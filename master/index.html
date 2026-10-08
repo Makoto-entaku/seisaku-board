@@ -1,5 +1,5 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow">
-<title>制作グループ 進行表</title>
+<title>進行表</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: 企画ごとに縦1列のボード。列は横に並び、列の中は上から期限順。期限順（全体）リストにも切替可 */
@@ -74,10 +74,12 @@ form.add input{flex:1;min-width:0;font:inherit;font-size:12.5px;border:1px solid
 .newp .full{grid-column:1/-1}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
-<style>body{margin:0}.ro li.t{grid-template-columns:auto 1fr auto}.mark{width:14px;height:14px;border:1.5px solid var(--line);border-radius:3px;margin-top:3px;display:inline-block}li.done .mark{background:var(--accent);border-color:var(--accent)}.dd{font-family:var(--mono);font-size:11px;color:var(--muted)}.late .dd{color:var(--late);font-weight:500}.soon .dd{color:var(--soon)}.tag{font-size:10px;line-height:1;padding:3px 5px;border-radius:4px;background:var(--late);color:var(--surface);font-weight:700;white-space:nowrap}li.done .tag{background:none;color:var(--done);border:1px solid var(--line)}.upd{font-size:11px;color:var(--muted);font-family:var(--mono)}</style>
+<style>body{margin:0}.upd{font-size:11px;color:var(--muted);font-family:var(--mono)}
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);font-size:12.5px;padding:8px 14px;border-radius:8px;max-width:calc(100% - 32px)}
+li.busy{opacity:.55}</style>
 </head><body>
-<div class="wrap ro">
-  <header><h1>制作グループ 進行表</h1><div class="stats" id="stats"></div></header>
+<div class="wrap">
+  <header><h1 id="ttl">進行表</h1><div class="stats" id="stats"></div></header>
   <div class="bar">
     <div class="seg" role="group" aria-label="表示"><button id="vProj" aria-pressed="true">企画ごと</button><button id="vDue" aria-pressed="false">全体を期限順</button></div>
     <label class="chk"><input type="checkbox" id="hideDone"> 完了を隠す</label>
@@ -85,9 +87,15 @@ form.add input{flex:1;min-width:0;font:inherit;font-size:12.5px;border:1px solid
   </div>
   <main id="list"><div class="note">読み込み中…</div></main>
 </div>
+<div class="toast" id="toast" hidden></div>
 <script>
+const API='https://script.google.com/macros/s/AKfycbxquFhdbNPnL6GT3hWhzDesY-go4mMMfH2YMfzCzn55X9mTm4HGtsDmjmq984VlU2Mb2g/exec';
+const TITLES={master:'制作グループ 進行表',risa:'リサの進行表',shoyo:'しょーよーの進行表',miyamon:'みやもんの進行表'};
+const PAGE=(location.pathname.split('/').filter(Boolean).pop()||'');
+const KEY=location.hash.slice(1);
+document.title=TITLES[PAGE]||'進行表';document.getElementById('ttl').textContent=document.title;
 const $=s=>document.querySelector(s);
-let projects=[],view='proj',hideDone=false;
+let projects=[],view='proj',hideDone=false,pending=0,loaded=false;
 try{const s=JSON.parse(localStorage.getItem('sgv')||'{}');view=s.view==='due'?'due':'proj';hideDone=!!s.hideDone}catch(e){}
 const save=()=>{try{localStorage.setItem('sgv',JSON.stringify({view,hideDone}))}catch(e){}};
 const today=()=>{const d=new Date();d.setHours(0,0,0,0);return d};
@@ -95,26 +103,53 @@ function dueClass(due,done){if(!due||done)return'';const diff=(new Date(due+'T00
 function md(s){if(!s)return'';const[,m,d]=s.split('-');return `${+m}/${+d}`}
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const byDue=(a,b)=>(a.done-b.done)||((a.due||'9999')<(b.due||'9999')?-1:(a.due||'9999')>(b.due||'9999')?1:(!!b.pri-!!a.pri));
-function row(p,t,showProj){const c=dueClass(t.due,t.done);return `<li class="t ${t.done?'done':''} ${c}"><span class="mark" aria-label="${t.done?'完了':'未完了'}"></span><div class="tb"><span class="tx">${esc(t.text)}</span><span class="meta">${t.due?`<span class="dd">期限 ${md(t.due)}</span>`:''}${t.who?`<span class="who">担当 ${esc(t.who)}</span>`:''}${showProj?`<span class="pj">${esc(p.no)} ${esc(p.name)}</span>`:''}</span></div><div class="acts">${t.pri?'<span class="tag">重要</span>':''}</div></li>`}
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,3500)}
+
+function row(p,t,showProj){const c=dueClass(t.due,t.done);
+  return `<li class="t ${t.done?'done':''} ${c}" data-p="${p.id}" data-t="${t.id}">
+  <input type="checkbox" ${t.done?'checked':''} aria-label="完了">
+  <div class="tb"><span class="tx">${esc(t.text)}</span>
+  <span class="meta"><input class="due" type="date" value="${t.due||''}" aria-label="期限">${t.who?`<span class="who">担当 ${esc(t.who)}</span>`:''}${showProj?`<span class="pj">${esc(p.no)} ${esc(p.name)}</span>`:''}</span></div>
+  <div class="acts"><button class="star" aria-pressed="${!!t.pri}" title="重要（備品・場所）">重要</button><button class="x" aria-label="削除">×</button></div></li>`}
 function render(){
   $('#vProj').setAttribute('aria-pressed',view==='proj');$('#vDue').setAttribute('aria-pressed',view==='due');$('#hideDone').checked=hideDone;
-  const all=projects.flatMap(p=>(p.tasks||[]).filter(t=>!t.del).map(t=>({p,t}))),o=all.filter(x=>!x.t.done);
+  const all=projects.flatMap(p=>(p.tasks||[]).map(t=>({p,t}))),o=all.filter(x=>!x.t.done);
   $('#stats').innerHTML=`<span>未完了 <b>${o.length}</b></span><span class="l">重要 <b>${o.filter(x=>x.t.pri).length}</b></span><span class="l">期限切れ <b>${o.filter(x=>dueClass(x.t.due)==='late').length}</b></span><span>7日以内 <b>${o.filter(x=>dueClass(x.t.due)==='soon').length}</b></span>`;
   const L=$('#list');
-  if(!projects.length){L.innerHTML='<div class="empty">表示する企画がありません。</div>';return}
+  if(!projects.length){L.innerHTML='<div class="empty">担当の企画はまだありません。</div>';return}
   if(view==='due'){const r=all.filter(x=>!hideDone||!x.t.done).sort((a,b)=>byDue(a.t,b.t));L.innerHTML=`<div class="list"><ul>${r.map(x=>row(x.p,x.t,true)).join('')}</ul></div>`;return}
-  L.innerHTML=`<div class="board">${projects.map(p=>{const ts=(p.tasks||[]).filter(t=>!t.del),dn=ts.filter(t=>t.done).length,pct=ts.length?Math.round(dn/ts.length*100):0;
-    return `<section class="col"><div class="ch"><div class="ct"><span class="no">${esc(p.no)}</span><span class="pn">${esc(p.name)}</span></div>
+  L.innerHTML=`<div class="board">${projects.map(p=>{const ts=p.tasks||[],dn=ts.filter(t=>t.done).length,pct=ts.length?Math.round(dn/ts.length*100):0;
+    return `<section class="col" data-p="${p.id}"><div class="ch"><div class="ct"><span class="no">${esc(p.no)}</span><span class="pn">${esc(p.name)}</span></div>
     <div class="pm">${p.owner?`<span class="own">担当 ${esc(p.owner)}</span>`:''}${p.deadline?`<span>締切 ${md(p.deadline)}</span>`:''}<span>${dn}/${ts.length} 完了</span>${p.doc?`<a href="${esc(p.doc)}" target="_blank" rel="noopener">資料</a>`:''}</div>
     <div class="meter"><i style="width:${pct}%"></i></div>${p.goal?`<div class="goal">${esc(p.goal)}</div>`:''}</div>
-    <ul>${ts.filter(t=>!hideDone||!t.done).sort(byDue).map(t=>row(p,t,false)).join('')}</ul></section>`}).join('')}</div>`;
+    <ul>${ts.filter(t=>!hideDone||!t.done).sort(byDue).map(t=>row(p,t,false)).join('')}</ul>
+    <form class="add" data-p="${p.id}"><input type="text" id="add-${p.id}" placeholder="todoを追加" aria-label="todoを追加" maxlength="300"><button class="btn">追加</button></form></section>`}).join('')}</div>`;
 }
+async function load(){
+  if(!KEY||!TITLES[PAGE]){$('#list').innerHTML='<div class="note">リンクが途中で切れています。共有されたURLを「#」以降も含めてそのまま開いてください。</div>';return}
+  if(pending)return;
+  try{const r=await fetch(`${API}?page=${PAGE}&k=${encodeURIComponent(KEY)}&t=${Date.now()}`);const d=await r.json();
+    if(!d.ok){$('#list').innerHTML=d.error==='auth'?'<div class="note">このリンクでは開けません。共有されたURLをそのまま開いてください。</div>':'<div class="note">読み込めませんでした。少し時間をおいて開き直してください。</div>';return}
+    if(pending)return;
+    const a=document.activeElement;if(loaded&&a&&a.matches&&a.matches('input[type=text],input.due'))return;
+    projects=d.projects.sort((x,y)=>x.order-y.order);loaded=true;
+    const u=new Date();$('#upd').textContent=`${u.getHours()}:${String(u.getMinutes()).padStart(2,'0')} 時点`;render()
+  }catch(e){if(!loaded)$('#list').innerHTML='<div class="note">読み込めませんでした。通信を確認して開き直してください。</div>'}
+}
+async function post(body){pending++;try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({page:PAGE,k:KEY,...body})});const d=await r.json();if(!d.ok)throw 0;return d}
+  catch(e){toast('保存できませんでした。もう一度試してください。');throw e}finally{pending--}}
+const findP=id=>projects.find(p=>p.id===id);
+async function setTask(li,fields){const p=findP(li.dataset.p),t=p.tasks.find(x=>x.id===li.dataset.t);const before={...t};
+  if(fields.del)p.tasks=p.tasks.filter(x=>x!==t);else Object.assign(t,fields);render();
+  try{await post({op:'set',id:t.id,fields})}catch(e){if(fields.del)p.tasks.push(before);else Object.assign(t,before);render()}}
+document.addEventListener('click',e=>{const st=e.target.closest('.star');if(st){const li=st.closest('li'),t=findP(li.dataset.p).tasks.find(x=>x.id===li.dataset.t);setTask(li,{pri:!t.pri});return}
+  const x=e.target.closest('.x');if(x){setTask(x.closest('li'),{del:true})}});
+document.addEventListener('change',e=>{const li=e.target.closest('li.t');if(!li)return;setTask(li,e.target.type==='checkbox'?{done:e.target.checked}:{due:e.target.value||''})});
+document.addEventListener('submit',async e=>{const f=e.target.closest('form.add');if(!f)return;e.preventDefault();
+  const inp=f.querySelector('input'),txt=inp.value.trim();if(!txt)return;const p=findP(f.dataset.p);
+  const tmp={id:'tmp'+Date.now(),text:txt,done:false,due:'',pri:false,who:''};p.tasks.push(tmp);render();
+  try{const d=await post({op:'add',pid:p.id,text:txt});tmp.id=d.id;render()}catch(_){p.tasks=p.tasks.filter(x=>x!==tmp);render()}
+  const n=document.getElementById('add-'+p.id);n&&n.focus()});
 $('#vProj').onclick=()=>{view='proj';save();render()};$('#vDue').onclick=()=>{view='due';save();render()};$('#hideDone').onchange=e=>{hideDone=e.target.checked;save();render()};
-function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
-let KEY=null;
-async function key(){if(KEY)return KEY;const k=location.hash.slice(1);if(!k)throw new Error('nokey');KEY=await crypto.subtle.importKey('raw',b64u(k),'AES-GCM',false,['decrypt']);return KEY}
-async function load(){try{const r=await fetch('data.enc?'+Date.now(),{cache:'no-store'});const e=await r.json();
-  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(e.iv)},await key(),b64u(e.ct));const d=JSON.parse(new TextDecoder().decode(pt));projects=(d.projects||[]).sort((a,b)=>(a.order||0)-(b.order||0));
-  if(d.updated){const u=new Date(d.updated);$('#upd').textContent=`最終更新 ${u.getMonth()+1}/${u.getDate()} ${String(u.getHours()).padStart(2,'0')}:${String(u.getMinutes()).padStart(2,'0')}`}render()}catch(e){$('#list').innerHTML=e&&e.message==='nokey'?'<div class="note">リンクが途中で切れています。共有されたURLを「#」以降も含めてそのまま開いてください。</div>':'<div class="note">読み込めませんでした。共有されたURLをそのまま開き直してください。</div>'}}
-load();setInterval(load,5*60*1000);
+load();setInterval(load,60000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)load()});
 </script></body></html>
