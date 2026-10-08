@@ -30,6 +30,11 @@ for f in sorted(glob.glob(os.path.join(src, "*.json"))):
     d.pop("chat", None)  # personal Claude chat links never go out
     d["tasks"] = [t for t in d.get("tasks", []) if not t.get("del")]
     projects.append(d)
+import hashlib
+digest = hashlib.sha256(json.dumps(projects, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
+last = os.path.join(out, "_tools", "last.sha")
+if os.path.exists(last) and open(last).read().strip() == digest and "--force" not in sys.argv:
+    print("unchanged; nothing to publish"); sys.exit(3)
 now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9))).isoformat()
 
 for folder, (title, owner) in PAGES.items():
@@ -48,5 +53,7 @@ open(os.path.join(out, "robots.txt"), "w").write("User-agent: *\nDisallow: /\n")
 open(os.path.join(out, ".nojekyll"), "w").write("")
 os.makedirs(os.path.join(out, "_tools"), exist_ok=True)
 for f in ("build_site.py", "viewer.html"):
-    open(os.path.join(out, "_tools", f), "w", encoding="utf8").write(open(os.path.join(here, f), encoding="utf8").read())
+    if os.path.abspath(here) != os.path.abspath(os.path.join(out, "_tools")):
+        open(os.path.join(out, "_tools", f), "w", encoding="utf8").write(open(os.path.join(here, f), encoding="utf8").read())
+open(last, "w").write(digest)
 print("built", len(projects), "projects at", now)
