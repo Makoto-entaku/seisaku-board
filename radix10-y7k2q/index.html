@@ -367,18 +367,18 @@ async function post(body){const r=await fetch(API,{method:'POST',body:JSON.strin
 const WORDS=["大海の一滴", "GRIT", "磨く", "事に向き合う", "上に抜け、下に譲る", "半歩先", "2歩先を見て半歩先を着手する", "ファーストペンギンであり続ける", "いうことは壮大に、やることは愚直に", "愚直", "凡事徹底", "2ランクアップの法則", "自己の拡張", "自己変革", "前進と変容", "等価交換", "All Winの実現", "万物に感謝", "当たり前と有り難う", "Be the トリガー", "起点", "熱狂", "wao", "和", "和を", "チェンジざバイアス", "現在地を直視する", "当たり前を塗り替える", "自ら機会を作り出し、その機会によって自らを変えよ", "皆経営者意識", "勝ち癖", "フィードシェア", "神は細部に宿る", "遠くに行きたいならみんなで行け", "ジョブ理論", "ラストワンマイル", "excellent", "リスペクト", "原点回帰", "利確", "天才、勝ち確、楽勝", "言語は人の鏡", "背中めがけて殴る", "遠慮と謙遜", "遠慮と気遣い", "優れるな異なれ", "息子と思って寄り添え", "諦めたくない人の集まり", "独善的利他", "利他", "サイの角のようにただ独り歩め", "暗中模索の中に一筋の光を", "お前はどうありたいのか？", "心がすべて", "在り方", "もっとやれる", "有難い", "素直さと主体性", "人として豊かになる", "志", "立志", "共想", "ワークハードプレイハード", "マイテーマを持つ", "ゲームチェンジャー", "ブレイクスルー", "Giver", "Talk a lot, Talk equally, Talk outside", "who/what/how", "守りの観点", "保存率", "SNSを溶かす", "ババを引く", "エフィカシー", "明日の意識行動に影響を与え続け、想像以上の前進体験を届ける", "ただのgood byeではなく、グッドリレーションズベターヒューチャー", "2Days", "感謝のアンケート", "good morning sakiyomi", "Radix", "強くてニューゲーム", "キングボンビー", "ジョーカー", "発明", "行動主義", "コア", "新たな挑戦に、成功体験を。", "仕事を通じて人間として成長し、自分と周りの人を幸せにする。", "パートナー", "エキスパート", "イノベーター", "保存率という概念", "先が読めない時代に、それでも挑戦する", "変わり続けることで、変わらないものを守る", "根があるから、枝葉は伸びる。", "根があるから、挑戦できる。", "私たちは変わらないために、挑戦し続けます。", "ゴール", "コンフォートゾーン", "自己機能"];
 function placeTyper(field,opt){let alive=true;const avoid=opt.avoid||[];const live=new Set();
   const hit=(a,b)=>!(a.right<b.left||a.left>b.right||a.bottom<b.top||a.top>b.bottom);
-  function spawn(){if(!alive)return;const fr=field.getBoundingClientRect();const el=document.createElement('span');el.className='tw'+(opt.cls?' '+opt.cls:'');
+  let fails=0;function spawn(){if(!alive)return;if(opt.keep&&fails>opt.n*3)return;const fr=field.getBoundingClientRect();const el=document.createElement('span');el.className='tw'+(opt.cls?' '+opt.cls:'');
     const used=new Set([...live].map(x=>x.dataset.w));let w;for(let t=0;t<20;t++){w=WORDS[Math.random()*WORDS.length|0];if(!used.has(w)&&(!opt.maxLen||w.length<=opt.maxLen))break}
     el.dataset.w=w;const fs=opt.size?opt.size():(14+Math.random()*22|0);el.style.fontSize=(w.length>18?Math.min(fs,18):fs)+'px';
     if(w.length<=12&&Math.random()<(opt.vert??.3))el.style.writingMode='vertical-rl';el.style.visibility='hidden';el.textContent=w;field.appendChild(el);
     const ew=el.offsetWidth,eh=el.offsetHeight;let ok=false;
-    for(let t=0;t<40&&!ok;t++){const x=Math.random()*Math.max(1,fr.width-ew),y=Math.random()*Math.max(1,fr.height-eh);el.style.left=x+'px';el.style.top=y+'px';
-      const r={left:fr.left+x-8,top:fr.top+y-8,right:fr.left+x+ew+8,bottom:fr.top+y+eh+8};
+    for(let t=0;t<(opt.tries||40)&&!ok;t++){const x=Math.random()*Math.max(1,fr.width-ew),y=Math.random()*Math.max(1,fr.height-eh);el.style.left=x+'px';el.style.top=y+'px';
+      const g=opt.gap??8;const r={left:fr.left+x-g,top:fr.top+y-g,right:fr.left+x+ew+g,bottom:fr.top+y+eh+g};
       ok=!avoid.some(a=>{const b=a.getBoundingClientRect();return b.width&&hit(r,{left:b.left-10,top:b.top-10,right:b.right+10,bottom:b.bottom+10})})&&![...live].some(o=>hit(r,o._r));el._r=r}
-    if(!ok){el.remove();setTimeout(spawn,400);return}
+    if(!ok){el.remove();fails++;setTimeout(spawn,opt.keep?60:400);return}
     live.add(el);el.style.opacity=(opt.op?opt.op():(.25+Math.random()*.5)).toFixed(2);el.textContent='';el.style.visibility='visible';let i=0;
     const t=setInterval(()=>{if(!alive){clearInterval(t);return}i++;el.textContent=w.slice(0,i);if(i>=w.length){clearInterval(t);if(opt.keep){el.classList.add('done');return}setTimeout(()=>{el.classList.add('out');setTimeout(()=>{live.delete(el);el.remove();spawn()},600)},900+Math.random()*900)}},90+Math.random()*90)}
-  for(let k=0;k<opt.n;k++)setTimeout(spawn,k*110);
+  for(let k=0;k<opt.n;k++)setTimeout(spawn,k*(opt.step||110));
   return{stop(){alive=false;field.innerHTML=''}}}
 const typing=(()=>{const f=document.getElementById('typefield');if(!f)return{stop(){}};return placeTyper(f,{n:16,avoid:[document.querySelector('.gate .load')]})})();
 async function boot(){
@@ -486,7 +486,7 @@ function openSheet(n){
       <h3 class="sec-h">寄せ書き <span id="bcount"></span></h3>
       <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>${composeB}`;
     $('#sheet').classList.add('full');
-    if(window._hw)window._hw.stop();setTimeout(()=>{const f=$('#heroWords');if(f)window._hw=placeTyper(f,{n:7,keep:true,vert:.2,maxLen:14,cls:'sm',size:()=>12+Math.random()*6|0,op:()=>.35+Math.random()*.3,avoid:[...document.querySelectorAll('.hero .av,.hero h2,.hero .sub,.hero .writebig')]})},150);
+    if(window._hw)window._hw.stop();setTimeout(()=>{const f=$('#heroWords');if(f)window._hw=placeTyper(f,{n:46,keep:true,vert:.35,maxLen:16,cls:'sm',gap:3,tries:80,step:45,size:()=>11+Math.random()*12|0,op:()=>.28+Math.random()*.4,avoid:[...document.querySelectorAll('.hero .av,.hero h2,.hero .sub,.hero .writebig')]})},150);
   }else{$('#sheet').classList.remove('full');$('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH}
   $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
   if($('#who'))$('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
