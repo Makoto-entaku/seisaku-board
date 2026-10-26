@@ -438,7 +438,7 @@ async function runMosaic2(){
   const N=Math.floor(atlas.naturalWidth/80),TOT=Math.min(242,N*Math.floor(atlas.naturalHeight/80));let bag=[];
   const pick=()=>{if(!bag.length)bag=[...Array(TOT).keys()].sort(()=>Math.random()-.5);return bag.pop()};
   const SPREAD=Math.min(2600,900+pts.length*7),DUR=280;
-  const ph=pts.map(([x,y],i)=>{const t=pick();return{x,y,s:S*(0.78+Math.random()*0.45),r:(Math.random()-.5)*0.62,a:(t%N)*80,b:Math.floor(t/N)*80,c:col(x,y),at:(i/pts.length)*SPREAD+Math.random()*120,done:false}});
+  const ph=pts.map(([x,y],i)=>{const t=pick();return{x,y,s:S*(0.78+Math.random()*0.45),r:(Math.random()-.5)*0.62,a:(t%N)*80,b:Math.floor(t/N)*80,c:(c=>{const l=.3*c[0]+.59*c[1]+.11*c[2];return[Math.min(255,l*1.08+10),l*0.97+4,l*0.78]})(col(x,y)),at:(i/pts.length)*SPREAD+Math.random()*120,done:false}});
   function put(g,p,k){const e=1-Math.pow(1-k,3),s=p.s*(1.35-0.35*e),pad=s*0.055;g.save();g.globalAlpha=Math.min(1,k*1.6);g.translate(p.x,p.y-(1-e)*S*0.12);g.rotate(p.r);
     const [r,gg,b]=p.c;g.fillStyle=`rgb(${r*0.55+238*0.45|0},${gg*0.55+226*0.45|0},${b*0.55+198*0.45|0})`;g.shadowColor='rgba(0,0,0,.35)';g.shadowBlur=s*0.05;g.shadowOffsetY=s*0.02;
     g.fillRect(-s/2-pad,-s/2-pad,s+pad*2,s+pad*3.2);g.shadowColor='transparent';
