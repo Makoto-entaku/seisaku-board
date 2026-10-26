@@ -415,27 +415,39 @@ async function runMosaic2(){
   const cv=document.getElementById('mosaic'),img=document.getElementById('wallImg');if(!cv||!img)return;
   let seen=false;try{seen=sessionStorage.getItem('yk_mosaic')==='1'}catch(e){}
   if(seen||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  const srcs=Object.values(AV).filter(Boolean);if(srcs.length<20)return;
+  const atlas=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src='tiles.jpg?v=1'});
+  const srcs=Object.values(AV).filter(Boolean);
+  if(!atlas&&srcs.length<20)return;
   if(!img.complete)await new Promise(r=>img.onload=r);
   const box=img.getBoundingClientRect();const W=box.width,H=box.height;if(!W||!H)return;
   const dpr=Math.min(2,devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
   const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
-  // sample wall image with object-fit:cover + object-position center 42%
   const iw=img.naturalWidth,ih=img.naturalHeight,sc=Math.max(W/iw,H/ih),dw=iw*sc,dh=ih*sc,ox=(W-dw)/2,oy=(H-dh)*0.42;
-  const cols=W<600?11:W<1000?16:22,cell=W/cols,rows=Math.ceil(H/cell);
+  const cols=W<600?14:W<1000?22:30,cell=W/cols,rows=Math.ceil(H/cell);
   const sm=document.createElement('canvas');sm.width=cols;sm.height=rows;const sx=sm.getContext('2d');sx.drawImage(img,-ox/cell,-oy/cell,dw/cell,dh/cell);
   const px=sx.getImageData(0,0,cols,rows).data;
-  const ims=await Promise.all(srcs.slice(0,160).map(s=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s})));const pool=ims.filter(Boolean);
-  const tiles=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const k=(y*cols+x)*4;const lum=.3*px[k]+.59*px[k+1]+.11*px[k+2];
-    tiles.push({x:x*cell,y:y*cell,lum,im:pool[(x*7+y*13)%pool.length],sx:W/2+(Math.random()-.5)*W*1.1,sy:H/2+(Math.random()-.5)*H*1.2,r:(Math.random()-.5)*0.9,delay:Math.random()*700})}
+  // tile pool: LINE album photos (atlas 80px cells) + member icons
+  const pool=[];const one=document.createElement('canvas');one.width=one.height=1;const oc=one.getContext('2d',{willReadFrequently:true});
+  const lumOf=(im,a,b,w)=>{oc.clearRect(0,0,1,1);oc.drawImage(im,a,b,w,w,0,0,1,1);const d=oc.getImageData(0,0,1,1).data;return .3*d[0]+.59*d[1]+.11*d[2]};
+  if(atlas){const N=Math.floor(atlas.naturalWidth/80);for(let i=0;i<242;i++){const a=(i%N)*80,b=Math.floor(i/N)*80;if(b>=atlas.naturalHeight)break;pool.push({im:atlas,a,b,w:80,l:lumOf(atlas,a,b,80),u:0})}}
+  const ims=await Promise.all(srcs.slice(0,120).map(s=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s})));
+  ims.filter(Boolean).forEach(i=>{const w=Math.min(i.naturalWidth,i.naturalHeight);if(w)pool.push({im:i,a:(i.naturalWidth-w)/2,b:(i.naturalHeight-w)/2,w,l:lumOf(i,(i.naturalWidth-w)/2,(i.naturalHeight-w)/2,w),u:0})});
+  if(pool.length<20)return;
+  // normalise tile luminance range to the wall's range, then pick closest with a reuse penalty
+  const pl=pool.map(p=>p.l),pmin=Math.min(...pl),pmax=Math.max(...pl);
+  const cells=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const k=(y*cols+x)*4;cells.push({x,y,lum:.3*px[k]+.59*px[k+1]+.11*px[k+2]})}
+  const cl=cells.map(c=>c.lum),cmin=Math.min(...cl),cmax=Math.max(...cl);
+  pool.forEach(p=>p.n=cmin+(p.l-pmin)/Math.max(1,pmax-pmin)*(cmax-cmin));
+  const tiles=[];cells.sort(()=>Math.random()-.5).forEach(c=>{let best=null,bs=1e9;for(const p of pool){const s=Math.abs(p.n-c.lum)+p.u*9+Math.random()*6;if(s<bs){bs=s;best=p}}best.u++;
+    tiles.push({x:c.x*cell,y:c.y*cell,lum:c.lum,t:best,sx:W/2+(Math.random()-.5)*W*1.1,sy:H/2+(Math.random()-.5)*H*1.2,r:(Math.random()-.5)*0.9,delay:Math.random()*700})});
   window._mzRunning=true;img.style.opacity='0';cv.style.opacity='1';document.querySelector('.tate-hero.on-photo')?.classList.add('wait');document.documentElement.classList.remove('mz-pre');
-  const T0=performance.now(),FLY=1500,HOLD=650,FADE=1100;
+  const T0=performance.now(),FLY=1500,HOLD=1000,FADE=1100;
   const ease=t=>1-Math.pow(1-t,3);
   function draw(now){const t=now-T0;ctx.clearRect(0,0,W,H);ctx.fillStyle='#141210';ctx.fillRect(0,0,W,H);
     for(const p of tiles){const k=Math.max(0,Math.min(1,(t-p.delay)/FLY)),e=ease(k);const s=cell*(1.9-0.9*e);
       const cx=p.sx+(p.x+cell/2-p.sx)*e,cy=p.sy+(p.y+cell/2-p.sy)*e;ctx.save();ctx.translate(cx,cy);ctx.rotate(p.r*(1-e));
       if(k<1){ctx.fillStyle='#fff';ctx.fillRect(-s/2-3,-s/2-3,s+6,s+10)}
-      ctx.drawImage(p.im,-s/2,-s/2,s,s);const a=0.25+0.55*e;ctx.fillStyle=`rgba(${p.lum|0},${p.lum|0},${p.lum|0},${a})`;ctx.fillRect(-s/2,-s/2,s,s);ctx.restore()}
+      ctx.drawImage(p.t.im,p.t.a,p.t.b,p.t.w,p.t.w,-s/2,-s/2,s,s);const a=0.1+0.42*e;ctx.fillStyle=`rgba(${p.lum|0},${p.lum|0},${p.lum|0},${a})`;ctx.fillRect(-s/2,-s/2,s,s);ctx.restore()}
     const end=FLY+700+HOLD;if(t<end){requestAnimationFrame(draw);return}
     img.style.transition=`opacity ${FADE}ms ease`;img.style.opacity='';cv.style.transition=`opacity ${FADE}ms ease`;cv.style.opacity='0';
     document.querySelector('.tate-hero.on-photo')?.classList.remove('wait');try{sessionStorage.setItem('yk_mosaic','1')}catch(e){}
