@@ -243,6 +243,14 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .tate-hero.on-photo .lead{font-size:clamp(15px,2vw,18px);line-height:2}
 @media (min-width:1100px){.wall{width:100vw;margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw)}.wall img{border-radius:0}}
 .wrap{padding-top:0}
+/* アイコン下に書くボタン、投稿は横並び */
+.hero{flex-direction:column;align-items:center;text-align:center;gap:6px;padding:28px 0 20px}
+.hero .av{width:110px;height:110px}
+.btn.writebig{margin-top:14px;border-radius:999px;padding:14px 34px;font-size:17px;font-weight:600}
+.sec-h{font-size:15px;margin:26px 0 10px;display:flex;align-items:baseline;gap:8px;color:var(--fg)}
+.sec-h small{font-size:12px;color:var(--muted)}
+.poststrip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;align-items:flex-start}
+.poststrip .post{flex:none;width:min(560px,86vw);max-height:68vh;overflow-y:auto;scroll-snap-align:start;margin:0}
 </style>
 </head>
 <body>
@@ -392,11 +400,11 @@ function openSheet(n){
       <div class="row"><button class="btn wide" id="send">寄せ書きに貼る</button></div>
     </div></div>`;
     $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">←</button><div class="bt">${esc(p.n)}さんへの寄せ書き</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
-      <header class="hero"><span class="av">${avHtml(p)}</span><div><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div></div></header>
+      <header class="hero"><span class="av">${avHtml(p)}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div><button class="btn writebig" data-opencompose>＋ メッセージを書く</button></header>
       ${photosB}
-      <div class="tabs" role="tablist"><button class="on" data-tab="board">寄せ書き <span id="bcount"></span></button>${own?'<button data-tab="posts">当時の投稿</button>':''}</div>
-      <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>
-      <section id="tab-posts" hidden>${own}</section>${composeB}`;
+      ${own?`<h3 class="sec-h">当時の投稿<small>横にスワイプ →</small></h3><div class="poststrip">${own}</div>`:''}
+      <h3 class="sec-h">寄せ書き <span id="bcount"></span></h3>
+      <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>${composeB}`;
     $('#sheet').classList.add('full');
   }else{$('#sheet').classList.remove('full');$('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH}
   $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
