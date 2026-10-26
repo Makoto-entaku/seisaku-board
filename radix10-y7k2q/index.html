@@ -280,6 +280,19 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .tate-hero.on-photo h1{font-size:clamp(48px,8vw,88px);letter-spacing:.1em}
 .tate-hero.on-photo .sub-t{margin:4px 0 16px}
 .tate-hero.on-photo .lead{max-width:none}
+/* アイコン＝ポラロイド＋マスキングテープ */
+.card .av,.hero .av{position:relative;overflow:visible;border-radius:0;background:#fff;padding:7px 7px 20px;box-shadow:0 2px 8px rgba(40,30,20,.2);transform:rotate(var(--r,-3deg));outline:none}
+.card .av{width:96px;height:auto}
+.card .av img,.hero .av img{display:block;width:100%;aspect-ratio:1;height:auto;object-fit:cover;border-radius:0}
+.card .av::before,.hero .av::before{content:"";position:absolute;top:-9px;left:50%;width:46%;height:16px;transform:translateX(-50%) rotate(-4deg);background:rgba(228,221,200,.88);border-left:1px dashed rgba(0,0,0,.08);border-right:1px dashed rgba(0,0,0,.08);z-index:1}
+.card:nth-child(2n) .av{--r:2.5deg}.card:nth-child(3n) .av{--r:-1deg}.card:nth-child(5n) .av{--r:3.5deg}
+.card .av:not(:has(img)){width:96px;height:118px;display:grid;place-items:center;font-size:22px;color:var(--muted)}
+.card.cur .av{outline:none}
+.card:hover{background:transparent;border-color:transparent}
+.card:hover .av{transform:rotate(0) scale(1.04);transition:transform .2s}
+.hero .av{width:150px;height:auto;padding:9px 9px 26px;--r:-2deg}
+.hero .av:not(:has(img)){height:185px;display:grid;place-items:center;font-size:30px}
+.grid{gap:28px 10px}
 </style>
 </head>
 <body>
