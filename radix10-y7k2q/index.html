@@ -299,10 +299,20 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .wall img{height:min(60svh,600px);min-height:300px;object-position:center 42%;-webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent 100%);mask-image:linear-gradient(to bottom,#000 72%,transparent 100%)}
 .tate-hero.on-photo{position:relative;inset:auto;left:auto;right:auto;bottom:auto;top:auto;margin-top:-56px;padding:0 max(20px,calc((100% - 960px)/2)) clamp(30px,6vh,52px);background:transparent;text-shadow:none}
 .bar{background:var(--bg)!important;backdrop-filter:none;z-index:6}
+/* 読み込み中のタイピング演出 */
+.gate{position:relative;overflow:hidden}
+.typefield{position:fixed;inset:0;pointer-events:none;z-index:0}
+.tw{position:absolute;white-space:nowrap;font-family:"Klee One",cursive;font-weight:600;color:var(--fg);transition:opacity .6s}
+.tw::after{content:"";display:inline-block;width:1px;height:1em;background:currentColor;margin-left:2px;vertical-align:-0.1em;animation:blink .8s steps(1) infinite}
+.tw.out{opacity:0!important}
+@keyframes blink{50%{opacity:0}}
+.gate .load{position:relative;z-index:1;background:radial-gradient(closest-side,var(--bg) 60%,transparent);padding:40px 60px}
+.gate .load h1{font-size:clamp(40px,8vw,64px);letter-spacing:.14em}
+@media (prefers-reduced-motion:reduce){.typefield{display:none}}
 </style>
 </head>
 <body>
-<div class="gate" id="gate"><div class="load"><h1>Radix 10周年 寄せ書き</h1><p class="note" id="gateErr">読み込んでいます…</p></div></div>
+<div class="gate" id="gate"><div class="typefield" id="typefield" aria-hidden="true"></div><div class="load"><h1>寄せ書き</h1><p class="note" id="gateErr">読み込んでいます…</p></div></div>
 
 <div class="wrap" id="app" hidden>
   <header>
@@ -349,10 +359,19 @@ function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTim
 async function get(params){const u=API+'?'+new URLSearchParams({...params,key:KEY});const r=await fetch(u);return r.json()}
 async function post(body){const r=await fetch(API,{method:'POST',body:JSON.stringify({...body,key:KEY})});return r.json()}
 
+const WORDS=['感情爆発','眼を磨く','エゴを手懐ける','概念を生む力を磨く','大欲','拡張','イジくり','全員まとめてうけとめる','勢いと熱','覚悟','挑戦','ありがとう','守る人になる','やり切る','仲間','一緒に走ってきた','あの日の2days','初心','本気で向き合う','また会おう'];
+const typing=(()=>{const f=document.getElementById('typefield');if(!f)return{stop(){}};let alive=true;const slots=[];
+  const W=()=>f.clientWidth,H=()=>f.clientHeight;
+  function spawn(){if(!alive)return;const el=document.createElement('span');el.className='tw';const w=WORDS[Math.random()*WORDS.length|0];
+    el.style.left=(4+Math.random()*80)+'%';el.style.top=(4+Math.random()*88)+'%';el.style.fontSize=(14+Math.random()*22|0)+'px';el.style.opacity=(.25+Math.random()*.5).toFixed(2);
+    if(Math.random()<.3)el.style.writingMode='vertical-rl';f.appendChild(el);let i=0;
+    const t=setInterval(()=>{if(!alive){clearInterval(t);return}i++;el.textContent=w.slice(0,i);if(i>=w.length){clearInterval(t);setTimeout(()=>{el.classList.add('out');setTimeout(()=>{el.remove();spawn()},600)},900+Math.random()*900)}},90+Math.random()*90)}
+  for(let k=0;k<14;k++)setTimeout(spawn,k*120);
+  return{stop(){alive=false;f.innerHTML=''}}})();
 async function boot(){
   let d;try{d=await get({action:'data'})}catch(e){$('#gateErr').textContent='つながりませんでした。通信状況を確認して、もう一度お試しください。';$('#gate').hidden=false;return}
   if(!d.ok){$('#gateErr').textContent='読み込みに失敗しました。少し待ってから再読み込みしてください。';return}
-  $('#gate').hidden=true;$('#app').hidden=false;
+  typing.stop();$('#gate').hidden=true;$('#app').hidden=false;
   PEOPLE=d.people;BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));MSG=d.messages||[];
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');
   $('#me').value=ME;render();loadAvatars();
