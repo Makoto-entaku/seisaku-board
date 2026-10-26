@@ -251,6 +251,21 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .sec-h small{font-size:12px;color:var(--muted)}
 .poststrip{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;align-items:flex-start}
 .poststrip .post{flex:none;width:min(560px,86vw);max-height:68vh;overflow-y:auto;scroll-snap-align:start;margin:0}
+/* 写真→当時のSlack投稿ポップアップ */
+.lb-in{display:flex;flex-direction:column;align-items:center;max-height:92dvh;max-width:100%}
+.lb-in>img{max-width:100%;max-height:90dvh;border-radius:6px}
+.slk{background:#fff;color:#1d1c1d;width:min(620px,94vw);max-height:88dvh;overflow:auto;border-radius:10px;box-shadow:0 20px 60px rgba(0,0,0,.4);font-family:"Lato","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;font-weight:400;cursor:auto;text-align:left}
+.slk-ch{padding:12px 18px;border-bottom:1px solid #e8e8e8;font-weight:900;font-size:15px}
+.slk-msg{display:flex;gap:10px;padding:14px 18px 18px}
+.slk-av{flex:none;width:38px;height:38px;border-radius:6px;overflow:hidden;background:#ddd;display:grid;place-items:center;font-size:12px}
+.slk-av img{width:100%;height:100%;object-fit:cover}
+.slk-body{min-width:0;flex:1}
+.slk-head{display:flex;gap:8px;align-items:baseline}.slk-head b{font-weight:900;font-size:15px}.slk-head span{font-size:12px;color:#616061}
+.slk-body p{margin:4px 0 8px;white-space:pre-line;font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.slk-img{max-width:100%;max-height:360px;border-radius:8px;border:1px solid #e8e8e8;display:block}
+.slk-meta{display:flex;gap:10px;margin-top:8px;font-size:12px}
+.slk-re{border:1px solid #1264a3;background:#e8f5fa;color:#1264a3;border-radius:12px;padding:2px 8px}
+.slk-rc{color:#1264a3;font-weight:700;padding:2px 0}
 </style>
 </head>
 <body>
@@ -284,7 +299,7 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 <div class="scrim" id="scrim" hidden></div>
 <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shName" hidden></section>
 <div class="toast" id="toast" hidden></div>
-<div class="lb" id="lb" hidden><img id="lbImg" alt="当時の写真"></div>
+<div class="lb" id="lb" hidden><div class="lb-in"><img id="lbImg" alt="当時の写真"><div class="slk" id="lbPost" hidden></div></div></div>
 
 <script>
 const API='https://script.google.com/macros/s/AKfycbwmzffnY-hwKJcy-DftwktmSfp2b22DRqWlML2y90UgYoNGGBSGqqqukoo53QsLBR-JQA/exec';
@@ -376,7 +391,7 @@ function openSheet(n){
   const posts=[...(p.own||[]).slice().sort((a,b)=>String(a[1]).localeCompare(String(b[1]))).map(o=>postHtml(o[0],`${esc(p.n)}さんの投稿 ・ ${ym(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}`)),...(p.about||[]).map(o=>postHtml(o[0],`${esc(o[3])}さんが${esc(p.n)}さんについて書いた投稿 ・ ${ym(o[1])} ・ スタンプ${o[2]}`))];
   const own=posts.join('');
   const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
-  const ph=[...[...(p.own||[]),...(p.about||[])].flatMap(o=>(o[5]||[]).map(id=>[id,o[1]])),...(p.ph||[])].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).slice(0,10).sort((a,b)=>String(a[1]).localeCompare(String(b[1])));
+  const ph=[...[...(p.own||[]),...(p.about||[])].flatMap(o=>(o[5]||[]).map(id=>[id,o[1]])),...(p.ph||[])].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).slice(0,10).sort((a,b)=>((b[2]||0)-(a[2]||0))||String(a[1]).localeCompare(String(b[1])));
   const top=`<div class="sh-top"><span class="av">${avHtml(p)}</span><div><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div></div><button class="x" id="close" aria-label="閉じる">×</button></div>`;
   const photosH=ph.length?`<h3>${p.group?`${esc(p.n)}さんがいた頃のSAKIYOMI`:'あの頃の写真'}<small>${ph.length>1?'横にスワイプ →':''}</small></h3><div class="photos" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:'';
   const postsH=own?`<h3>当時の投稿</h3>${own}`:'';
@@ -418,7 +433,7 @@ function renderMsgs(n){const el=$('#msgs');if(!el)return;const ms=MSG.filter(m=>
   el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初の一通をどうぞ。</p>'}
 function closeSheet(){stopMic();open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
 $('#scrim').addEventListener('click',closeSheet);
-$('#lb').addEventListener('click',()=>$('#lb').hidden=true);
+$('#lb').addEventListener('click',e=>{if(e.target.closest('.slk')&&!e.target.closest('.slk-close'))return;$('#lb').hidden=true});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#lb').hidden){$('#lb').hidden=true;return}if(open)closeSheet()});
 $('#sheet').addEventListener('click',async e=>{
   if(e.target.closest('#close'))return closeSheet();
@@ -430,7 +445,10 @@ $('#sheet').addEventListener('click',async e=>{
   if(e.target.closest('[data-closecompose]')){stopMic();$('#composeBox').hidden=true;return}
   const mp=e.target.closest('[data-moreposts]');if(mp){$('#morePosts').hidden=false;mp.remove();return}
   const mo=e.target.closest('[data-more]');if(mo){const p=mo.closest('.post');p.classList.toggle('open');mo.textContent=p.classList.contains('open')?'閉じる':'全文を読む';return}
-  const im=e.target.closest('#sheet img[data-id]');if(im&&im.src){$('#lbImg').src=im.src;$('#lb').hidden=false;return}
+  const im=e.target.closest('#sheet img[data-id]');if(im&&im.src){$('#lbImg').src=im.src;const p=BYN[open];const x=p&&(p.ph||[]).find(y=>y[0]===im.dataset.id);const c=x&&x[3];const box=$('#lbPost');
+    if(c){box.innerHTML=`<div class="slk-ch"># ${esc(c.ch)}</div><div class="slk-msg"><span class="slk-av">${avHtml(p)}</span><div class="slk-body"><div class="slk-head"><b>${esc(p.n)}</b><span>${esc(c.at)}</span></div><p>${esc(c.t)}</p><img src="${im.src}" alt="" class="slk-img"><div class="slk-meta">${c.re?`<span class="slk-re">👏 ${c.re}</span>`:''}${c.rc?`<span class="slk-rc">${c.rc}件の返信</span>`:''}</div></div></div>`;box.hidden=false;$('#lbImg').hidden=true}
+    else{box.hidden=true;$('#lbImg').hidden=false}
+    $('#lb').hidden=false;return}
   const d=e.target.closest('[data-del]');if(d){const r=await post({action:'delete',id:d.dataset.del,from:ME});if(r.ok){MSG=MSG.filter(m=>m.id!==d.dataset.del);MINE=MINE.filter(x=>x!==d.dataset.del);save('yk_mine',MINE);renderMsgs(open);render();toast('取り消しました')}else toast('取り消せませんでした');return}
   if(e.target.closest('#next')){const nx=PEOPLE.filter(p=>!p.cur&&p.n!==open&&!mineTo(p.n)).sort((a,b)=>count(a.n)-count(b.n))[0];if(nx)openSheet(nx.n);return}
   if(e.target.closest('#send')){
