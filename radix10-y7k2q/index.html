@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>Radix10周年 寄せ書き</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600;800&family=Klee+One:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;700&family=IBM+Plex+Mono:wght@500&display=swap">
 <style>
 /* layout: sticky toolbar → card grid sorted by fewest messages → slide-up memory sheet with composer */
 :root{--bg:#ffffff;--surface:#ffffff;--fg:#111111;--muted:#6b6b6b;--line:#e6e6e6;--accent:#111111;--accent-soft:#f3f3f3;--ok:#111111;--ok-soft:#f3f3f3;--shadow:0 10px 40px rgba(0,0,0,.14);
@@ -144,6 +144,39 @@ textarea{width:100%;min-height:72px;border:1px solid var(--line);border-radius:1
 .gate h1{font-family:var(--round);margin:0;font-size:22px}
 .gate input{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
 .err{color:var(--accent);font-size:13px;min-height:1.2em}
+/* ===== 原稿用紙・手紙トーン ===== */
+:root{--bg:#fbfaf5;--surface:#fffefa;--fg:#262421;--muted:#7a756c;--line:#e4dfd3;--accent-soft:#f4f1e8;--grid:#ebe6da;--rule:#d9d3c4;
+--mincho:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;--hand:"Klee One","Hiragino Maru Gothic ProN",cursive}
+@media (prefers-color-scheme:dark){:root{--bg:#1a1916;--surface:#22201c;--fg:#ece7dc;--muted:#a39d91;--line:#3a362f;--accent-soft:#2a2823;--grid:#2a2823;--rule:#3d3931}}
+body{font-family:var(--mincho);background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:30px 30px;background-attachment:fixed}
+header h1,.gate h1{font-family:var(--mincho);font-weight:800;letter-spacing:.08em}
+header p{font-family:var(--mincho);line-height:2}
+.big span{font-family:var(--mincho)}
+.big b{font-family:var(--mincho);font-weight:800;letter-spacing:0}
+.bar{background:transparent;backdrop-filter:blur(2px)}
+.card .nm{font-family:var(--hand);font-size:14px}
+.av{border-radius:50%}
+.sheet.full{background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:30px 30px}
+.bar-b{background:var(--bg)}
+.bar-b .bt,.hero h2{font-family:var(--mincho);font-weight:800;letter-spacing:.04em}
+.tabs button{font-family:var(--mincho)}
+/* みんなのメッセージ＝罫線ノートに手書き */
+.tile{font-family:var(--hand);background-color:var(--surface);background-image:repeating-linear-gradient(transparent 0 31px,var(--rule) 31px 32px);background-position:0 12px;border:1px solid var(--line);border-radius:4px;box-shadow:0 2px 8px rgba(60,50,30,.08);padding:12px 18px 14px}
+.tile p{font-size:16px;line-height:32px;margin:0 0 4px}
+.tile .meta{font-family:var(--hand);justify-content:flex-end;line-height:32px}
+.tile .meta span{font-weight:600}
+.tile.add{font-family:var(--mincho);background-image:none;border:1.5px dashed var(--fg)}
+/* 当時の投稿＝原稿用紙に明朝 */
+.post{font-family:var(--mincho);background-color:var(--surface);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:26px 26px;border:1px solid var(--rule);border-radius:2px;box-shadow:0 2px 8px rgba(60,50,30,.06)}
+.post .cover{font-family:var(--mincho);font-weight:800;letter-spacing:.03em}
+.post p{line-height:2.1;font-size:15px}
+/* 書く欄＝便箋 */
+.modal-card{background:var(--surface);border-radius:6px}
+.cb-head b{font-family:var(--mincho);font-size:17px}
+.modal-card textarea{font-family:var(--hand);font-size:17px;line-height:34px;padding:2px 14px;background-color:var(--surface);background-image:repeating-linear-gradient(transparent 0 33px,var(--rule) 33px 34px);background-attachment:local;border:1px solid var(--line);border-radius:4px;min-height:210px}
+.btn,.mic,.fromrow{font-family:var(--mincho)}
+.photos figure img{border-radius:4px}
+.photos figcaption{font-family:var(--hand);font-size:12px}
 </style>
 </head>
 <body>
