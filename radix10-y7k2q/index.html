@@ -179,7 +179,9 @@ function hints(p){
 function openSheet(n){
   const p=BYN[n];if(!p)return;open=n;
   const span=p.span?`${p.span[0].replace('-','年')}月〜${p.span[1].replace('-','年')}月`:'';
-  const postHtml=(t,meta,pics)=>{const lines=t.split('\n');let i=0;while(i<lines.length&&!lines[i].trim())i++;const cover=(lines[i]||'').trim(),body=lines.slice(i+1).join('\n').trim();
+  const postHtml=(t,meta,pics)=>{const lines=t.split('\n');const G=/^(@\S*\s*)*(お疲れ様|おつかれ|お疲れさま|おはよう|こんにちは|こんばんは|全体メンション|夜分|休日に失礼|失礼いたします|失礼します|皆さん|みなさん|cc)/i;
+    let i=lines.findIndex((l,k)=>k<6&&/^【.+】/.test(l.trim()));if(i<0){i=0;while(i<lines.length&&(!lines[i].trim()||G.test(lines[i].trim())||lines[i].trim().length<6||/^@\S+\s*$/.test(lines[i].trim())))i++;if(i>=lines.length)i=0}
+    let cover=(lines[i]||'').trim().replace(/^(@\S+\s*)+/,'');if(cover.length>60)cover=cover.slice(0,60)+'…';const body=lines.filter((_,k)=>k!==i).join('\n').replace(/^\s+/,'');
     return `<article class="post"><h4 class="cover">${esc(cover)}</h4>${(pics||[]).length?`<div class="pp">${pics.slice(0,2).map(id=>`<img data-id="${esc(id)}" alt="当時の写真" ${PH[id]?`src="${PH[id]}"`:''}>`).join('')}</div>`:''}<p>${esc(body)}</p><button class="more" data-more>全文を読む</button><div class="meta">${meta}</div></article>`};
   const own=(p.own||[]).map(o=>postHtml(o[0],`${ym(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}${o[3]?` ・ 返信${o[3]}`:''}`,o[5])).join('');
   const about=(p.about||[]).map(o=>postHtml(o[0],`${ym(o[1])} ・ ${esc(o[3])}さんの投稿${o[4]?` ・ #${esc(o[4])}`:''} ・ スタンプ${o[2]}`,o[5])).join('');
