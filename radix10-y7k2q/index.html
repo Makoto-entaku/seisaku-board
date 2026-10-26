@@ -293,6 +293,11 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .hero .av{width:150px;height:auto;padding:9px 9px 26px;--r:-2deg}
 .hero .av:not(:has(img)){height:185px;display:grid;place-items:center;font-size:30px}
 .grid{gap:28px 10px}
+/* 文字はSAKIYOMIに被らない：写真の下の黒帯へ */
+.wall::after{display:none}
+.wall{background:#141210}
+.wall img{height:min(60svh,600px);min-height:300px;object-position:center 42%;-webkit-mask-image:linear-gradient(to bottom,#000 72%,transparent 100%);mask-image:linear-gradient(to bottom,#000 72%,transparent 100%)}
+.tate-hero.on-photo{position:relative;inset:auto;left:auto;right:auto;bottom:auto;top:auto;margin-top:-56px;padding:0 max(20px,calc((100% - 960px)/2)) clamp(30px,6vh,52px);background:transparent;text-shadow:none}
 </style>
 </head>
 <body>
