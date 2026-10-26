@@ -389,9 +389,9 @@ function placeTyper(field,opt){let alive=true;const avoid=opt.avoid||[];const li
     if(!ok){el.remove();fails++;setTimeout(spawn,opt.keep?60:400);return}
     live.add(el);el.style.opacity=(opt.op?opt.op():(.25+Math.random()*.5)).toFixed(2);el.textContent='';el.style.visibility='visible';let i=0;
     const t=setInterval(()=>{if(!alive){clearInterval(t);return}i++;el.textContent=w.slice(0,i);if(i>=w.length){clearInterval(t);if(opt.keep){el.classList.add('done');return}setTimeout(()=>{el.classList.add('out');setTimeout(()=>{live.delete(el);el.remove();spawn()},opt.fade||600)},opt.hold?opt.hold():900+Math.random()*900)}},opt.ch?opt.ch():90+Math.random()*90)}
-  (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{for(let k=0;k<opt.n;k++)setTimeout(spawn,k*(opt.step||110))});
+  (document.fonts&&!opt.now?document.fonts.ready:Promise.resolve()).then(()=>{for(let k=0;k<opt.n;k++)setTimeout(spawn,k*(opt.step||110))});
   return{stop(){alive=false;field.innerHTML=''}}}
-const typing=(()=>{const f=document.getElementById('typefield');if(!f)return{stop(){}};return placeTyper(f,{n:34,step:35,gap:4,tries:60,fade:400,ch:()=>40+Math.random()*40,hold:()=>700+Math.random()*700,avoid:[document.querySelector('.gate .load')]})})();
+const typing=(()=>{const f=document.getElementById('typefield');if(!f)return{stop(){}};return placeTyper(f,{now:true,n:34,step:35,gap:4,tries:60,fade:400,ch:()=>40+Math.random()*40,hold:()=>700+Math.random()*700,avoid:[document.querySelector('.gate .load')]})})();
 async function boot(){
   let d;try{d=await get({action:'data'})}catch(e){$('#gateErr').textContent='つながりませんでした。通信状況を確認して、もう一度お試しください。';$('#gate').hidden=false;return}
   if(!d.ok){$('#gateErr').textContent='読み込みに失敗しました。少し待ってから再読み込みしてください。';return}
