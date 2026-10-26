@@ -217,6 +217,18 @@ body,.sheet.full{background-image:repeating-linear-gradient(transparent 0 39px,v
 .sheet.full .board{display:block;columns:3 240px;column-gap:14px}
 .sheet.full .board .tile{margin:0 0 14px;break-inside:avoid}
 .tile.add{width:100%;height:auto;min-height:140px}
+/* ===== 読みやすさ調整 ===== */
+:root{--fg:#141210;--muted:#4f4a42}
+@media (prefers-color-scheme:dark){:root{--fg:#f5f1e8;--muted:#c9c2b4}}
+body{font-weight:600;-webkit-font-smoothing:auto}
+.post{background-image:none;background-color:var(--surface)}
+.post p{font-size:17px;line-height:2;font-weight:600;color:var(--fg);letter-spacing:.03em}
+.post .cover{font-size:clamp(21px,2.6vw,25px)}
+.post .meta,.tile .meta,.hero .sub,.sub,.note,.photos figcaption,.tabs button,h3,.tate-hero .sub-t{color:var(--muted);font-weight:600}
+.tile p{font-size:17px;font-weight:600}
+.tabs button.on{color:var(--fg)}
+.tabs button:focus-visible{outline-offset:-2px}
+.tate-hero .lead{font-weight:600}
 </style>
 </head>
 <body>
