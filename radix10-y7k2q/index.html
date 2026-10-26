@@ -99,6 +99,31 @@ h3 small{font-weight:400;margin-left:8px;letter-spacing:0}
 .cb textarea{min-height:140px;font-size:15px}
 .hintd{margin:8px 0 0;font-size:13px;color:var(--muted)}.hintd summary{cursor:pointer}
 .row.end{justify-content:flex-end}
+.sheet.full{left:0;transform:none;top:0;bottom:0;width:100%;max-height:none;height:100dvh;border-radius:0;padding:0 0 calc(24px + env(safe-area-inset-bottom,0px));animation:none}
+.sheet.full>*:not(.bar-b):not(.modal):not(.photos){margin-left:max(16px,calc((100% - 960px)/2));margin-right:max(16px,calc((100% - 960px)/2))}
+.sheet.full .photos{padding-left:max(16px,calc((100% - 960px)/2));padding-right:16px;margin:0}
+.bar-b{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:12px;padding:10px max(16px,calc((100% - 960px)/2));padding-top:calc(10px + env(safe-area-inset-top,0px));background:var(--bg);border-bottom:1px solid var(--line)}
+.bar-b .bt{flex:1;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.back{border:0;background:none;font-size:22px;cursor:pointer;padding:4px 8px 4px 0;color:var(--fg)}
+.btn.pill{border-radius:999px;padding:9px 18px;white-space:nowrap}
+.hero{display:flex;align-items:center;gap:16px;padding:28px 0 18px}
+.hero .av{width:84px;height:84px;border-radius:50%}
+.hero h2{margin:0;font-size:clamp(24px,4vw,32px);font-weight:700;letter-spacing:-.01em}
+.hero .sub{color:var(--muted);font-size:13px;margin-top:4px}
+.sheet.full .board{columns:3 240px}
+.tile{background:var(--surface);border:1px solid var(--line);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.tile .meta span{font-weight:700;color:var(--fg)}
+.tile.add{border:2px dashed var(--fg);background:transparent;color:var(--fg);box-shadow:none}
+.modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.45);display:grid;place-items:center;padding:16px}
+.modal-card{background:var(--surface);border-radius:18px;width:min(560px,100%);padding:20px;box-shadow:var(--shadow);max-height:calc(100dvh - 32px);overflow:auto}
+.modal-card textarea{min-height:180px;font-size:16px;line-height:1.7}
+.cb-tools{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-top:10px}
+.mic{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--fg);background:var(--surface);color:var(--fg);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+.mic.on{background:var(--fg);color:var(--bg);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.6}}
+.fromrow{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:13px;color:var(--muted)}
+.fromrow input{flex:1;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.btn.wide{width:100%;padding:13px;font-size:15px;margin-top:6px}
 .lb{position:fixed;inset:0;z-index:40;background:rgba(10,8,6,.88);display:grid;place-items:center;padding:16px;cursor:zoom-out}
 .lb img{max-width:100%;max-height:90dvh;border-radius:12px}
 textarea{width:100%;min-height:72px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface);resize:vertical}
@@ -200,6 +225,13 @@ $('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!
 $('#q').addEventListener('input',render);$('#showCur').addEventListener('change',render);
 $('#me').addEventListener('change',()=>{ME=$('#me').value.trim();save('yk_me',ME);render()});
 
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,recBase='';
+function stopMic(){if(rec){try{rec.stop()}catch(e){}rec=null}const b=$('#mic');if(b){b.classList.remove('on');b.setAttribute('aria-pressed','false');b.querySelector('span').textContent='話して書く'}}
+function toggleMic(){if(rec){stopMic();return}const t=$('#txt');rec=new SR();rec.lang='ja-JP';rec.continuous=true;rec.interimResults=true;recBase=t.value?t.value.replace(/\s*$/,'')+(t.value.trim()?'\n':''):'';
+  rec.onresult=e=>{let fin='',tmp='';for(let i=0;i<e.results.length;i++){const r=e.results[i];if(r.isFinal)fin+=r[0].transcript;else tmp+=r[0].transcript}t.value=(recBase+fin+tmp).slice(0,600)};
+  rec.onend=()=>{if(rec){recBase=t.value;try{rec.start()}catch(e){stopMic()}}};
+  rec.onerror=e=>{if(e.error==='not-allowed'||e.error==='service-not-allowed'){toast('マイクの使用が許可されていません');stopMic()}};
+  try{rec.start()}catch(e){toast('音声入力を開始できませんでした');rec=null;return}const b=$('#mic');b.classList.add('on');b.setAttribute('aria-pressed','true');b.querySelector('span').textContent='聞き取り中…タップで停止'}
 const LAYOUT_B=new Set(['Kota Nakanishi']);
 const ym=s=>{const m=String(s||'').match(/^(\d{4})-(\d{2})/);return m?`${m[1]}年${+m[2]}月`:esc(s)};
 function hints(p){
@@ -238,26 +270,32 @@ function openSheet(n){
   const layoutB=LAYOUT_B.has(p.n);
   if(layoutB){
     const photosB=ph.length?`<div class="photos b" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:'';
-    const composeB=`<div class="compose cb" id="composeBox" hidden>
+    const mic=SR?`<button class="mic" id="mic" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><span>話して書く</span></button>`:'';
+    const composeB=`<div class="modal" id="composeBox" hidden><div class="modal-card" role="dialog" aria-label="メッセージを書く">
       <div class="cb-head"><b>${esc(p.n)}さんへ</b><button class="x sm" data-closecompose aria-label="閉じる">×</button></div>
       <textarea id="txt" maxlength="600" placeholder="思い出したことを、そのまま言葉にしてください。"></textarea>
-      <details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details>
-      <div class="row"><button class="btn" id="send">送る</button><span class="note" id="who"></span></div>
-    </div>`;
-    $('#sheet').innerHTML=top+photosB+`<div class="tabs" role="tablist"><button class="on" data-tab="board">寄せ書き <span id="bcount"></span></button>${own?'<button data-tab="posts">当時の投稿</button>':''}</div>
-      <section id="tab-board">${composeB}<div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>
-      <section id="tab-posts" hidden>${own}</section>`;
-  }else $('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH;
+      <div class="cb-tools">${mic}<details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details></div>
+      <label class="fromrow"><span>あなたの名前</span><input id="meB" list="names" value="${esc(ME)}" placeholder="例：岸原 誠" autocomplete="name"></label>
+      <div class="row"><button class="btn wide" id="send">寄せ書きに貼る</button></div>
+    </div></div>`;
+    $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">←</button><div class="bt">${esc(p.n)}さんへの寄せ書き</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
+      <header class="hero"><span class="av">${avHtml(p)}</span><div><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div></div></header>
+      ${photosB}
+      <div class="tabs" role="tablist"><button class="on" data-tab="board">寄せ書き <span id="bcount"></span></button>${own?'<button data-tab="posts">当時の投稿</button>':''}</div>
+      <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>
+      <section id="tab-posts" hidden>${own}</section>${composeB}`;
+    $('#sheet').classList.add('full');
+  }else{$('#sheet').classList.remove('full');$('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH}
   $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
-  $('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
+  if($('#who'))$('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
   const pic=ph.map(x=>x[0]);renderMsgs(n);loadPhotos([...new Set(pic)].filter(id=>!PH[id]));
 }
 async function loadPhotos(ids){if(!ids.length)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){Object.assign(PH,d.photos);document.querySelectorAll('#sheet img[data-id]').forEach(i=>{if(PH[i.dataset.id])i.src=PH[i.dataset.id]})}}catch(e){}}
 function renderMsgs(n){const el=$('#msgs');if(!el)return;const ms=MSG.filter(m=>m.to===n);
   if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=ms.length?`${ms.length}`:'';
-    el.innerHTML=`<button class="tile add" data-opencompose><span>＋</span>メッセージを書く</button>`+ms.map(m=>`<div class="tile"><p>${esc(m.text)}</p><div class="meta"><span>— ${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join('');return}
+    el.innerHTML=(ms.length?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+ms.map(m=>`<div class="tile"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join('');return}
   el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初の一通をどうぞ。</p>'}
-function closeSheet(){open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
+function closeSheet(){stopMic();open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
 $('#scrim').addEventListener('click',closeSheet);
 $('#lb').addEventListener('click',()=>$('#lb').hidden=true);
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#lb').hidden){$('#lb').hidden=true;return}if(open)closeSheet()});
@@ -265,20 +303,22 @@ $('#sheet').addEventListener('click',async e=>{
   if(e.target.closest('#close'))return closeSheet();
   const g=e.target.closest('[data-go]');if(g)return openSheet(g.dataset.go);
   const tb=e.target.closest('[data-tab]');if(tb){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b===tb));$('#tab-board').hidden=tb.dataset.tab!=='board';$('#tab-posts').hidden=tb.dataset.tab!=='posts';return}
-  if(e.target.closest('[data-opencompose]')){const c=$('#composeBox');c.hidden=false;$('#msgs').hidden=true;$('#txt').focus();return}
-  if(e.target.closest('[data-closecompose]')){$('#composeBox').hidden=true;$('#msgs').hidden=false;return}
+  if(e.target.closest('[data-opencompose]')){$('#composeBox').hidden=false;setTimeout(()=>$('#txt').focus(),50);return}
+  if(e.target.id==='composeBox'){stopMic();$('#composeBox').hidden=true;return}
+  if(e.target.closest('#mic')){toggleMic();return}
+  if(e.target.closest('[data-closecompose]')){stopMic();$('#composeBox').hidden=true;return}
   const mp=e.target.closest('[data-moreposts]');if(mp){$('#morePosts').hidden=false;mp.remove();return}
   const mo=e.target.closest('[data-more]');if(mo){const p=mo.closest('.post');p.classList.toggle('open');mo.textContent=p.classList.contains('open')?'閉じる':'全文を読む';return}
   const im=e.target.closest('#sheet img[data-id]');if(im&&im.src){$('#lbImg').src=im.src;$('#lb').hidden=false;return}
   const d=e.target.closest('[data-del]');if(d){const r=await post({action:'delete',id:d.dataset.del,from:ME});if(r.ok){MSG=MSG.filter(m=>m.id!==d.dataset.del);MINE=MINE.filter(x=>x!==d.dataset.del);save('yk_mine',MINE);renderMsgs(open);render();toast('取り消しました')}else toast('取り消せませんでした');return}
   if(e.target.closest('#next')){const nx=PEOPLE.filter(p=>!p.cur&&p.n!==open&&!mineTo(p.n)).sort((a,b)=>count(a.n)-count(b.n))[0];if(nx)openSheet(nx.n);return}
   if(e.target.closest('#send')){
-    const text=$('#txt').value.trim();ME=$('#me').value.trim();
-    if(!ME){toast('先に「あなたの名前」を入れてください');closeSheet();$('#me').focus();return}
+    const text=$('#txt').value.trim();if($('#meB')&&$('#meB').value.trim())$('#me').value=$('#meB').value.trim();ME=$('#me').value.trim();
+    if(!ME){toast('「あなたの名前」を入れてください');if($('#meB')){$('#meB').focus()}else{closeSheet();$('#me').focus()}return}
     if(!text){toast('メッセージを入れてください');return}
     const b=$('#send');b.disabled=true;b.textContent='送信中…';
     try{const r=await post({action:'post',to:open,from:ME,text});
-      if(r.ok){MSG.push({ts:new Date().toISOString(),id:r.id,to:open,from:ME,text});MINE.push(r.id);save('yk_mine',MINE);save('yk_me',ME);$('#txt').value='';if($('#composeBox')){$('#composeBox').hidden=true;$('#msgs').hidden=false}renderMsgs(open);render();toast('送りました。ありがとう！')}
+      if(r.ok){MSG.push({ts:new Date().toISOString(),id:r.id,to:open,from:ME,text});MINE.push(r.id);save('yk_mine',MINE);save('yk_me',ME);$('#txt').value='';if($('#composeBox')){stopMic();$('#composeBox').hidden=true}renderMsgs(open);render();toast('送りました。ありがとう！')}
       else toast('送れませんでした（'+r.error+'）')}catch(err){toast('送れませんでした。通信状況を確認してください')}
     b.disabled=false;b.textContent='送る'}
 });
