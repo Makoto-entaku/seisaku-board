@@ -187,7 +187,7 @@ function openSheet(n){
     let cover=(lines[i]||'').trim().replace(/^(@\S+\s*)+/,'');if(cover.length>60)cover=cover.slice(0,60)+'…';const body=lines.filter((_,k)=>k!==i).join('\n').replace(/^\s+/,'');
     return `<article class="post"><h4 class="cover">${esc(cover)}</h4><p>${esc(body)}</p><div class="meta">${meta}</div></article>`};
   const posts=[...(p.own||[]).map(o=>postHtml(o[0],`${esc(p.n)}さんの投稿 ・ ${ym(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}`)),...(p.about||[]).map(o=>postHtml(o[0],`${esc(o[3])}さんが${esc(p.n)}さんについて書いた投稿 ・ ${ym(o[1])} ・ スタンプ${o[2]}`))];
-  const own=posts.length?posts[0]+(posts.length>1?`<div id="morePosts" hidden>${posts.slice(1).join('')}</div><button class="btn ghost small" data-moreposts>ほかの投稿も見る（${posts.length-1}件）</button>`:''):'';
+  const own=posts.join('');
   const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
   const ph=[...[...(p.own||[]),...(p.about||[])].flatMap(o=>(o[5]||[]).map(id=>[id,o[1]])),...(p.ph||[])].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).slice(0,10);
   $('#sheet').innerHTML=`
