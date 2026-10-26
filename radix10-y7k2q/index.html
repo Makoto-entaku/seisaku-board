@@ -431,7 +431,8 @@ async function runMosaic2(){
   const lumOf=(im,a,b,w)=>{oc.clearRect(0,0,1,1);oc.drawImage(im,a,b,w,w,0,0,1,1);const d=oc.getImageData(0,0,1,1).data;return .3*d[0]+.59*d[1]+.11*d[2]};
   if(atlas){const N=Math.floor(atlas.naturalWidth/80);for(let i=0;i<242;i++){const a=(i%N)*80,b=Math.floor(i/N)*80;if(b>=atlas.naturalHeight)break;pool.push({im:atlas,a,b,w:80,l:lumOf(atlas,a,b,80),u:0})}}
   const ims=await Promise.all(srcs.slice(0,120).map(s=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s})));
-  ims.filter(Boolean).forEach(i=>{const w=Math.min(i.naturalWidth,i.naturalHeight);if(w)pool.push({im:i,a:(i.naturalWidth-w)/2,b:(i.naturalHeight-w)/2,w,l:lumOf(i,(i.naturalWidth-w)/2,(i.naturalHeight-w)/2,w),u:0})});
+  const plain=i=>{const c=document.createElement('canvas');c.width=c.height=16;const g=c.getContext('2d',{willReadFrequently:true});g.drawImage(i,0,0,16,16);const d=g.getImageData(0,0,16,16).data;const set=new Set();let sat=0;for(let k=0;k<d.length;k+=4){set.add((d[k]>>4)+','+(d[k+1]>>4)+','+(d[k+2]>>4));sat+=Math.max(d[k],d[k+1],d[k+2])-Math.min(d[k],d[k+1],d[k+2])}return set.size<14||sat/256<6};
+  ims.filter(i=>i&&!plain(i)).forEach(i=>{const w=Math.min(i.naturalWidth,i.naturalHeight);if(w)pool.push({im:i,a:(i.naturalWidth-w)/2,b:(i.naturalHeight-w)/2,w,l:lumOf(i,(i.naturalWidth-w)/2,(i.naturalHeight-w)/2,w),u:0})});
   if(pool.length<20)return;
   // normalise tile luminance range to the wall's range, then pick closest with a reuse penalty
   const pl=pool.map(p=>p.l),pmin=Math.min(...pl),pmax=Math.max(...pl);
