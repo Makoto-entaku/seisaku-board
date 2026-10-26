@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Radix10周年 寄せ書き</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;700&family=Zen+Maru+Gothic:wght@500;700&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* layout: sticky toolbar → card grid sorted by fewest messages → slide-up memory sheet with composer */
+:root{--bg:#f6f4ef;--surface:#fffdf8;--fg:#24211c;--muted:#6f6a61;--line:#e3ded3;--accent:#c4552d;--accent-soft:#f6e3d8;--ok:#2f6b52;--ok-soft:#e1efe7;--shadow:0 10px 40px rgba(40,30,20,.18);
+--sans:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;--round:"Zen Maru Gothic","Hiragino Maru Gothic ProN",var(--sans);--mono:"IBM Plex Mono",ui-monospace,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#171513;--surface:#211e1a;--fg:#efe9df;--muted:#a59d90;--line:#36312a;--accent:#e78a62;--accent-soft:#3a271e;--ok:#79c3a0;--ok-soft:#1d2e26;--shadow:0 10px 40px rgba(0,0,0,.5);color-scheme:dark}}
+*{box-sizing:border-box}html,body{margin:0}body{background:var(--bg);color:var(--fg);font:15px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+[hidden]{display:none!important}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 80px}
+header h1{font-family:var(--round);font-size:clamp(22px,4vw,30px);margin:0;letter-spacing:.02em;text-wrap:balance}
+header p{color:var(--muted);margin:6px 0 0;max-width:62ch}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:12px;margin-top:12px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.me{display:flex;gap:6px;align-items:center;background:var(--accent-soft);padding:4px 6px 4px 12px;border-radius:999px}
+.me label{font-size:12px;color:var(--muted);white-space:nowrap}
+.me input{border:0;background:transparent;min-width:0;width:11em;padding:4px 0}
+input[type=search]{flex:1 1 180px;min-width:0;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.chk{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer}
+.stat{font-family:var(--mono);font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;margin-left:auto}
+.prog{height:6px;border-radius:3px;background:var(--line);overflow:hidden;flex-basis:100%}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .4s}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:14px 10px;margin-top:18px}
+.card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px 12px;border-radius:16px;border:1px solid transparent;background:none;cursor:pointer;text-align:center;min-width:0;position:relative}
+.card:hover{background:var(--surface);border-color:var(--line)}
+.av{width:76px;height:76px;border-radius:18px;background:var(--line);overflow:hidden;display:grid;place-items:center;font-weight:700;color:var(--muted);font-size:20px;flex:none}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.nm{font-size:13px;line-height:1.3;overflow-wrap:anywhere}
+.cnt{font-family:var(--mono);font-size:11px;padding:1px 8px;border-radius:999px;background:var(--line);color:var(--muted)}
+.cnt.zero{background:var(--accent);color:#fff}
+.cnt.mine{background:var(--ok);color:#fff}
+.card.cur .av{outline:2px solid var(--ok);outline-offset:2px}
+.sec{font-family:var(--round);font-size:15px;margin:26px 0 0;display:flex;gap:8px;align-items:baseline}
+.sec small{font-family:var(--mono);color:var(--muted);font-weight:500}
+/* sheet */
+.scrim{position:fixed;inset:0;background:rgba(20,15,10,.45);z-index:20}
+.sheet{position:fixed;z-index:21;left:50%;transform:translateX(-50%);bottom:0;width:min(720px,100%);max-height:92dvh;overflow:auto;background:var(--surface);border-radius:22px 22px 0 0;box-shadow:var(--shadow);padding:18px max(18px,env(safe-area-inset-left,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px))}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .28s cubic-bezier(.2,.8,.2,1)}@keyframes up{from{transform:translate(-50%,40px);opacity:0}}}
+.sh-top{display:flex;gap:14px;align-items:center}
+.sh-top .av{width:64px;height:64px}
+.sh-top h2{font-family:var(--round);margin:0;font-size:20px}
+.sh-top .sub{color:var(--muted);font-size:12px}
+.x{margin-left:auto;border:0;background:var(--line);width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:18px;flex:none}
+.photos{display:flex;gap:8px;overflow-x:auto;margin:16px -4px 0;padding:0 4px 4px}
+.photos figure{margin:0;flex:none}
+.photos img{height:150px;width:auto;border-radius:12px;display:block;background:var(--line)}
+.photos figcaption{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
+h3{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:18px 0 6px;font-weight:700}
+.post{border-left:3px solid var(--accent-soft);padding:4px 0 4px 12px;margin:0 0 10px}
+.post p{margin:0;font-size:14px;overflow-wrap:anywhere}
+.post .meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.rel{display:flex;gap:8px;flex-wrap:wrap}
+.rel button{display:flex;gap:6px;align-items:center;border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 10px 3px 3px;font-size:12px;cursor:pointer}
+.rel .av{width:26px;height:26px;border-radius:50%;font-size:10px}
+.compose{margin-top:20px;background:var(--accent-soft);border-radius:16px;padding:14px}
+.compose h3{margin-top:0;color:var(--accent)}
+.sugg{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.sugg button{text-align:left;border:1px dashed var(--accent);background:var(--surface);border-radius:10px;padding:8px 10px;font-size:13px;cursor:pointer}
+textarea{width:100%;min-height:72px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface);resize:vertical}
+.row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.btn{border:0;border-radius:12px;padding:10px 16px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line);font-weight:500}
+.btn:disabled{opacity:.5;cursor:default}
+.note{font-size:12px;color:var(--muted)}
+.msgs{display:flex;flex-direction:column;gap:8px}
+.msg{background:var(--bg);border-radius:12px;padding:8px 12px}
+.msg p{margin:0;overflow-wrap:anywhere}
+.msg .meta{font-size:11px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.msg .del{border:0;background:none;color:var(--accent);cursor:pointer;font-size:11px;padding:0}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(24px + env(safe-area-inset-bottom,0px));background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:12px;z-index:30;font-size:14px}
+/* gate */
+.gate{min-height:100dvh;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-left,0px))}
+.gate form{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:28px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px}
+.gate h1{font-family:var(--round);margin:0;font-size:22px}
+.gate input{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.err{color:var(--accent);font-size:13px;min-height:1.2em}
+</style>
+</head>
+<body>
+<div class="gate" id="gate">
+  <form id="gateForm">
+    <h1>Radix 10周年 寄せ書き</h1>
+    <p class="note">共有された合言葉を入力してください。</p>
+    <input id="pass" type="password" autocomplete="current-password" placeholder="合言葉" required>
+    <button class="btn" type="submit">ひらく</button>
+    <div class="err" id="gateErr"></div>
+  </form>
+</div>
+
+<div class="wrap" id="app" hidden>
+  <header>
+    <h1>Radix 10周年 寄せ書き</h1>
+    <p>一緒に走ってきた人に、ひとことずつ。1行で大丈夫です。顔を押すと当時の写真や投稿が出てくるので、思い出しながら書いてください。まだメッセージが少ない人から順に並んでいます。</p>
+  </header>
+  <div class="bar">
+    <div class="me"><label for="me">あなたの名前</label><input id="me" list="names" placeholder="例：岸原 誠" autocomplete="name"></div>
+    <input id="q" type="search" placeholder="名前でさがす">
+    <label class="chk"><input id="showCur" type="checkbox">現メンバーも表示</label>
+    <span class="stat" id="stat"></span>
+    <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
+  </div>
+  <datalist id="names"></datalist>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shName" hidden></section>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const API='https://script.google.com/macros/s/AKfycbwmzffnY-hwKJcy-DftwktmSfp2b22DRqWlML2y90UgYoNGGBSGqqqukoo53QsLBR-JQA/exec';
+let KEY='';try{KEY=localStorage.getItem('yk_pass')||''}catch(e){}
+let ME='';try{ME=localStorage.getItem('yk_me')||''}catch(e){}
+let MINE=[];try{MINE=JSON.parse(localStorage.getItem('yk_mine')||'[]')}catch(e){}
+let PEOPLE=[],BYN={},MSG=[],AV={},PH={},open=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ini=n=>{const p=n.split(' ');return p.length>1?(p[0][0]+p[p.length-1][0]).toUpperCase():n.slice(0,2)};
+const avHtml=(p)=>p&&AV[p.av]?`<img alt="" src="${AV[p.av]}">`:esc(ini(p?p.n:'?'));
+function save(k,v){try{localStorage.setItem(k,typeof v==='string'?v:JSON.stringify(v))}catch(e){}}
+function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2600)}
+async function get(params){const u=API+'?'+new URLSearchParams({...params,key:KEY});const r=await fetch(u);return r.json()}
+async function post(body){const r=await fetch(API,{method:'POST',body:JSON.stringify({...body,key:KEY})});return r.json()}
+
+$('#gateForm').addEventListener('submit',async e=>{e.preventDefault();KEY=$('#pass').value.trim();$('#gateErr').textContent='確認しています…';await boot()});
+async function boot(){
+  let d;try{d=await get({action:'data'})}catch(e){$('#gateErr').textContent='つながりませんでした。通信状況を確認して、もう一度お試しください。';$('#gate').hidden=false;return}
+  if(!d.ok){$('#gateErr').textContent=d.error==='passcode'?'合言葉が違います。':'読み込みに失敗しました。';$('#gate').hidden=false;return}
+  save('yk_pass',KEY);$('#gate').hidden=true;$('#app').hidden=false;
+  PEOPLE=d.people;BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));MSG=d.messages||[];
+  $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');
+  $('#me').value=ME;render();loadAvatars();
+  setInterval(refresh,45000);
+}
+async function refresh(){try{const d=await get({action:'messages'});if(d.ok){MSG=d.messages;render();if(open)renderMsgs(open)}}catch(e){}}
+async function loadAvatars(){
+  const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))];
+  const jobs=[];for(let i=0;i<keys.length;i+=40){const ids=keys.slice(i,i+40).map(k=>'av:'+k);
+    jobs.push(get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok){for(const k in d.photos)AV[k.slice(3)]=d.photos[k];render()}}).catch(()=>{}))}
+  await Promise.all(jobs)
+}
+const count=n=>MSG.filter(m=>m.to===n).length;
+const mineTo=n=>MSG.some(m=>m.to===n&&m.from===ME);
+function render(){
+  const q=$('#q').value.trim().toLowerCase(),showCur=$('#showCur').checked;
+  const list=PEOPLE.filter(p=>(showCur||!p.cur)&&(!q||p.n.toLowerCase().includes(q)));
+  list.sort((a,b)=>(count(a.n)-count(b.n))||(mineTo(a.n)-mineTo(b.n))||a.n.localeCompare(b.n));
+  $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
+    return `<button class="card${p.cur?' cur':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
+  const targets=PEOPLE.filter(p=>!p.cur),done=targets.filter(p=>count(p.n)>0).length,mine=ME?MSG.filter(m=>m.from===ME).length:0;
+  $('#stat').textContent=`メッセージ ${MSG.length}件 ・ 届いた人 ${done}/${targets.length}人${ME?` ・ あなた ${mine}件`:''}`;
+  $('#progBar').style.width=(targets.length?done/targets.length*100:0)+'%';
+}
+$('#grid').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openSheet(c.dataset.n)});
+$('#q').addEventListener('input',render);$('#showCur').addEventListener('change',render);
+$('#me').addEventListener('change',()=>{ME=$('#me').value.trim();save('yk_me',ME);render()});
+
+function topic(t){let s=t.replace(/@\S+(\s\S+)?\s?/g,'').replace(/[【】「」『』]/g,'').replace(/https?:\S+/g,'').trim();s=s.split(/[。！!？?\n]/)[0];return s.length>22?s.slice(0,22)+'…':s}
+function suggestions(p){
+  const s=[];const first=p.n;
+  if(p.own&&p.own[0])s.push(`「${topic(p.own[0][0])}」って投稿してた${first}さん、今でも覚えてます。`);
+  if(p.span)s.push(`${p.span[0].slice(0,4)}年に一緒に過ごした時間、ずっと宝物です。本当にありがとう！`);
+  s.push(`${first}さんがいたから頑張れました。12/19、会えるのを楽しみにしてます！`);
+  return s.slice(0,3);
+}
+function openSheet(n){
+  const p=BYN[n];if(!p)return;open=n;
+  const span=p.span?`${p.span[0].replace('-','年')}月〜${p.span[1].replace('-','年')}月`:'';
+  const own=(p.own||[]).map(o=>`<div class="post"><p>${esc(o[0])}</p><div class="meta">${esc(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}${o[3]?` ・ 返信${o[3]}`:''}</div></div>`).join('');
+  const about=(p.about||[]).map(o=>`<div class="post"><p>${esc(o[0])}</p><div class="meta">${esc(o[1])} ・ ${esc(o[3])}さんの投稿 ・ スタンプ${o[2]}</div></div>`).join('');
+  const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
+  const ph=(p.ph||[]);
+  $('#sheet').innerHTML=`
+    <div class="sh-top"><span class="av">${avHtml(p)}</span><div><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div></div><button class="x" id="close" aria-label="閉じる">×</button></div>
+    ${ph.length?`<div class="photos" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${esc(x[1])}</figcaption></figure>`).join('')}</div>`:''}
+    ${own?`<h3>反応が多かった投稿</h3>${own}`:''}
+    ${about?`<h3>みんなが${esc(p.n)}さんに向けた投稿</h3>${about}`:''}
+    ${rel?`<h3>よく一緒にいた人</h3><div class="rel">${rel}</div>`:''}
+    <div class="compose">
+      <h3>${esc(p.n)}さんへ ひとこと</h3>
+      <div class="sugg">${suggestions(p).map(t=>`<button data-s="${esc(t)}">${esc(t)}</button>`).join('')}</div>
+      <textarea id="txt" maxlength="400" placeholder="1行で大丈夫です。上の候補を押して、少し書き換えてもOK。"></textarea>
+      <div class="row"><button class="btn" id="send">送る</button><button class="btn ghost" id="next">次の人へ</button><span class="note" id="who"></span></div>
+    </div>
+    <h3>届いているメッセージ</h3><div class="msgs" id="msgs"></div>`;
+  $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
+  $('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
+  renderMsgs(n);loadPhotos(ph.map(x=>x[0]).filter(id=>!PH[id]));
+}
+async function loadPhotos(ids){if(!ids.length)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){Object.assign(PH,d.photos);document.querySelectorAll('#photos img').forEach(i=>{if(PH[i.dataset.id])i.src=PH[i.dataset.id]})}}catch(e){}}
+function renderMsgs(n){const el=$('#msgs');if(!el)return;const ms=MSG.filter(m=>m.to===n);
+  el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初のひとことをどうぞ。</p>'}
+function closeSheet(){open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
+$('#scrim').addEventListener('click',closeSheet);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open)closeSheet()});
+$('#sheet').addEventListener('click',async e=>{
+  if(e.target.closest('#close'))return closeSheet();
+  const g=e.target.closest('[data-go]');if(g)return openSheet(g.dataset.go);
+  const s=e.target.closest('[data-s]');if(s){$('#txt').value=s.dataset.s;$('#txt').focus();return}
+  const d=e.target.closest('[data-del]');if(d){const r=await post({action:'delete',id:d.dataset.del,from:ME});if(r.ok){MSG=MSG.filter(m=>m.id!==d.dataset.del);MINE=MINE.filter(x=>x!==d.dataset.del);save('yk_mine',MINE);renderMsgs(open);render();toast('取り消しました')}else toast('取り消せませんでした');return}
+  if(e.target.closest('#next')){const nx=PEOPLE.filter(p=>!p.cur&&p.n!==open&&!mineTo(p.n)).sort((a,b)=>count(a.n)-count(b.n))[0];if(nx)openSheet(nx.n);return}
+  if(e.target.closest('#send')){
+    const text=$('#txt').value.trim();ME=$('#me').value.trim();
+    if(!ME){toast('先に「あなたの名前」を入れてください');closeSheet();$('#me').focus();return}
+    if(!text){toast('ひとことを入れてください');return}
+    const b=$('#send');b.disabled=true;b.textContent='送信中…';
+    try{const r=await post({action:'post',to:open,from:ME,text});
+      if(r.ok){MSG.push({ts:new Date().toISOString(),id:r.id,to:open,from:ME,text});MINE.push(r.id);save('yk_mine',MINE);save('yk_me',ME);$('#txt').value='';renderMsgs(open);render();toast('送りました。ありがとう！')}
+      else toast('送れませんでした（'+r.error+'）')}catch(err){toast('送れませんでした。通信状況を確認してください')}
+    b.disabled=false;b.textContent='送る'}
+});
+if(KEY)boot();
+</script>
+</body>
+</html>
