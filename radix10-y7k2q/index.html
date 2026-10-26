@@ -82,6 +82,23 @@ h3 small{font-weight:400;margin-left:8px;letter-spacing:0}
 .post p{white-space:pre-line}
 .post.open p{display:block;-webkit-line-clamp:unset;color:var(--fg)}
 .more{border:0;background:none;color:var(--accent);font-size:12px;padding:2px 0;cursor:pointer}
+.photos.b img{height:200px}
+.tabs{display:flex;gap:4px;margin:18px 0 12px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:10px 14px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button.on{color:var(--fg);border-bottom-color:var(--fg)}
+.tabs span{font-family:var(--mono);font-size:11px;margin-left:4px}
+.board{columns:2 220px;column-gap:10px}
+.tile{break-inside:avoid;display:block;width:100%;background:var(--accent-soft);border-radius:14px;padding:14px;margin:0 0 10px;text-align:left;border:0}
+.tile p{margin:0 0 8px;white-space:pre-line;font-size:15px;line-height:1.7}
+.tile .meta{font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}
+.tile.add{background:var(--fg);color:var(--bg);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;font-weight:700;font-size:15px;gap:4px}
+.tile.add span{font-size:34px;line-height:1;font-weight:400}
+.cb{margin:0 0 12px;background:var(--accent-soft)}
+.cb-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.x.sm{width:28px;height:28px;font-size:15px;margin:0}
+.cb textarea{min-height:140px;font-size:15px}
+.hintd{margin:8px 0 0;font-size:13px;color:var(--muted)}.hintd summary{cursor:pointer}
+.row.end{justify-content:flex-end}
 .lb{position:fixed;inset:0;z-index:40;background:rgba(10,8,6,.88);display:grid;place-items:center;padding:16px;cursor:zoom-out}
 .lb img{max-width:100%;max-height:90dvh;border-radius:12px}
 textarea{width:100%;min-height:72px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface);resize:vertical}
@@ -219,13 +236,26 @@ function openSheet(n){
     </div>`;
   const msgsH=`<h3>届いているメッセージ</h3><div class="msgs" id="msgs"></div>`;
   const layoutB=LAYOUT_B.has(p.n);
-  $('#sheet').innerHTML=top+(layoutB?composeH+msgsH+photosH+postsH:photosH+postsH+composeH+msgsH);
+  if(layoutB){
+    const photosB=ph.length?`<div class="photos b" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:'';
+    const composeB=`<div class="compose cb" id="composeBox" hidden>
+      <div class="cb-head"><b>${esc(p.n)}さんへ</b><button class="x sm" data-closecompose aria-label="閉じる">×</button></div>
+      <textarea id="txt" maxlength="600" placeholder="思い出したことを、そのまま言葉にしてください。"></textarea>
+      <details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details>
+      <div class="row"><button class="btn" id="send">送る</button><span class="note" id="who"></span></div>
+    </div>`;
+    $('#sheet').innerHTML=top+photosB+`<div class="tabs" role="tablist"><button class="on" data-tab="board">寄せ書き <span id="bcount"></span></button>${own?'<button data-tab="posts">当時の投稿</button>':''}</div>
+      <section id="tab-board">${composeB}<div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>
+      <section id="tab-posts" hidden>${own}</section>`;
+  }else $('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH;
   $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
   $('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
   const pic=ph.map(x=>x[0]);renderMsgs(n);loadPhotos([...new Set(pic)].filter(id=>!PH[id]));
 }
 async function loadPhotos(ids){if(!ids.length)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){Object.assign(PH,d.photos);document.querySelectorAll('#sheet img[data-id]').forEach(i=>{if(PH[i.dataset.id])i.src=PH[i.dataset.id]})}}catch(e){}}
 function renderMsgs(n){const el=$('#msgs');if(!el)return;const ms=MSG.filter(m=>m.to===n);
+  if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=ms.length?`${ms.length}`:'';
+    el.innerHTML=`<button class="tile add" data-opencompose><span>＋</span>メッセージを書く</button>`+ms.map(m=>`<div class="tile"><p>${esc(m.text)}</p><div class="meta"><span>— ${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join('');return}
   el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初の一通をどうぞ。</p>'}
 function closeSheet(){open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
 $('#scrim').addEventListener('click',closeSheet);
@@ -234,6 +264,9 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#lb').
 $('#sheet').addEventListener('click',async e=>{
   if(e.target.closest('#close'))return closeSheet();
   const g=e.target.closest('[data-go]');if(g)return openSheet(g.dataset.go);
+  const tb=e.target.closest('[data-tab]');if(tb){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b===tb));$('#tab-board').hidden=tb.dataset.tab!=='board';$('#tab-posts').hidden=tb.dataset.tab!=='posts';return}
+  if(e.target.closest('[data-opencompose]')){const c=$('#composeBox');c.hidden=false;$('#msgs').hidden=true;$('#txt').focus();return}
+  if(e.target.closest('[data-closecompose]')){$('#composeBox').hidden=true;$('#msgs').hidden=false;return}
   const mp=e.target.closest('[data-moreposts]');if(mp){$('#morePosts').hidden=false;mp.remove();return}
   const mo=e.target.closest('[data-more]');if(mo){const p=mo.closest('.post');p.classList.toggle('open');mo.textContent=p.classList.contains('open')?'閉じる':'全文を読む';return}
   const im=e.target.closest('#sheet img[data-id]');if(im&&im.src){$('#lbImg').src=im.src;$('#lb').hidden=false;return}
@@ -245,7 +278,7 @@ $('#sheet').addEventListener('click',async e=>{
     if(!text){toast('メッセージを入れてください');return}
     const b=$('#send');b.disabled=true;b.textContent='送信中…';
     try{const r=await post({action:'post',to:open,from:ME,text});
-      if(r.ok){MSG.push({ts:new Date().toISOString(),id:r.id,to:open,from:ME,text});MINE.push(r.id);save('yk_mine',MINE);save('yk_me',ME);$('#txt').value='';renderMsgs(open);render();toast('送りました。ありがとう！')}
+      if(r.ok){MSG.push({ts:new Date().toISOString(),id:r.id,to:open,from:ME,text});MINE.push(r.id);save('yk_mine',MINE);save('yk_me',ME);$('#txt').value='';if($('#composeBox')){$('#composeBox').hidden=true;$('#msgs').hidden=false}renderMsgs(open);render();toast('送りました。ありがとう！')}
       else toast('送れませんでした（'+r.error+'）')}catch(err){toast('送れませんでした。通信状況を確認してください')}
     b.disabled=false;b.textContent='送る'}
 });
