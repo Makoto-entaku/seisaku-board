@@ -206,6 +206,17 @@ body,button,input,textarea,select{font-family:"Klee One","Hiragino Maru Gothic P
 .post .cover,.hero h2,.bar-b .bt,header h1,.tate-hero h1,.big b{font-weight:600}
 .tate-hero h1{font-size:clamp(56px,11vw,88px);letter-spacing:.22em}
 .big b{font-variant-numeric:normal}
+/* ===== 横書き（上から下）に統一 ===== */
+.tate-hero{writing-mode:horizontal-tb;display:block;height:auto;overflow:visible;text-align:center;margin:56px auto 28px;padding:0 8px}
+.tate-hero h1{font-size:clamp(56px,12vw,104px);letter-spacing:.12em;margin:0 0 4px}
+.tate-hero .sub-t{padding:0;margin:0 0 28px;letter-spacing:.3em}
+.tate-hero .lead{padding:0;white-space:normal;font-size:17px;line-height:2.2;letter-spacing:.06em}
+body,.sheet.full{background-image:repeating-linear-gradient(transparent 0 39px,var(--grid) 39px 40px)}
+.tile{writing-mode:horizontal-tb;height:auto;overflow:visible;width:100%;padding:12px 18px 14px;background-image:repeating-linear-gradient(transparent 0 33px,var(--rule) 33px 34px);background-position:0 10px}
+.tile p{margin:0 0 4px;line-height:34px}
+.sheet.full .board{display:block;columns:3 240px;column-gap:14px}
+.sheet.full .board .tile{margin:0 0 14px;break-inside:avoid}
+.tile.add{width:100%;height:auto;min-height:140px}
 </style>
 </head>
 <body>
