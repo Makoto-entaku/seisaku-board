@@ -177,6 +177,29 @@ header p{font-family:var(--mincho);line-height:2}
 .btn,.mic,.fromrow{font-family:var(--mincho)}
 .photos figure img{border-radius:4px}
 .photos figcaption{font-family:var(--hand);font-size:12px}
+/* ===== 縦書きトーン ===== */
+body{background-image:repeating-linear-gradient(90deg,transparent 0 39px,var(--grid) 39px 40px);background-size:auto}
+.sheet.full{background-image:repeating-linear-gradient(90deg,transparent 0 39px,var(--grid) 39px 40px);background-size:auto}
+.tate-hero{writing-mode:vertical-rl;display:flex;gap:28px;height:min(440px,64vh);margin:28px auto 8px;overflow-x:auto;max-width:100%;align-items:flex-start;padding:4px 0}
+.tate-hero h1{font-family:var(--hand);font-weight:600;font-size:clamp(46px,9vw,72px);letter-spacing:.18em;margin:0;line-height:1.1}
+.tate-hero .sub-t{font-family:var(--mincho);font-size:15px;letter-spacing:.3em;color:var(--muted);margin:0;padding-top:.6em}
+.tate-hero .lead{font-family:var(--mincho);font-size:16px;line-height:2.1;letter-spacing:.12em;margin:0;padding-top:3.2em;color:var(--fg)}
+header{display:flex;flex-direction:column;align-items:center}
+.big{justify-content:center}
+/* みんなのメッセージ＝縦書きの一筆箋 */
+.sheet.full .board{columns:auto;display:flex;flex-wrap:wrap;flex-direction:row-reverse;justify-content:flex-start;gap:14px}
+.tile{writing-mode:vertical-rl;width:auto;height:340px;max-width:100%;overflow-x:auto;margin:0;padding:18px 14px;background-image:repeating-linear-gradient(90deg,transparent 0 33px,var(--rule) 33px 34px);background-position:right 14px top 0}
+.tile p{font-size:17px;line-height:34px;margin:0 0 0 6px;letter-spacing:.06em}
+.tile .meta{justify-content:flex-end;line-height:34px;margin:0}
+.tile.add{writing-mode:horizontal-tb;width:180px;height:340px;background-image:none}
+/* 当時の投稿＝縦書きの原稿 */
+.post{writing-mode:vertical-rl;max-height:min(560px,72vh);overflow-x:auto;padding:24px 18px;background-image:repeating-linear-gradient(90deg,transparent 0 35px,var(--grid) 35px 36px);background-size:auto;background-position:right 18px top 0}
+.post .cover{font-size:clamp(20px,2.6vw,24px);margin:0 0 0 18px;line-height:1.6;letter-spacing:.08em}
+.post p{line-height:36px;font-size:16px;letter-spacing:.08em;margin:0}
+.post .meta{margin:0 18px 0 0;font-size:12px;letter-spacing:.05em}
+#tab-posts{display:flex;flex-direction:column;gap:16px}
+/* 書く欄も縦書き罫の便箋に（入力は横書きのまま） */
+.cb-head b{writing-mode:horizontal-tb}
 </style>
 </head>
 <body>
@@ -184,8 +207,11 @@ header p{font-family:var(--mincho);line-height:2}
 
 <div class="wrap" id="app" hidden>
   <header>
-    <h1>Radix 10周年 寄せ書き</h1>
-    <p>一緒に走ってきた人へ、あなたの言葉で。顔を押すと、その人の当時の写真や、発表・決意の投稿が出てきます。思い出に浸ってから書いてみてください。短くても大丈夫です。まだメッセージが少ない人から順に並んでいます。</p>
+    <div class="tate-hero">
+      <h1>寄せ書き</h1>
+      <p class="sub-t">Radix 十周年</p>
+      <p class="lead">一緒に走ってきた人へ、<br>あなたの言葉で。<br><br>顔を押すと、その人の<br>当時の写真や、<br>発表・決意の投稿が出てきます。<br><br>思い出に浸ってから<br>書いてみてください。<br>短くても大丈夫です。</p>
+    </div>
     <div class="big" aria-live="polite">
       <div><span>みんなから集まったメッセージ</span><b><span id="bigMsg" style="all:unset">0</span><small style="font-size:.22em;letter-spacing:0;margin-left:.15em;font-weight:500">件</small></b></div>
     </div>
