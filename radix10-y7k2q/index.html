@@ -55,7 +55,6 @@ input[type=search]{flex:1 1 180px;min-width:0;padding:8px 12px;border:1px solid 
 .photos img{cursor:zoom-in;height:200px;width:auto;border-radius:12px;display:block;background:var(--line)}
 .photos figcaption{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:2px}
 h3{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:18px 0 6px;font-weight:700}
-.post{border-left:3px solid var(--accent-soft);padding:4px 0 4px 12px;margin:0 0 10px}
 .post p{margin:0;font-size:14px;overflow-wrap:anywhere}
 .post .meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
 .rel{display:flex;gap:8px;flex-wrap:wrap}
@@ -65,9 +64,13 @@ h3{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:18px 0 6px;font
 .compose h3{margin-top:0;color:var(--accent)}
 .hint-lead{margin:0 0 4px;font-size:13px;color:var(--muted)}
 .hints{margin:0 0 10px;padding-left:1.2em;font-size:13px;line-height:1.7}
-.post.long p{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+.post{background:var(--bg);border:0;border-radius:16px;padding:14px 16px;margin:0 0 12px}
+.post .cover{font-family:var(--round);font-size:16px;line-height:1.5;margin:0 0 8px;overflow-wrap:anywhere}
+.post .pp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;margin:0 0 10px}
+.post .pp img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;background:var(--line);cursor:zoom-in;display:block}
+.post p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;color:var(--muted)}
 .post p{white-space:pre-line}
-.post.open p{display:block;-webkit-line-clamp:unset}
+.post.open p{display:block;-webkit-line-clamp:unset;color:var(--fg)}
 .more{border:0;background:none;color:var(--accent);font-size:12px;padding:2px 0;cursor:pointer}
 .lb{position:fixed;inset:0;z-index:40;background:rgba(10,8,6,.88);display:grid;place-items:center;padding:16px;cursor:zoom-out}
 .lb img{max-width:100%;max-height:90dvh;border-radius:12px}
@@ -176,16 +179,17 @@ function hints(p){
 function openSheet(n){
   const p=BYN[n];if(!p)return;open=n;
   const span=p.span?`${p.span[0].replace('-','年')}月〜${p.span[1].replace('-','年')}月`:'';
-  const postHtml=(t,meta)=>`<div class="post${t.length>220?' long':''}"><p>${esc(t)}</p>${t.length>220?'<button class="more" data-more>全文を読む</button>':''}<div class="meta">${meta}</div></div>`;
-  const own=(p.own||[]).map(o=>postHtml(o[0],`${ym(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}${o[3]?` ・ 返信${o[3]}`:''}`)).join('');
-  const about=(p.about||[]).map(o=>postHtml(o[0],`${ym(o[1])} ・ ${esc(o[3])}さんの投稿${o[4]?` ・ #${esc(o[4])}`:''} ・ スタンプ${o[2]}`)).join('');
+  const postHtml=(t,meta,pics)=>{const lines=t.split('\n');let i=0;while(i<lines.length&&!lines[i].trim())i++;const cover=(lines[i]||'').trim(),body=lines.slice(i+1).join('\n').trim();
+    return `<article class="post"><h4 class="cover">${esc(cover)}</h4>${(pics||[]).length?`<div class="pp">${pics.slice(0,2).map(id=>`<img data-id="${esc(id)}" alt="当時の写真" ${PH[id]?`src="${PH[id]}"`:''}>`).join('')}</div>`:''}<p>${esc(body)}</p><button class="more" data-more>全文を読む</button><div class="meta">${meta}</div></article>`};
+  const own=(p.own||[]).map(o=>postHtml(o[0],`${ym(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}${o[3]?` ・ 返信${o[3]}`:''}`,o[5])).join('');
+  const about=(p.about||[]).map(o=>postHtml(o[0],`${ym(o[1])} ・ ${esc(o[3])}さんの投稿${o[4]?` ・ #${esc(o[4])}`:''} ・ スタンプ${o[2]}`,o[5])).join('');
   const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
   const ph=(p.ph||[]);
   $('#sheet').innerHTML=`
     <div class="sh-top"><span class="av">${avHtml(p)}</span><div><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div></div><button class="x" id="close" aria-label="閉じる">×</button></div>
-    ${ph.length?`<h3>あの頃の写真</h3><div class="photos" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:''}
     ${own?`<h3>${esc(p.n)}さんの発表・決意</h3>${own}`:''}
     ${about?`<h3>みんなが${esc(p.n)}さんについて書いた投稿</h3>${about}`:''}
+    ${ph.length?`<h3>${own||about?'ほかの写真':'あの頃の写真'}</h3><div class="photos" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:''}
     ${rel?`<h3>よく一緒にいた人</h3><div class="rel">${rel}</div>`:''}
     <div class="compose">
       <h3>${esc(p.n)}さんへのメッセージ</h3>
@@ -197,9 +201,9 @@ function openSheet(n){
     <h3>届いているメッセージ</h3><div class="msgs" id="msgs"></div>`;
   $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
   $('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
-  renderMsgs(n);loadPhotos(ph.map(x=>x[0]).filter(id=>!PH[id]));
+  const pic=[...ph.map(x=>x[0]),...[...(p.own||[]),...(p.about||[])].flatMap(o=>o[5]||[])];renderMsgs(n);loadPhotos([...new Set(pic)].filter(id=>!PH[id]));
 }
-async function loadPhotos(ids){if(!ids.length)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){Object.assign(PH,d.photos);document.querySelectorAll('#photos img').forEach(i=>{if(PH[i.dataset.id])i.src=PH[i.dataset.id]})}}catch(e){}}
+async function loadPhotos(ids){if(!ids.length)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){Object.assign(PH,d.photos);document.querySelectorAll('#sheet img[data-id]').forEach(i=>{if(PH[i.dataset.id])i.src=PH[i.dataset.id]})}}catch(e){}}
 function renderMsgs(n){const el=$('#msgs');if(!el)return;const ms=MSG.filter(m=>m.to===n);
   el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初の一通をどうぞ。</p>'}
 function closeSheet(){open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
@@ -210,7 +214,7 @@ $('#sheet').addEventListener('click',async e=>{
   if(e.target.closest('#close'))return closeSheet();
   const g=e.target.closest('[data-go]');if(g)return openSheet(g.dataset.go);
   const mo=e.target.closest('[data-more]');if(mo){const p=mo.closest('.post');p.classList.toggle('open');mo.textContent=p.classList.contains('open')?'閉じる':'全文を読む';return}
-  const im=e.target.closest('#photos img');if(im&&im.src){$('#lbImg').src=im.src;$('#lb').hidden=false;return}
+  const im=e.target.closest('#sheet img[data-id]');if(im&&im.src){$('#lbImg').src=im.src;$('#lb').hidden=false;return}
   const d=e.target.closest('[data-del]');if(d){const r=await post({action:'delete',id:d.dataset.del,from:ME});if(r.ok){MSG=MSG.filter(m=>m.id!==d.dataset.del);MINE=MINE.filter(x=>x!==d.dataset.del);save('yk_mine',MINE);renderMsgs(open);render();toast('取り消しました')}else toast('取り消せませんでした');return}
   if(e.target.closest('#next')){const nx=PEOPLE.filter(p=>!p.cur&&p.n!==open&&!mineTo(p.n)).sort((a,b)=>count(a.n)-count(b.n))[0];if(nx)openSheet(nx.n);return}
   if(e.target.closest('#send')){
