@@ -266,6 +266,12 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .slk-meta{display:flex;gap:10px;margin-top:8px;font-size:12px}
 .slk-re{border:1px solid #1264a3;background:#e8f5fa;color:#1264a3;border-radius:12px;padding:2px 8px}
 .slk-rc{color:#1264a3;font-weight:700;padding:2px 0}
+/* 白文字をギュッと中央に */
+.tate-hero.on-photo{gap:0}
+.tate-hero.on-photo h1{font-size:clamp(52px,9vw,96px);letter-spacing:.14em;margin:0;line-height:1.1}
+.tate-hero.on-photo .sub-t{margin:6px 0 22px;font-size:14px;letter-spacing:.35em}
+.tate-hero.on-photo .lead{font-size:clamp(14px,1.7vw,17px);line-height:1.95;letter-spacing:.05em;max-width:34em}
+.tate-hero.on-photo::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,.45),transparent 70%);z-index:-1}
 </style>
 </head>
 <body>
@@ -277,7 +283,7 @@ body{font-weight:600;-webkit-font-smoothing:auto}
     <div class="tate-hero on-photo">
       <h1>寄せ書き</h1>
       <p class="sub-t">Radix 十周年</p>
-      <p class="lead">一緒に走ってきた人へ、<br>あなたの言葉で。<br><br>顔を押すと、その人の<br>当時の写真や、<br>発表・決意の投稿が出てきます。<br><br>思い出に浸ってから<br>書いてみてください。<br>短くても大丈夫です。</p>
+      <p class="lead">一緒に走ってきた人へ、あなたの言葉で。<br>顔を押すと、当時の写真や決意の投稿が出てきます。<br>思い出に浸ってから、短くても大丈夫なので書いてみてください。</p>
     </div>
     </figure>
     <div class="big" aria-live="polite">
