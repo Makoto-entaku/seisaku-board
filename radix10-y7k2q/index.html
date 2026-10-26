@@ -326,7 +326,7 @@ body,.sheet.full{background-color:#f6f5f1;background-image:var(--paper)!importan
 .bar,.bar-b,body::before{background-color:#f6f5f1!important;background-image:var(--paper)!important;background-size:720px 720px!important;background-attachment:scroll!important}
 @media (prefers-color-scheme:dark){body,.sheet.full,.bar,.bar-b,body::before{background-image:none!important}}
 </style>
-<link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=2" as="image">
+<link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
 <body>
 <div class="gate" id="gate"><div class="typefield" id="typefield" aria-hidden="true"></div><div class="load"><h1>寄せ書き</h1><p class="note" id="gateErr">読み込んでいます…</p></div></div>
@@ -420,7 +420,7 @@ async function runMosaic(){try{await runMosaic2()}catch(e){}finally{setTimeout((
 async function runMosaic2(){
   const cv=document.getElementById('mosaic'),img=document.getElementById('wallImg');if(!cv||!img)return;
   if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
-  const atlas=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src='tiles.jpg?v=2'});if(!atlas)return;
+  const atlas=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src='tiles.jpg?v=3'});if(!atlas)return;
   if(!img.complete||!img.naturalWidth)await new Promise(r=>{img.onload=r;img.onerror=r});
   const box=img.getBoundingClientRect();const W=box.width,H=box.height;if(!W||!H||!img.naturalWidth)return;
   const dpr=Math.min(2,devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
@@ -437,12 +437,13 @@ async function runMosaic2(){
   pts.sort(()=>Math.random()-.5);
   const N=Math.floor(atlas.naturalWidth/80),TOT=Math.min(242,N*Math.floor(atlas.naturalHeight/80));let bag=[];
   const pick=()=>{if(!bag.length)bag=[...Array(TOT).keys()].sort(()=>Math.random()-.5);return bag.pop()};
+  const DU=["'21 12 19", "'21 7 04", "'21 7 08", "'21 8 22", "'22 7 06", "'22 7 09", "'22 8 02", "'24 5 31"],DI='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaafffffffffffffggggggggggggghhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbccccccccccccccccccccccccccccccdddddddddddddddddddddddddddddddddddddddddddddddddddeeeeeeeeee',DT=t=>DU[DI.charCodeAt(t)-97]||'';
   const SPREAD=Math.min(2600,900+pts.length*7),DUR=280;
-  const ph=pts.map(([x,y],i)=>{const t=pick();return{x,y,s:S*(0.78+Math.random()*0.45),r:(Math.random()-.5)*0.62,a:(t%N)*80,b:Math.floor(t/N)*80,c:(c=>{const l=.3*c[0]+.59*c[1]+.11*c[2];return[Math.min(255,l*1.08+10),l*0.97+4,l*0.78]})(col(x,y)),at:(i/pts.length)*SPREAD+Math.random()*120,done:false}});
+  const ph=pts.map(([x,y],i)=>{const t=pick();return{x,y,s:S*(0.78+Math.random()*0.45),r:(Math.random()-.5)*0.62,a:(t%N)*80,b:Math.floor(t/N)*80,c:col(x,y),dt:DT(t),at:(i/pts.length)*SPREAD+Math.random()*120,done:false}});
   function put(g,p,k){const e=1-Math.pow(1-k,3),s=p.s*(1.35-0.35*e),pad=s*0.055;g.save();g.globalAlpha=Math.min(1,k*1.6);g.translate(p.x,p.y-(1-e)*S*0.12);g.rotate(p.r);
-    const [r,gg,b]=p.c;g.fillStyle=`rgb(${r*0.55+238*0.45|0},${gg*0.55+226*0.45|0},${b*0.55+198*0.45|0})`;g.shadowColor='rgba(0,0,0,.35)';g.shadowBlur=s*0.05;g.shadowOffsetY=s*0.02;
+    const [r,gg,b]=p.c;g.fillStyle=`rgb(${r*0.7+255*0.3|0},${gg*0.7+255*0.3|0},${b*0.7+255*0.3|0})`;g.shadowColor='rgba(0,0,0,.35)';g.shadowBlur=s*0.05;g.shadowOffsetY=s*0.02;
     g.fillRect(-s/2-pad,-s/2-pad,s+pad*2,s+pad*3.2);g.shadowColor='transparent';
-    g.drawImage(atlas,p.a,p.b,80,80,-s/2,-s/2,s,s);g.fillStyle=`rgba(${r},${gg},${b},0.44)`;g.fillRect(-s/2,-s/2,s,s);g.restore()}
+    g.drawImage(atlas,p.a,p.b,80,80,-s/2,-s/2,s,s);g.fillStyle=`rgba(${r},${gg},${b},0.52)`;g.fillRect(-s/2,-s/2,s,s);if(p.dt){const fs=Math.max(7,s*0.105);g.font=`700 ${fs}px 'Courier New',ui-monospace,monospace`;g.textAlign='right';g.textBaseline='alphabetic';g.shadowColor='rgba(255,120,20,.85)';g.shadowBlur=fs*0.45;g.fillStyle='#ff9a2e';g.fillText(p.dt,s/2-s*0.06,s/2-s*0.06);g.shadowBlur=0;g.fillStyle='rgba(255,214,150,.9)';g.fillText(p.dt,s/2-s*0.06,s/2-s*0.06)}g.restore()}
   window._mzRunning=true;img.style.opacity='0';cv.style.opacity='1';const hero=document.querySelector('.tate-hero.on-photo');hero?.classList.add('wait');document.documentElement.classList.remove('mz-pre');
   const HOLD=800,FADE=1100,T0=performance.now();let landed=0;
   function frame(now){const t=now-T0;
