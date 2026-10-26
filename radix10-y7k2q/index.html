@@ -66,8 +66,8 @@ h3{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:18px 0 6px;font
 .hints{margin:0 0 10px;padding-left:1.2em;font-size:13px;line-height:1.7}
 .post{background:var(--bg);border:0;border-radius:16px;padding:14px 16px;margin:0 0 12px}
 .post .cover{font-family:var(--round);font-size:16px;line-height:1.5;margin:0 0 8px;overflow-wrap:anywhere}
-.post .pp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:6px;margin:0 0 10px}
-.post .pp img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;background:var(--line);cursor:zoom-in;display:block}
+.post .pp{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto}
+.post .pp img{height:200px;width:auto;max-width:100%;min-width:120px;object-fit:cover;border-radius:10px;background:var(--line);cursor:zoom-in;display:block;flex:none}
 .post p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;color:var(--muted)}
 .post p{white-space:pre-line}
 .post.open p{display:block;-webkit-line-clamp:unset;color:var(--fg)}
