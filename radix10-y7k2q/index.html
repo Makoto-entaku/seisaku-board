@@ -70,7 +70,6 @@ h3{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:18px 0 6px;font
 .post .pp{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto}
 .post .pp img{height:200px;width:auto;max-width:100%;min-width:120px;object-fit:cover;border-radius:10px;background:var(--line);cursor:zoom-in;display:block;flex:none}
 .post p{color:var(--fg);font-size:14px;line-height:1.75}
-.post.long p{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
 .btn.small{padding:6px 12px;font-size:13px}
 h3 small{font-weight:400;margin-left:8px;letter-spacing:0}
 .post p{white-space:pre-line}
@@ -186,8 +185,7 @@ function openSheet(n){
   const postHtml=(t,meta,pics)=>{const lines=t.split('\n');const G=/^(@\S*\s*)*(お疲れ様|おつかれ|お疲れさま|おはよう|こんにちは|こんばんは|全体メンション|夜分|休日に失礼|失礼いたします|失礼します|皆さん|みなさん|cc)/i;
     let i=lines.findIndex((l,k)=>k<6&&/^【.+】/.test(l.trim()));if(i<0){i=0;while(i<lines.length&&(!lines[i].trim()||G.test(lines[i].trim())||lines[i].trim().length<6||/^@\S+\s*$/.test(lines[i].trim())))i++;if(i>=lines.length)i=0}
     let cover=(lines[i]||'').trim().replace(/^(@\S+\s*)+/,'');if(cover.length>60)cover=cover.slice(0,60)+'…';const body=lines.filter((_,k)=>k!==i).join('\n').replace(/^\s+/,'');
-    const long=body.split('\n').length>5||body.length>200;
-    return `<article class="post${long?' long':''}"><h4 class="cover">${esc(cover)}</h4><p>${esc(body)}</p>${long?'<button class="more" data-more>全文を読む</button>':''}<div class="meta">${meta}</div></article>`};
+    return `<article class="post"><h4 class="cover">${esc(cover)}</h4><p>${esc(body)}</p><div class="meta">${meta}</div></article>`};
   const posts=[...(p.own||[]).map(o=>postHtml(o[0],`${esc(p.n)}さんの投稿 ・ ${ym(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}`)),...(p.about||[]).map(o=>postHtml(o[0],`${esc(o[3])}さんが${esc(p.n)}さんについて書いた投稿 ・ ${ym(o[1])} ・ スタンプ${o[2]}`))];
   const own=posts.length?posts[0]+(posts.length>1?`<div id="morePosts" hidden>${posts.slice(1).join('')}</div><button class="btn ghost small" data-moreposts>ほかの投稿も見る（${posts.length-1}件）</button>`:''):'';
   const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
