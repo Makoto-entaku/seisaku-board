@@ -25,6 +25,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .me label{font-size:12px;color:var(--muted);white-space:nowrap}
 .me input{border:0;background:transparent;min-width:0;width:11em;padding:4px 0}
 input[type=search]{flex:1 1 180px;min-width:0;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.seg{display:flex;border:1px solid var(--fg);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:7px 14px;font-size:13px;cursor:pointer;color:var(--fg)}
+.seg button.on{background:var(--fg);color:var(--bg)}
 .chk{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--muted);cursor:pointer}
 .big{display:flex;justify-content:center;text-align:center;margin:36px 0 16px}
 .big div{display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -115,6 +118,7 @@ textarea{width:100%;min-height:72px;border:1px solid var(--line);border-radius:1
   <div class="bar">
     <div class="me"><label for="me">あなたの名前</label><input id="me" list="names" placeholder="例：岸原 誠" autocomplete="name"></div>
     <input id="q" type="search" placeholder="名前でさがす">
+    <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button></div>
     <label class="chk"><input id="showCur" type="checkbox">現メンバーも表示</label>
     <span class="stat" id="stat"></span>
     <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
@@ -163,7 +167,7 @@ const count=n=>MSG.filter(m=>m.to===n).length;
 const mineTo=n=>MSG.some(m=>m.to===n&&m.from===ME);
 function render(){
   const q=$('#q').value.trim().toLowerCase(),showCur=$('#showCur').checked;
-  const list=PEOPLE.filter(p=>(showCur||!p.cur)&&(!q||p.n.toLowerCase().includes(q)));
+  const list=PEOPLE.filter(p=>(showCur||!p.cur)&&(ROLE==='all'||p.cur||p.role===ROLE)&&(!q||p.n.toLowerCase().includes(q)));
   list.sort((a,b)=>(count(a.n)-count(b.n))||(mineTo(a.n)-mineTo(b.n))||a.n.localeCompare(b.n));
   $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
     return `<button class="card${p.cur?' cur':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
@@ -174,6 +178,8 @@ function render(){
   $('#progBar').style.width=(targets.length?done/targets.length*100:0)+'%';
 }
 $('#grid').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openSheet(c.dataset.n)});
+let ROLE='all';
+$('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;ROLE=b.dataset.r;document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));render()});
 $('#q').addEventListener('input',render);$('#showCur').addEventListener('change',render);
 $('#me').addEventListener('change',()=>{ME=$('#me').value.trim();save('yk_me',ME);render()});
 
