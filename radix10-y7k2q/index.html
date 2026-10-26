@@ -68,7 +68,7 @@ h3{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:18px 0 6px;font
 .post .cover{font-family:var(--round);font-size:16px;line-height:1.5;margin:0 0 8px;overflow-wrap:anywhere}
 .post .pp{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto}
 .post .pp img{height:200px;width:auto;max-width:100%;min-width:120px;object-fit:cover;border-radius:10px;background:var(--line);cursor:zoom-in;display:block;flex:none}
-.post p{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;color:var(--muted)}
+.post p{color:var(--fg);font-size:14px;line-height:1.75}
 .post p{white-space:pre-line}
 .post.open p{display:block;-webkit-line-clamp:unset;color:var(--fg)}
 .more{border:0;background:none;color:var(--accent);font-size:12px;padding:2px 0;cursor:pointer}
@@ -168,7 +168,7 @@ $('#me').addEventListener('change',()=>{ME=$('#me').value.trim();save('yk_me',ME
 const ym=s=>{const m=String(s||'').match(/^(\d{4})-(\d{2})/);return m?`${m[1]}年${+m[2]}月`:esc(s)};
 function hints(p){
   const h=[];
-  if(p.ph&&p.ph.length)h.push('上の写真の日、どんな空気でしたか？');
+  if(p.ph&&p.ph.length&&!p.group)h.push('写真の日、どんな空気でしたか？');if(p.group)h.push('この頃のSAKIYOMI、どんな雰囲気でしたか？');
   if(p.own&&p.own.length)h.push(`${p.n}さんのこの投稿を読んだとき、どう感じましたか？`);
   h.push('一緒にやったことで、今でも覚えている場面は？');
   h.push('言われてうれしかった言葉、助けられたことは？');
@@ -182,7 +182,7 @@ function openSheet(n){
   const postHtml=(t,meta,pics)=>{const lines=t.split('\n');const G=/^(@\S*\s*)*(お疲れ様|おつかれ|お疲れさま|おはよう|こんにちは|こんばんは|全体メンション|夜分|休日に失礼|失礼いたします|失礼します|皆さん|みなさん|cc)/i;
     let i=lines.findIndex((l,k)=>k<6&&/^【.+】/.test(l.trim()));if(i<0){i=0;while(i<lines.length&&(!lines[i].trim()||G.test(lines[i].trim())||lines[i].trim().length<6||/^@\S+\s*$/.test(lines[i].trim())))i++;if(i>=lines.length)i=0}
     let cover=(lines[i]||'').trim().replace(/^(@\S+\s*)+/,'');if(cover.length>60)cover=cover.slice(0,60)+'…';const body=lines.filter((_,k)=>k!==i).join('\n').replace(/^\s+/,'');
-    return `<article class="post"><h4 class="cover">${esc(cover)}</h4>${(pics||[]).length?`<div class="pp">${pics.slice(0,2).map(id=>`<img data-id="${esc(id)}" alt="当時の写真" ${PH[id]?`src="${PH[id]}"`:''}>`).join('')}</div>`:''}<p>${esc(body)}</p><button class="more" data-more>全文を読む</button><div class="meta">${meta}</div></article>`};
+    return `<article class="post"><h4 class="cover">${esc(cover)}</h4>${(pics||[]).length?`<div class="pp">${pics.slice(0,2).map(id=>`<img data-id="${esc(id)}" alt="当時の写真" ${PH[id]?`src="${PH[id]}"`:''}>`).join('')}</div>`:''}<p>${esc(body)}</p><div class="meta">${meta}</div></article>`};
   const own=(p.own||[]).map(o=>postHtml(o[0],`${ym(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}${o[3]?` ・ 返信${o[3]}`:''}`,o[5])).join('');
   const about=(p.about||[]).map(o=>postHtml(o[0],`${ym(o[1])} ・ ${esc(o[3])}さんの投稿${o[4]?` ・ #${esc(o[4])}`:''} ・ スタンプ${o[2]}`,o[5])).join('');
   const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
@@ -191,8 +191,7 @@ function openSheet(n){
     <div class="sh-top"><span class="av">${avHtml(p)}</span><div><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div></div><button class="x" id="close" aria-label="閉じる">×</button></div>
     ${own?`<h3>${esc(p.n)}さんの発表・決意</h3>${own}`:''}
     ${about?`<h3>みんなが${esc(p.n)}さんについて書いた投稿</h3>${about}`:''}
-    ${ph.length?`<h3>${own||about?'ほかの写真':'あの頃の写真'}</h3><div class="photos" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:''}
-    ${rel?`<h3>よく一緒にいた人</h3><div class="rel">${rel}</div>`:''}
+    ${ph.length?`<h3>${p.group?`${esc(p.n)}さんがいた頃のSAKIYOMI`:own||about?'ほかの写真':'あの頃の写真'}</h3><div class="photos" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:''}
     <div class="compose">
       <h3>${esc(p.n)}さんへのメッセージ</h3>
       <p class="hint-lead">何を書くか迷ったら、こんなことを思い出してみてください。</p>
