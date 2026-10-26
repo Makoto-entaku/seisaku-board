@@ -309,6 +309,11 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .gate .load{position:relative;z-index:1;background:radial-gradient(closest-side,var(--bg) 60%,transparent);padding:40px 60px}
 .gate .load h1{font-size:clamp(40px,8vw,64px);letter-spacing:.14em}
 @media (prefers-reduced-motion:reduce){.typefield{display:none}}
+.hero{position:relative}
+.heroWords{position:absolute;inset:0 -8px;pointer-events:none;z-index:0;overflow:hidden}
+.hero>*:not(.heroWords){position:relative;z-index:1}
+.tw.sm::after{display:none}
+.tw.done::after{display:none}
 </style>
 </head>
 <body>
@@ -360,14 +365,22 @@ async function get(params){const u=API+'?'+new URLSearchParams({...params,key:KE
 async function post(body){const r=await fetch(API,{method:'POST',body:JSON.stringify({...body,key:KEY})});return r.json()}
 
 const WORDS=["大海の一滴", "GRIT", "磨く", "事に向き合う", "上に抜け、下に譲る", "半歩先", "2歩先を見て半歩先を着手する", "ファーストペンギンであり続ける", "いうことは壮大に、やることは愚直に", "愚直", "凡事徹底", "2ランクアップの法則", "自己の拡張", "自己変革", "前進と変容", "等価交換", "All Winの実現", "万物に感謝", "当たり前と有り難う", "Be the トリガー", "起点", "熱狂", "wao", "和", "和を", "チェンジざバイアス", "現在地を直視する", "当たり前を塗り替える", "自ら機会を作り出し、その機会によって自らを変えよ", "皆経営者意識", "勝ち癖", "フィードシェア", "神は細部に宿る", "遠くに行きたいならみんなで行け", "ジョブ理論", "ラストワンマイル", "excellent", "リスペクト", "原点回帰", "利確", "天才、勝ち確、楽勝", "言語は人の鏡", "背中めがけて殴る", "遠慮と謙遜", "遠慮と気遣い", "優れるな異なれ", "息子と思って寄り添え", "諦めたくない人の集まり", "独善的利他", "利他", "サイの角のようにただ独り歩め", "暗中模索の中に一筋の光を", "お前はどうありたいのか？", "心がすべて", "在り方", "もっとやれる", "有難い", "素直さと主体性", "人として豊かになる", "志", "立志", "共想", "ワークハードプレイハード", "マイテーマを持つ", "ゲームチェンジャー", "ブレイクスルー", "Giver", "Talk a lot, Talk equally, Talk outside", "who/what/how", "守りの観点", "保存率", "SNSを溶かす", "ババを引く", "エフィカシー", "明日の意識行動に影響を与え続け、想像以上の前進体験を届ける", "ただのgood byeではなく、グッドリレーションズベターヒューチャー", "2Days", "感謝のアンケート", "good morning sakiyomi", "Radix", "強くてニューゲーム", "キングボンビー", "ジョーカー", "発明", "行動主義", "コア", "新たな挑戦に、成功体験を。", "仕事を通じて人間として成長し、自分と周りの人を幸せにする。", "パートナー", "エキスパート", "イノベーター", "保存率という概念", "先が読めない時代に、それでも挑戦する", "変わり続けることで、変わらないものを守る", "根があるから、枝葉は伸びる。", "根があるから、挑戦できる。", "私たちは変わらないために、挑戦し続けます。", "ゴール", "コンフォートゾーン", "自己機能"];
-const typing=(()=>{const f=document.getElementById('typefield');if(!f)return{stop(){}};let alive=true;const slots=[];
-  const W=()=>f.clientWidth,H=()=>f.clientHeight;
-  function spawn(){if(!alive)return;const el=document.createElement('span');el.className='tw';const w=WORDS[Math.random()*WORDS.length|0];
-    el.style.left=(2+Math.random()*(w.length>18?45:75))+'%';el.style.top=(4+Math.random()*88)+'%';el.style.fontSize=(14+Math.random()*22|0)+'px';el.style.opacity=(.25+Math.random()*.5).toFixed(2);
-    if(w.length<=12&&Math.random()<.3)el.style.writingMode='vertical-rl';if(w.length>18)el.style.fontSize=(13+Math.random()*7|0)+'px';f.appendChild(el);let i=0;
-    const t=setInterval(()=>{if(!alive){clearInterval(t);return}i++;el.textContent=w.slice(0,i);if(i>=w.length){clearInterval(t);setTimeout(()=>{el.classList.add('out');setTimeout(()=>{el.remove();spawn()},600)},900+Math.random()*900)}},90+Math.random()*90)}
-  for(let k=0;k<16;k++)setTimeout(spawn,k*110);
-  return{stop(){alive=false;f.innerHTML=''}}})();
+function placeTyper(field,opt){let alive=true;const avoid=opt.avoid||[];const live=new Set();
+  const hit=(a,b)=>!(a.right<b.left||a.left>b.right||a.bottom<b.top||a.top>b.bottom);
+  function spawn(){if(!alive)return;const fr=field.getBoundingClientRect();const el=document.createElement('span');el.className='tw'+(opt.cls?' '+opt.cls:'');
+    const used=new Set([...live].map(x=>x.dataset.w));let w;for(let t=0;t<20;t++){w=WORDS[Math.random()*WORDS.length|0];if(!used.has(w)&&(!opt.maxLen||w.length<=opt.maxLen))break}
+    el.dataset.w=w;const fs=opt.size?opt.size():(14+Math.random()*22|0);el.style.fontSize=(w.length>18?Math.min(fs,18):fs)+'px';
+    if(w.length<=12&&Math.random()<(opt.vert??.3))el.style.writingMode='vertical-rl';el.style.visibility='hidden';el.textContent=w;field.appendChild(el);
+    const ew=el.offsetWidth,eh=el.offsetHeight;let ok=false;
+    for(let t=0;t<40&&!ok;t++){const x=Math.random()*Math.max(1,fr.width-ew),y=Math.random()*Math.max(1,fr.height-eh);el.style.left=x+'px';el.style.top=y+'px';
+      const r={left:fr.left+x-8,top:fr.top+y-8,right:fr.left+x+ew+8,bottom:fr.top+y+eh+8};
+      ok=!avoid.some(a=>{const b=a.getBoundingClientRect();return b.width&&hit(r,{left:b.left-10,top:b.top-10,right:b.right+10,bottom:b.bottom+10})})&&![...live].some(o=>hit(r,o._r));el._r=r}
+    if(!ok){el.remove();setTimeout(spawn,400);return}
+    live.add(el);el.style.opacity=(opt.op?opt.op():(.25+Math.random()*.5)).toFixed(2);el.textContent='';el.style.visibility='visible';let i=0;
+    const t=setInterval(()=>{if(!alive){clearInterval(t);return}i++;el.textContent=w.slice(0,i);if(i>=w.length){clearInterval(t);if(opt.keep){el.classList.add('done');return}setTimeout(()=>{el.classList.add('out');setTimeout(()=>{live.delete(el);el.remove();spawn()},600)},900+Math.random()*900)}},90+Math.random()*90)}
+  for(let k=0;k<opt.n;k++)setTimeout(spawn,k*110);
+  return{stop(){alive=false;field.innerHTML=''}}}
+const typing=(()=>{const f=document.getElementById('typefield');if(!f)return{stop(){}};return placeTyper(f,{n:16,avoid:[document.querySelector('.gate .load')]})})();
 async function boot(){
   let d;try{d=await get({action:'data'})}catch(e){$('#gateErr').textContent='つながりませんでした。通信状況を確認して、もう一度お試しください。';$('#gate').hidden=false;return}
   if(!d.ok){$('#gateErr').textContent='読み込みに失敗しました。少し待ってから再読み込みしてください。';return}
@@ -467,12 +480,13 @@ function openSheet(n){
       <div class="row"><button class="btn wide" id="send">寄せ書きに貼る</button></div>
     </div></div>`;
     $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">←</button><div class="bt">${esc(p.n)}さんへの寄せ書き</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
-      <header class="hero"><span class="av">${avHtml(p)}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div><button class="btn writebig" data-opencompose>＋ メッセージを書く</button></header>
+      <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div><button class="btn writebig" data-opencompose>＋ メッセージを書く</button></header>
       ${photosB}
       ${own?`<h3 class="sec-h">当時の投稿<small>横にスワイプ →</small></h3><div class="poststrip">${own}</div>`:''}
       <h3 class="sec-h">寄せ書き <span id="bcount"></span></h3>
       <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>${composeB}`;
     $('#sheet').classList.add('full');
+    if(window._hw)window._hw.stop();setTimeout(()=>{const f=$('#heroWords');if(f)window._hw=placeTyper(f,{n:7,keep:true,vert:.2,maxLen:14,cls:'sm',size:()=>12+Math.random()*6|0,op:()=>.35+Math.random()*.3,avoid:[...document.querySelectorAll('.hero .av,.hero h2,.hero .sub,.hero .writebig')]})},150);
   }else{$('#sheet').classList.remove('full');$('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH}
   $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
   if($('#who'))$('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
@@ -483,7 +497,7 @@ function renderMsgs(n){const el=$('#msgs');if(!el)return;const ms=MSG.filter(m=>
   if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=ms.length?`${ms.length}`:'';
     el.innerHTML=(ms.length?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+ms.map(m=>`<div class="tile"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join('');return}
   el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初の一通をどうぞ。</p>'}
-function closeSheet(){stopMic();open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
+function closeSheet(){stopMic();if(window._hw){window._hw.stop();window._hw=null}open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
 $('#scrim').addEventListener('click',closeSheet);
 $('#lb').addEventListener('click',e=>{if(e.target.closest('.slk')&&!e.target.closest('.slk-close'))return;$('#lb').hidden=true});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#lb').hidden){$('#lb').hidden=true;return}if(open)closeSheet()});
