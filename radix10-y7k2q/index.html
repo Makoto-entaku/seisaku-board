@@ -272,6 +272,10 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .tate-hero.on-photo .sub-t{margin:6px 0 22px;font-size:14px;letter-spacing:.35em}
 .tate-hero.on-photo .lead{font-size:clamp(14px,1.7vw,17px);line-height:1.95;letter-spacing:.05em;max-width:34em}
 .tate-hero.on-photo::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,.45),transparent 70%);z-index:-1}
+/* 白文字の後ろにすりガラスの板 */
+.tate-hero.on-photo::before{display:none}
+.tate-hero.on-photo{inset:auto;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100% - 32px));height:auto;padding:34px 28px 30px;background:rgba(18,16,14,.62);-webkit-backdrop-filter:blur(8px) saturate(.8);backdrop-filter:blur(8px) saturate(.8);border-radius:6px;text-shadow:none;box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.wall img{filter:grayscale(.2) brightness(.8) contrast(1.05)}
 </style>
 </head>
 <body>
