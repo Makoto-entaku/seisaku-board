@@ -498,7 +498,7 @@ function openSheet(n){
     const full=(lines[i]||'').trim().replace(/^(@\S+\s*)+/,'');const mm=full.match(/^.+?[。！!？?]+(?=.)/);let cover=full,rest='';if(full.length>45&&mm&&mm[0].length>=6){cover=mm[0];rest=full.slice(mm[0].length).trim()}
     const body=lines.map((l,k)=>k===i?rest:l).filter((l,k)=>!(k===i&&!l)).join('\n').replace(/^\s+/,'');
     return `<article class="post"><h4 class="cover">${esc(cover)}</h4><p>${esc(body)}</p><div class="meta">${meta}</div></article>`};
-  const posts=[...(p.own||[]).slice().sort((a,b)=>String(a[1]).localeCompare(String(b[1]))).map(o=>postHtml(o[0],`${esc(p.n)}さんの投稿 ・ ${ym(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}`)),...(p.about||[]).map(o=>postHtml(o[0],`${esc(o[3])}さんが${esc(p.n)}さんについて書いた投稿 ・ ${ym(o[1])} ・ スタンプ${o[2]}`))];
+  const posts=[...(p.own||[]).slice().sort((a,b)=>String(a[1]).localeCompare(String(b[1]))).map(o=>postHtml(o[0],`${esc(p.n)}さんの投稿 ・ ${ym(o[1])} ・ #${esc(o[4])}`)),...(p.about||[]).map(o=>postHtml(o[0],`${esc(o[3])}さんが${esc(p.n)}さんについて書いた投稿 ・ ${ym(o[1])}`))];
   const own=posts.join('');
   const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
   const ph=[...[...(p.own||[]),...(p.about||[])].flatMap(o=>(o[5]||[]).map(id=>[id,o[1]])),...(p.ph||[])].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).slice(0,10).sort((a,b)=>((b[2]||0)-(a[2]||0))||String(a[1]).localeCompare(String(b[1])));
@@ -557,7 +557,7 @@ $('#sheet').addEventListener('click',async e=>{
   const mp=e.target.closest('[data-moreposts]');if(mp){$('#morePosts').hidden=false;mp.remove();return}
   const mo=e.target.closest('[data-more]');if(mo){const p=mo.closest('.post');p.classList.toggle('open');mo.textContent=p.classList.contains('open')?'閉じる':'全文を読む';return}
   const im=e.target.closest('#sheet img[data-id]');if(im&&im.src){$('#lbImg').src=im.src;const p=BYN[open];const x=p&&(p.ph||[]).find(y=>y[0]===im.dataset.id);const c=x&&x[3];const box=$('#lbPost');
-    if(c){box.innerHTML=`<div class="slk-ch"># ${esc(c.ch)}</div><div class="slk-msg"><span class="slk-av">${avHtml(p)}</span><div class="slk-body"><div class="slk-head"><b>${esc(p.n)}</b><span>${esc(c.at)}</span></div><p>${esc(c.t)}</p><img src="${im.src}" alt="" class="slk-img"><div class="slk-meta">${c.re?`<span class="slk-re">👏 ${c.re}</span>`:''}${c.rc?`<span class="slk-rc">${c.rc}件の返信</span>`:''}</div></div></div>`;box.hidden=false;$('#lbImg').hidden=true}
+    if(c){box.innerHTML=`<div class="slk-ch"># ${esc(c.ch)}</div><div class="slk-msg"><span class="slk-av">${avHtml(p)}</span><div class="slk-body"><div class="slk-head"><b>${esc(p.n)}</b><span>${esc(c.at)}</span></div><p>${esc(c.t)}</p><img src="${im.src}" alt="" class="slk-img"></div></div>`;box.hidden=false;$('#lbImg').hidden=true}
     else{box.hidden=true;$('#lbImg').hidden=false}
     $('#lb').hidden=false;return}
   const d=e.target.closest('[data-del]');if(d){const r=await post({action:'delete',id:d.dataset.del,from:ME});if(r.ok){MSG=MSG.filter(m=>m.id!==d.dataset.del);MINE=MINE.filter(x=>x!==d.dataset.del);save('yk_mine',MINE);renderMsgs(open);render();toast('取り消しました')}else toast('取り消せませんでした');return}
