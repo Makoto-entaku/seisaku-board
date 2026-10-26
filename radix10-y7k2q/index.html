@@ -183,6 +183,7 @@ $('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!
 $('#q').addEventListener('input',render);$('#showCur').addEventListener('change',render);
 $('#me').addEventListener('change',()=>{ME=$('#me').value.trim();save('yk_me',ME);render()});
 
+const LAYOUT_B=new Set(['Kota Nakanishi']);
 const ym=s=>{const m=String(s||'').match(/^(\d{4})-(\d{2})/);return m?`${m[1]}年${+m[2]}月`:esc(s)};
 function hints(p){
   const h=[];
@@ -206,18 +207,19 @@ function openSheet(n){
   const own=posts.join('');
   const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
   const ph=[...[...(p.own||[]),...(p.about||[])].flatMap(o=>(o[5]||[]).map(id=>[id,o[1]])),...(p.ph||[])].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).slice(0,10).sort((a,b)=>String(a[1]).localeCompare(String(b[1])));
-  $('#sheet').innerHTML=`
-    <div class="sh-top"><span class="av">${avHtml(p)}</span><div><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div></div><button class="x" id="close" aria-label="閉じる">×</button></div>
-    ${ph.length?`<h3>${p.group?`${esc(p.n)}さんがいた頃のSAKIYOMI`:'あの頃の写真'}<small>${ph.length>1?'横にスワイプ →':''}</small></h3><div class="photos" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:''}
-    ${own?`<h3>当時の投稿</h3>${own}`:''}
-    <div class="compose">
+  const top=`<div class="sh-top"><span class="av">${avHtml(p)}</span><div><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div></div><button class="x" id="close" aria-label="閉じる">×</button></div>`;
+  const photosH=ph.length?`<h3>${p.group?`${esc(p.n)}さんがいた頃のSAKIYOMI`:'あの頃の写真'}<small>${ph.length>1?'横にスワイプ →':''}</small></h3><div class="photos" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:'';
+  const postsH=own?`<h3>当時の投稿</h3>${own}`:'';
+  const composeH=`<div class="compose">
       <h3>${esc(p.n)}さんへのメッセージ</h3>
       <p class="hint-lead">何を書くか迷ったら、こんなことを思い出してみてください。</p>
       <ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul>
       <textarea id="txt" maxlength="600" placeholder="思い出したことを、そのまま言葉にしてください。"></textarea>
       <div class="row"><button class="btn" id="send">送る</button><button class="btn ghost" id="next">次の人へ</button><span class="note" id="who"></span></div>
-    </div>
-    <h3>届いているメッセージ</h3><div class="msgs" id="msgs"></div>`;
+    </div>`;
+  const msgsH=`<h3>届いているメッセージ</h3><div class="msgs" id="msgs"></div>`;
+  const layoutB=LAYOUT_B.has(p.n);
+  $('#sheet').innerHTML=top+(layoutB?composeH+msgsH+photosH+postsH:photosH+postsH+composeH+msgsH);
   $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
   $('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
   const pic=ph.map(x=>x[0]);renderMsgs(n);loadPhotos([...new Set(pic)].filter(id=>!PH[id]));
