@@ -314,6 +314,12 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .hero>*:not(.heroWords){position:relative;z-index:1}
 .tw.sm::after{display:none}
 .tw.done::after{display:none}
+/* モザイク演出 */
+.mz-pre #wallImg{opacity:0}.mz-pre .tate-hero.on-photo{opacity:0}
+#mosaic{position:absolute;left:0;top:0;z-index:1;pointer-events:none;opacity:0}
+.wall img{position:relative;z-index:0}
+.tate-hero.on-photo{z-index:2;transition:opacity .9s ease .2s}
+.tate-hero.on-photo.wait{opacity:0}
 </style>
 </head>
 <body>
@@ -321,7 +327,7 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 
 <div class="wrap" id="app" hidden>
   <header>
-    <figure class="wall"><img src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager">
+    <figure class="wall"><canvas id="mosaic" aria-hidden="true"></canvas><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager">
     <div class="tate-hero on-photo">
       <h1>寄せ書き</h1>
       <p class="sub-t">Radix 十周年</p>
@@ -395,7 +401,41 @@ async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))];
   const jobs=[];for(let i=0;i<keys.length;i+=40){const ids=keys.slice(i,i+40).map(k=>'av:'+k);
     jobs.push(get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok){for(const k in d.photos)AV[k.slice(3)]=d.photos[k];render()}}).catch(()=>{}))}
-  await Promise.all(jobs);prefetchPhotos()
+  await Promise.all(jobs);runMosaic().catch(()=>{});prefetchPhotos()
+}
+(function(){let seen=false;try{seen=sessionStorage.getItem('yk_mosaic')==='1'}catch(e){}if(!seen&&!matchMedia('(prefers-reduced-motion:reduce)').matches){document.documentElement.classList.add('mz-pre')}})();
+function mosaicAbort(){document.documentElement.classList.remove('mz-pre')}
+async function runMosaic(){try{await runMosaic2()}catch(e){}finally{setTimeout(()=>{if(!window._mzRunning)mosaicAbort()},50)}}
+async function runMosaic2(){
+  const cv=document.getElementById('mosaic'),img=document.getElementById('wallImg');if(!cv||!img)return;
+  let seen=false;try{seen=sessionStorage.getItem('yk_mosaic')==='1'}catch(e){}
+  if(seen||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const srcs=Object.values(AV).filter(Boolean);if(srcs.length<20)return;
+  if(!img.complete)await new Promise(r=>img.onload=r);
+  const box=img.getBoundingClientRect();const W=box.width,H=box.height;if(!W||!H)return;
+  const dpr=Math.min(2,devicePixelRatio||1);cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+'px';cv.style.height=H+'px';
+  const ctx=cv.getContext('2d');ctx.scale(dpr,dpr);
+  // sample wall image with object-fit:cover + object-position center 42%
+  const iw=img.naturalWidth,ih=img.naturalHeight,sc=Math.max(W/iw,H/ih),dw=iw*sc,dh=ih*sc,ox=(W-dw)/2,oy=(H-dh)*0.42;
+  const cols=W<600?11:W<1000?16:22,cell=W/cols,rows=Math.ceil(H/cell);
+  const sm=document.createElement('canvas');sm.width=cols;sm.height=rows;const sx=sm.getContext('2d');sx.drawImage(img,-ox/cell,-oy/cell,dw/cell,dh/cell);
+  const px=sx.getImageData(0,0,cols,rows).data;
+  const ims=await Promise.all(srcs.slice(0,160).map(s=>new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=s})));const pool=ims.filter(Boolean);
+  const tiles=[];for(let y=0;y<rows;y++)for(let x=0;x<cols;x++){const k=(y*cols+x)*4;const lum=.3*px[k]+.59*px[k+1]+.11*px[k+2];
+    tiles.push({x:x*cell,y:y*cell,lum,im:pool[(x*7+y*13)%pool.length],sx:W/2+(Math.random()-.5)*W*1.1,sy:H/2+(Math.random()-.5)*H*1.2,r:(Math.random()-.5)*0.9,delay:Math.random()*700})}
+  window._mzRunning=true;img.style.opacity='0';cv.style.opacity='1';document.querySelector('.tate-hero.on-photo')?.classList.add('wait');document.documentElement.classList.remove('mz-pre');
+  const T0=performance.now(),FLY=1500,HOLD=650,FADE=1100;
+  const ease=t=>1-Math.pow(1-t,3);
+  function draw(now){const t=now-T0;ctx.clearRect(0,0,W,H);ctx.fillStyle='#141210';ctx.fillRect(0,0,W,H);
+    for(const p of tiles){const k=Math.max(0,Math.min(1,(t-p.delay)/FLY)),e=ease(k);const s=cell*(1.9-0.9*e);
+      const cx=p.sx+(p.x+cell/2-p.sx)*e,cy=p.sy+(p.y+cell/2-p.sy)*e;ctx.save();ctx.translate(cx,cy);ctx.rotate(p.r*(1-e));
+      if(k<1){ctx.fillStyle='#fff';ctx.fillRect(-s/2-3,-s/2-3,s+6,s+10)}
+      ctx.drawImage(p.im,-s/2,-s/2,s,s);const a=0.25+0.55*e;ctx.fillStyle=`rgba(${p.lum|0},${p.lum|0},${p.lum|0},${a})`;ctx.fillRect(-s/2,-s/2,s,s);ctx.restore()}
+    const end=FLY+700+HOLD;if(t<end){requestAnimationFrame(draw);return}
+    img.style.transition=`opacity ${FADE}ms ease`;img.style.opacity='';cv.style.transition=`opacity ${FADE}ms ease`;cv.style.opacity='0';
+    document.querySelector('.tate-hero.on-photo')?.classList.remove('wait');try{sessionStorage.setItem('yk_mosaic','1')}catch(e){}
+    setTimeout(()=>{cv.width=cv.height=0;window._mzRunning=false},FADE+50)}
+  requestAnimationFrame(draw);
 }
 async function prefetchPhotos(){
   const order=[...PEOPLE].filter(p=>!p.cur).sort((a,b)=>count(a.n)-count(b.n));
