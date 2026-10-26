@@ -229,6 +229,11 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 .tabs button.on{color:var(--fg)}
 .tabs button:focus-visible{outline-offset:-2px}
 .tate-hero .lead{font-weight:600}
+/* 空のときの「最初のメッセージを書く」は中央に */
+.sheet.full .board:has(.tile.add){columns:auto;display:flex;justify-content:center}
+.sheet.full .board .tile.add{width:100%;max-width:560px;min-height:160px;margin:8px auto 14px;flex-direction:row;gap:10px;font-size:17px}
+.tile.add span{font-size:28px}
+#tab-board .row.end{justify-content:center}
 </style>
 </head>
 <body>
