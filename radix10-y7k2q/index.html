@@ -384,12 +384,12 @@ function placeTyper(field,opt){let alive=true;const avoid=opt.avoid||[];const li
     if(w.length<=12&&Math.random()<(opt.vert??.3))el.style.writingMode='vertical-rl';el.style.visibility='hidden';el.textContent=w;field.appendChild(el);
     const ew=el.offsetWidth,eh=el.offsetHeight;let ok=false;
     for(let t=0;t<(opt.tries||40)&&!ok;t++){const x=Math.random()*Math.max(1,fr.width-ew),y=Math.random()*Math.max(1,fr.height-eh);el.style.left=x+'px';el.style.top=y+'px';
-      const g=opt.gap??8;const r={left:fr.left+x-g,top:fr.top+y-g,right:fr.left+x+ew+g,bottom:fr.top+y+eh+g};
-      ok=!avoid.some(a=>{const b=a.getBoundingClientRect();return b.width&&hit(r,{left:b.left-10,top:b.top-10,right:b.right+10,bottom:b.bottom+10})})&&![...live].some(o=>hit(r,o._r));el._r=r}
+      const g=opt.gap??8;const r={left:x-g,top:y-g,right:x+ew+g,bottom:y+eh+g};const cr=field.getBoundingClientRect();
+      ok=!avoid.some(a=>{const b=a.getBoundingClientRect();return b.width&&hit(r,{left:b.left-cr.left-10,top:b.top-cr.top-10,right:b.right-cr.left+10,bottom:b.bottom-cr.top+10})})&&![...live].some(o=>hit(r,o._r));el._r=r}
     if(!ok){el.remove();fails++;setTimeout(spawn,opt.keep?60:400);return}
     live.add(el);el.style.opacity=(opt.op?opt.op():(.25+Math.random()*.5)).toFixed(2);el.textContent='';el.style.visibility='visible';let i=0;
     const t=setInterval(()=>{if(!alive){clearInterval(t);return}i++;el.textContent=w.slice(0,i);if(i>=w.length){clearInterval(t);if(opt.keep){el.classList.add('done');return}setTimeout(()=>{el.classList.add('out');setTimeout(()=>{live.delete(el);el.remove();spawn()},600)},900+Math.random()*900)}},90+Math.random()*90)}
-  for(let k=0;k<opt.n;k++)setTimeout(spawn,k*(opt.step||110));
+  (document.fonts?document.fonts.ready:Promise.resolve()).then(()=>{for(let k=0;k<opt.n;k++)setTimeout(spawn,k*(opt.step||110))});
   return{stop(){alive=false;field.innerHTML=''}}}
 const typing=(()=>{const f=document.getElementById('typefield');if(!f)return{stop(){}};return placeTyper(f,{n:16,avoid:[document.querySelector('.gate .load')]})})();
 async function boot(){
