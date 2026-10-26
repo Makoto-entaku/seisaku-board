@@ -204,7 +204,7 @@ function openSheet(n){
   const posts=[...(p.own||[]).slice().sort((a,b)=>String(a[1]).localeCompare(String(b[1]))).map(o=>postHtml(o[0],`${esc(p.n)}さんの投稿 ・ ${ym(o[1])} ・ #${esc(o[4])} ・ スタンプ${o[2]}`)),...(p.about||[]).map(o=>postHtml(o[0],`${esc(o[3])}さんが${esc(p.n)}さんについて書いた投稿 ・ ${ym(o[1])} ・ スタンプ${o[2]}`))];
   const own=posts.join('');
   const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
-  const ph=[...[...(p.own||[]),...(p.about||[])].flatMap(o=>(o[5]||[]).map(id=>[id,o[1]])),...(p.ph||[])].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).slice(0,10);
+  const ph=[...[...(p.own||[]),...(p.about||[])].flatMap(o=>(o[5]||[]).map(id=>[id,o[1]])),...(p.ph||[])].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).slice(0,10).sort((a,b)=>String(a[1]).localeCompare(String(b[1])));
   $('#sheet').innerHTML=`
     <div class="sh-top"><span class="av">${avHtml(p)}</span><div><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div></div><button class="x" id="close" aria-label="閉じる">×</button></div>
     ${ph.length?`<h3>${p.group?`${esc(p.n)}さんがいた頃のSAKIYOMI`:'あの頃の写真'}<small>${ph.length>1?'横にスワイプ →':''}</small></h3><div class="photos" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:''}
