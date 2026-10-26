@@ -109,8 +109,7 @@ textarea{width:100%;min-height:72px;border:1px solid var(--line);border-radius:1
     <h1>Radix 10周年 寄せ書き</h1>
     <p>一緒に走ってきた人へ、あなたの言葉で。顔を押すと、その人の当時の写真や、発表・決意の投稿が出てきます。思い出に浸ってから書いてみてください。短くても大丈夫です。まだメッセージが少ない人から順に並んでいます。</p>
     <div class="big" aria-live="polite">
-      <div><b id="bigMsg">0</b><span>件のメッセージ</span></div>
-      <div><b id="bigDone">0</b><span>/ <i id="bigAll">119</i> 人に届いた</span></div>
+      <div><span>みんなから集まったメッセージ</span><b id="bigMsg">0</b><span>件</span></div>
     </div>
   </header>
   <div class="bar">
@@ -169,7 +168,7 @@ function render(){
   $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
     return `<button class="card${p.cur?' cur':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
   const targets=PEOPLE.filter(p=>!p.cur),done=targets.filter(p=>count(p.n)>0).length,mine=ME?MSG.filter(m=>m.from===ME).length:0;
-  $('#bigMsg').textContent=MSG.length;$('#bigDone').textContent=done;$('#bigAll').textContent=targets.length;
+  $('#bigMsg').textContent=MSG.length;
   $('#stat').textContent=ME?`あなた ${mine}件`:'';
   void `メッセージ ${MSG.length}件 ・ 届いた人 ${done}/${targets.length}人${ME?` ・ あなた ${mine}件`:''}`;
   $('#progBar').style.width=(targets.length?done/targets.length*100:0)+'%';
