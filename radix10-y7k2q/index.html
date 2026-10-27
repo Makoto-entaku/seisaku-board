@@ -367,6 +367,11 @@ const KEY='radix10';
 let ME='';try{ME=localStorage.getItem('yk_me')||''}catch(e){}
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('yk_mine')||'[]')}catch(e){}
 let PEOPLE=[],BYN={},MSG=[],AV={},PH={},open=null;
+const IDB=(()=>{let db;const o=()=>db||(db=new Promise((r,j)=>{try{const q=indexedDB.open('yk',1);q.onupgradeneeded=()=>q.result.createObjectStore('img');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)}catch(e){j(e)}}));
+  return{async load(){try{const d=await o();return await new Promise(r=>{const out={};const c=d.transaction('img').objectStore('img').openCursor();c.onsuccess=()=>{const x=c.result;if(x){out[x.key]=x.value;x.continue()}else r(out)};c.onerror=()=>r(out)})}catch(e){return{}}},
+    async put(pre,obj){try{const d=await o();const t=d.transaction('img','readwrite'),st=t.objectStore('img');for(const k in obj)st.put(obj[k],pre+k)}catch(e){}}}})();
+function fillSheet(){if(open)document.querySelectorAll('#sheet img[data-id]').forEach(i=>{if(!i.getAttribute('src')&&PH[i.dataset.id])i.src=PH[i.dataset.id]})}
+function gotPhotos(o){const n={};for(const k in o)if(!PH[k]){PH[k]=o[k];n[k]=o[k]}IDB.put('p:',n);fillSheet()}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ini=n=>{const p=n.split(' ');return p.length>1?(p[0][0]+p[p.length-1][0]).toUpperCase():n.slice(0,2)};
@@ -397,22 +402,23 @@ async function boot(){
   typing.stop();$('#gate').hidden=true;$('#app').hidden=false;
   runMosaic().catch(()=>{});
   let cached=null;try{cached=JSON.parse(localStorage.getItem('yk_data')||'null')}catch(e){}
-  try{const a=JSON.parse(localStorage.getItem('yk_av2')||'null');if(a)Object.assign(AV,a)}catch(e){}
+  try{localStorage.removeItem('yk_av2');localStorage.removeItem('yk_av')}catch(e){}
+  try{const c=await Promise.race([IDB.load(),new Promise(r=>setTimeout(()=>r({}),1500))]);for(const k in c){if(k.startsWith('a:'))AV[k.slice(2)]=c[k];else if(k.startsWith('p:'))PH[k.slice(2)]=c[k]}}catch(e){}
   if(cached&&cached.people)apply(cached);else $('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">みんなの顔を読み込んでいます…</p>';
   let d;try{d=await get({action:'data'})}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
   try{localStorage.setItem('yk_data',JSON.stringify(d))}catch(e){}
-  apply(d);loadAvatars();
+  apply(d);loadAvatars();prefetchPhotos();
   setInterval(refresh,45000);
 }
 function apply(d){PEOPLE=d.people.filter(p=>!p.hide);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));MSG=(d.messages||[]).filter(m=>m.to!=='__review__');
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render()}
 async function refresh(){try{const d=await get({action:'messages'});if(d.ok){MSG=d.messages.filter(m=>m.to!=='__review__');render();if(open)renderMsgs(open)}}catch(e){}}
 async function loadAvatars(){
-  const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))];
-  const jobs=[];for(let i=0;i<keys.length;i+=40){const ids=keys.slice(i,i+40).map(k=>'av:'+k);
-    jobs.push(get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok){for(const k in d.photos)AV[k.slice(3)]=d.photos[k];render()}}).catch(()=>{}))}
-  await Promise.all(jobs);try{localStorage.setItem('yk_av2',JSON.stringify(AV))}catch(e){}prefetchPhotos()
+  const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))].filter(k=>!AV[k]);
+  const jobs=[];for(let i=0;i<keys.length;i+=20){const ids=keys.slice(i,i+20).map(k=>'av:'+k);
+    jobs.push(get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok){const n={};for(const k in d.photos){AV[k.slice(3)]=d.photos[k];n[k.slice(3)]=d.photos[k]}IDB.put('a:',n);render()}}).catch(()=>{}))}
+  await Promise.all(jobs);
 }
 (function(){if(!matchMedia('(prefers-reduced-motion:reduce)').matches){document.documentElement.classList.add('mz-pre')}})();
 function mosaicAbort(){document.documentElement.classList.remove('mz-pre')}
@@ -456,13 +462,14 @@ async function runMosaic2(){
   requestAnimationFrame(frame);
 }
 async function prefetchPhotos(){
-  const order=[...PEOPLE].filter(p=>!p.cur).sort((a,b)=>count(a.n)-count(b.n));
+  const st=p=>String((p.span||[])[0]||'9999');
+  const order=[...PEOPLE].filter(p=>!p.cur).sort((a,b)=>st(a).localeCompare(st(b)));
   const ids=[...new Set(order.flatMap(p=>(p.ph||[]).map(x=>x[0])))].filter(id=>!PH[id]);
-  const chunks=[];for(let i=0;i<ids.length;i+=25)chunks.push(ids.slice(i,i+25));
-  let k=0;const worker=async()=>{while(k<chunks.length){const c=chunks[k++].filter(id=>!PH[id]);if(!c.length)continue;try{const d=await get({action:'photos',ids:c.join(',')});if(d.ok){Object.assign(PH,d.photos);if(open)document.querySelectorAll('#sheet img[data-id]').forEach(i=>{if(!i.src&&PH[i.dataset.id])i.src=PH[i.dataset.id]})}}catch(e){}}};
-  await Promise.all([worker(),worker(),worker()]);
+  const chunks=[];for(let i=0;i<ids.length;i+=30)chunks.push(ids.slice(i,i+30));
+  let k=0;const worker=async()=>{while(k<chunks.length){const c=chunks[k++].filter(id=>!PH[id]);if(!c.length)continue;try{const d=await get({action:'photos',ids:c.join(',')});if(d.ok)gotPhotos(d.photos)}catch(e){}}};
+  await Promise.all(Array.from({length:6},worker));
 }
-function warm(n){const p=BYN[n];if(!p)return;const ids=(p.ph||[]).map(x=>x[0]).filter(id=>!PH[id]);if(ids.length&&!warm.busy?.[n]){(warm.busy=warm.busy||{})[n]=1;get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok)Object.assign(PH,d.photos)}).catch(()=>{})}}
+function warm(n){const p=BYN[n];if(!p)return;const ids=(p.ph||[]).map(x=>x[0]).filter(id=>!PH[id]);if(ids.length&&!warm.busy?.[n]){(warm.busy=warm.busy||{})[n]=1;get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok)gotPhotos(d.photos)}).catch(()=>{})}}
 const count=n=>MSG.filter(m=>m.to===n).length;
 const mineTo=n=>MSG.some(m=>m.to===n&&m.from===ME);
 function render(){
@@ -550,7 +557,7 @@ function openSheet(n){
   if($('#who'))$('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
   const pic=ph.map(x=>x[0]);renderMsgs(n);loadPhotos([...new Set(pic)].filter(id=>!PH[id]));
 }
-async function loadPhotos(ids){if(!ids.length)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){Object.assign(PH,d.photos);document.querySelectorAll('#sheet img[data-id]').forEach(i=>{if(PH[i.dataset.id])i.src=PH[i.dataset.id]})}}catch(e){}}
+async function loadPhotos(ids){if(!ids.length)return;const sp=[];for(let i=0;i<ids.length;i+=2)sp.push(ids.slice(i,i+2));await Promise.all(sp.map(c=>get({action:'photos',ids:c.join(',')}).then(d=>{if(d.ok)gotPhotos(d.photos)}).catch(()=>{})))}
 function renderMsgs(n){const el=$('#msgs');if(!el)return;const ms=MSG.filter(m=>m.to===n);
   if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=ms.length?`${ms.length}`:'';
     el.innerHTML=(ms.length?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+ms.map(m=>`<div class="tile"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join('');return}
