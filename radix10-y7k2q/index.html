@@ -465,9 +465,9 @@ async function prefetchPhotos(){
   const st=p=>String((p.span||[])[0]||'9999');
   const order=[...PEOPLE].filter(p=>!p.cur).sort((a,b)=>st(a).localeCompare(st(b)));
   const ids=[...new Set(order.flatMap(p=>(p.ph||[]).map(x=>x[0])))].filter(id=>!PH[id]);
-  const chunks=[];for(let i=0;i<ids.length;i+=30)chunks.push(ids.slice(i,i+30));
+  const chunks=[];for(let i=0;i<ids.length;i+=15)chunks.push(ids.slice(i,i+15));
   let k=0;const worker=async()=>{while(k<chunks.length){const c=chunks[k++].filter(id=>!PH[id]);if(!c.length)continue;try{const d=await get({action:'photos',ids:c.join(',')});if(d.ok)gotPhotos(d.photos)}catch(e){}}};
-  await Promise.all(Array.from({length:6},worker));
+  await Promise.all(Array.from({length:10},worker));
 }
 function warm(n){const p=BYN[n];if(!p)return;const ids=(p.ph||[]).map(x=>x[0]).filter(id=>!PH[id]);if(ids.length&&!warm.busy?.[n]){(warm.busy=warm.busy||{})[n]=1;get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok)gotPhotos(d.photos)}).catch(()=>{})}}
 const count=n=>MSG.filter(m=>m.to===n).length;
