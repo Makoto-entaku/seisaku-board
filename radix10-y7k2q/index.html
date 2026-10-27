@@ -337,6 +337,14 @@ body,.sheet.full{background-color:#f6f5f1;background-image:var(--paper)!importan
 .cta-b .btn{background:#d62d20;color:#fff;border:0;border-radius:999px;padding:12px 26px;font-size:16px;font-weight:700;white-space:nowrap}
 .cta-b .att-stamp{margin-left:auto;font-family:var(--mincho);font-weight:800;font-size:15px;color:#d62d20;border:2px solid #d62d20;border-radius:50%;width:56px;height:56px;display:grid;place-items:center;transform:rotate(-10deg)}
 .cta-b .link{background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;font-family:inherit}
+
+.filters{flex-basis:100%;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;order:10}
+.flabel{font-size:13px;font-weight:700;color:var(--fg)}
+.filters .seg button{padding:9px 16px;font-size:14px;font-weight:600}
+.filters .chk{color:var(--fg);font-size:14px}
+.card .nm{color:var(--fg)!important;font-weight:600;font-size:15px;opacity:1}
+.back{font-size:16px!important;font-weight:700;white-space:nowrap;border:1px solid var(--line)!important;border-radius:999px;padding:6px 14px!important}
+.row.end{gap:10px;flex-wrap:wrap}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -359,8 +367,8 @@ body,.sheet.full{background-color:#f6f5f1;background-image:var(--paper)!importan
   <div class="bar">
     <div class="me"><label for="me">あなたの名前</label><input id="me" list="names" placeholder="例：岸原 誠" autocomplete="name"></div>
     <input id="q" type="search" placeholder="名前でさがす">
-    <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button></div>
-    <label class="chk"><input id="showCur" type="checkbox">現メンバーも表示</label>
+    <div class="filters"><span class="flabel">絞り込み</span><div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button></div>
+    <label class="chk"><input id="showCur" type="checkbox">現メンバーも表示</label></div>
     <span class="stat" id="stat"></span>
     <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
   </div>
@@ -551,7 +559,7 @@ function openSheet(n){
   const msgsH=`<h3>届いているメッセージ</h3><div class="msgs" id="msgs"></div>`;
   const layoutB=true;
   if(layoutB){
-    const photosB=ph.length?`<div class="photos b" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:'';
+    const photosB=ph.length?`${p.group?`<h3 class="sec-h">${esc(p.n)}さんがいた頃のSAKIYOMI</h3>`:''}<div class="photos b" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:'';
     const mic=SR?`<button class="mic" id="mic" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><span>話して書く</span></button>`:'';
     const composeB=`<div class="modal" id="composeBox" hidden><div class="modal-card" role="dialog" aria-label="メッセージを書く">
       <div class="cb-head"><b>${esc(p.n)}さんへ</b><button class="x sm" data-closecompose aria-label="閉じる">×</button></div>
@@ -560,12 +568,12 @@ function openSheet(n){
       <label class="fromrow"><span>あなたの名前</span><input id="meB" list="names" value="${esc(ME)}" placeholder="例：岸原 誠" autocomplete="name"></label>
       <div class="row"><button class="btn wide" id="send">寄せ書きに貼る</button></div>
     </div></div>`;
-    $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">←</button><div class="bt">${esc(p.n)}さんへの寄せ書き</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
+    $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">← 一覧へ</button><div class="bt">${esc(p.n)}さんへの寄せ書き</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
       <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div><button class="btn writebig" data-opencompose>＋ メッセージを書く</button></header>
       ${photosB}
       ${own?`<h3 class="sec-h">当時の投稿<small>横にスワイプ →</small></h3><div class="poststrip">${own}</div>`:''}
       <h3 class="sec-h">寄せ書き <span id="bcount"></span></h3>
-      <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>${p.cur?'':ctaHtml(p.n)}${composeB}`;
+      <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="close2">← みんなの一覧に戻る</button><button class="btn ghost" id="next">次の人へ →</button></div></section>${p.cur?'':ctaHtml(p.n)}${composeB}`;
     $('#sheet').classList.add('full');
     if(window._hw)window._hw.stop();setTimeout(()=>{const f=$('#heroWords');if(f)window._hw=placeTyper(f,{n:46,keep:true,vert:.35,maxLen:16,cls:'sm',gap:3,tries:80,step:45,size:()=>11+Math.random()*12|0,op:()=>.28+Math.random()*.4,avoid:[...document.querySelectorAll('.hero .av,.hero h2,.hero .sub,.hero .writebig')]})},150);
   }else{$('#sheet').classList.remove('full');$('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH}
@@ -583,7 +591,7 @@ $('#scrim').addEventListener('click',closeSheet);
 $('#lb').addEventListener('click',e=>{if(e.target.closest('.slk')&&!e.target.closest('.slk-close'))return;$('#lb').hidden=true});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#lb').hidden){$('#lb').hidden=true;return}if(open)closeSheet()});
 $('#sheet').addEventListener('click',async e=>{
-  if(e.target.closest('#close'))return closeSheet();
+  if(e.target.closest('#close')||e.target.closest('#close2'))return closeSheet();
   const g=e.target.closest('[data-go]');if(g)return openSheet(g.dataset.go);
   const tb=e.target.closest('[data-tab]');if(tb){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b===tb));$('#tab-board').hidden=tb.dataset.tab!=='board';$('#tab-posts').hidden=tb.dataset.tab!=='posts';return}
   if(e.target.closest('#rsvp')||e.target.closest('#rsvpX')){const n=open,on=!!e.target.closest('#rsvp');if(on)ATT.add(n);else ATT.delete(n);$('#ctaB').outerHTML=ctaHtml(n);const av=document.querySelector('.hero .av');if(av){av.querySelector('.maru')?.remove();if(on)av.insertAdjacentHTML('beforeend',MARU)}render();
