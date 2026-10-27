@@ -56,6 +56,7 @@ const NG=new Set();let UNK=0;
 document.getElementById('send').onclick=async()=>{const st=document.getElementById('st');st.textContent='送信中…';
  const items=[...NG].map(x=>'N|'+x).concat([...document.querySelectorAll('select[data-u]')].filter(s=>s.value).map(s=>'U|'+s.dataset.u+'|'+s.value));
  const chunks=[];let cur='';for(const it of items){if((cur+';'+it).length>380){chunks.push(cur);cur=it}else cur=cur?cur+';'+it:it}chunks.push(cur||'none');
- for(const c of chunks){await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'post',key:KEY,to:'__review__',from:'kakunin2',text:c})})}
+ let bad=0;for(const c of chunks){let ok=false;for(let t=0;t<4&&!ok;t++){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'post',key:KEY,to:'__review__',from:'kakunin2',text:c})}).then(r=>r.json());ok=!!r.ok}catch(e){}if(!ok)await new Promise(r=>setTimeout(r,2500))}if(!ok)bad++}
+ if(bad){st.textContent='一部送れませんでした。もう一度「送信」を押してください';return})}
  st.textContent='送信しました。ありがとうございます！'};
 </script></body></html>

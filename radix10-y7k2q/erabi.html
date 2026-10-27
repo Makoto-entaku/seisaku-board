@@ -60,6 +60,7 @@ const order=ph=>[...ph].sort((a,b)=>(b[2]-a[2])||String(a[1]).localeCompare(Stri
 document.getElementById('send').onclick=async()=>{const st=document.getElementById('st');st.textContent='送信中…';
  const items=[...NG].map(x=>'X|'+x).concat(Object.entries(FIRST).map(([n,id])=>'F|'+n+'|'+id));
  const chunks=[];let cur='';for(const it of items){if((cur+';'+it).length>380){chunks.push(cur);cur=it}else cur=cur?cur+';'+it:it}chunks.push(cur||'none');
- for(const c of chunks){await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'post',key:KEY,to:'__review__',from:'erabi',text:c})})}
+ let bad=0;for(const c of chunks){let ok=false;for(let t=0;t<4&&!ok;t++){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'post',key:KEY,to:'__review__',from:'erabi',text:c})}).then(r=>r.json());ok=!!r.ok}catch(e){}if(!ok)await new Promise(r=>setTimeout(r,2500))}if(!ok)bad++}
+ if(bad){st.textContent='一部送れませんでした。もう一度「送信」を押してください';return})}
  st.textContent='送信しました（✕ '+NG.size+'枚・★ '+Object.keys(FIRST).length+'人）'};
 </script></body></html>
