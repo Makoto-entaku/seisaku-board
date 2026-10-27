@@ -50,6 +50,15 @@ const order=ph=>[...ph].sort((a,b)=>(b[2]-a[2])||String(a[1]).localeCompare(Stri
   const a=e.target.closest('.allng');if(a){const phs=[...row.querySelectorAll('.ph')];const on=!phs.every(p=>p.classList.contains('ng'));phs.forEach(p=>{p.classList.toggle('ng',on);on?NG.add(n+'|'+p.dataset.id):NG.delete(n+'|'+p.dataset.id)});return}
   const s=e.target.closest('.star');if(s){const p=s.closest('.ph');row.querySelectorAll('.ph').forEach(x=>x.classList.remove('first'));p.classList.add('first');FIRST[n]=p.dataset.id;row.querySelector('.who').after(p);return}
   const p=e.target.closest('.ph');if(!p)return;const k=n+'|'+p.dataset.id;p.classList.toggle('ng');p.classList.contains('ng')?NG.add(k):NG.delete(k)});
+ // 送信済み（まだ反映前）の✕・★と、この端末の下書きを復元
+ try{const m=await get({action:'messages'});const sent=m.messages.filter(x=>x.to==='__review__'&&x.from==='erabi').flatMap(x=>String(x.text).split(';'));
+  let draft={};try{draft=JSON.parse(localStorage.getItem('erabi_draft')||'{}')}catch(e){}
+  const marks=sent.concat(draft.items||[]);
+  for(const it of marks){const [t,n,id]=it.split('|');const row=[...list.querySelectorAll('.row')].find(r=>r.dataset.n===n);if(!row)continue;const ph=[...row.querySelectorAll('.ph')].find(p=>p.dataset.id===id);if(!ph)continue;
+   if(t==='X'){ph.classList.add('ng');NG.add(n+'|'+id)}else if(t==='F'){row.querySelectorAll('.ph').forEach(x=>x.classList.remove('first'));ph.classList.add('first');FIRST[n]=id;row.querySelector('.who').after(ph)}}
+  const k=NG.size+Object.keys(FIRST).length;if(k)document.getElementById('st').textContent='前回の選択（'+k+'件）を復元しました';}catch(e){}
+ const save=()=>{try{localStorage.setItem('erabi_draft',JSON.stringify({items:[...NG].map(x=>'X|'+x).concat(Object.entries(FIRST).map(([n,id])=>'F|'+n+'|'+id))}))}catch(e){}};
+ list.addEventListener('click',()=>setTimeout(save,0));
  const avs=[...new Set(P.map(p=>p.av).filter(Boolean))];
  for(let i=0;i<avs.length;i+=40){get({action:'photos',ids:avs.slice(i,i+40).map(a=>'av:'+a).join(',')}).then(x=>{list.querySelectorAll('img[data-av]').forEach(im=>{const u=x.photos['av:'+im.dataset.av];if(u)im.src=u})})}
  // lazy-load photos per row as it scrolls into view
@@ -57,10 +66,14 @@ const order=ph=>[...ph].sort((a,b)=>(b[2]-a[2])||String(a[1]).localeCompare(Stri
    for(let i=0;i<ids.length;i+=10)get({action:'photos',ids:ids.slice(i,i+10).join(',')}).then(x=>{for(const k in x.photos)en.target.querySelectorAll(`img[data-id="${CSS.escape(k)}"]`).forEach(im=>im.src=x.photos[k])})})},{rootMargin:'600px'});
  list.querySelectorAll('.row').forEach(r=>io.observe(r));
 })();
-document.getElementById('send').onclick=async()=>{const st=document.getElementById('st');st.textContent='送信中…';
+document.getElementById('send').onclick=async()=>{const st=document.getElementById('st');const btn=document.getElementById('send');btn.disabled=true;st.textContent='送信中…';
+ const sid='S'+Date.now().toString(36);
  const items=[...NG].map(x=>'X|'+x).concat(Object.entries(FIRST).map(([n,id])=>'F|'+n+'|'+id));
- const chunks=[];let cur='';for(const it of items){if((cur+';'+it).length>380){chunks.push(cur);cur=it}else cur=cur?cur+';'+it:it}chunks.push(cur||'none');
- let bad=0;for(const c of chunks){let ok=false;for(let t=0;t<4&&!ok;t++){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'post',key:KEY,to:'__review__',from:'erabi',text:c})}).then(r=>r.json());ok=!!r.ok}catch(e){}if(!ok)await new Promise(r=>setTimeout(r,2500))}if(!ok)bad++}
- if(bad){st.textContent='一部送れませんでした。もう一度「送信」を押してください';return}
- st.textContent='送信しました（✕ '+NG.size+'枚・★ '+Object.keys(FIRST).length+'人）'};
+ const chunks=[];let cur='';for(const it of items){if((cur+';'+it).length>360){chunks.push(cur);cur=it}else cur=cur?cur+';'+it:it}chunks.push(cur||'none');
+ let bad=0;for(const c of chunks){let ok=false;for(let t=0;t<5&&!ok;t++){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'post',key:KEY,to:'__review__',from:'erabi',text:sid+';'+c})}).then(r=>r.json());ok=!!r.ok}catch(e){}if(!ok)await new Promise(r=>setTimeout(r,2500))}if(!ok)bad++}
+ // 届いたか確認（受領チェック）
+ let got=0;try{const m=await get({action:'messages'});got=m.messages.filter(x=>x.to==='__review__'&&String(x.text).startsWith(sid+';')).flatMap(x=>String(x.text).split(';').slice(1)).filter(t=>t&&t!=='none').length}catch(e){}
+ btn.disabled=false;
+ if(bad||got<items.length){st.style.color='#d2392b';st.textContent='⚠ 届いたのは '+got+' / '+items.length+' 件です。もう一度「送信」を押してください';return}
+ st.style.color='';st.textContent='✓ 届きました（✕ '+NG.size+'枚・★ '+Object.keys(FIRST).length+'人）';};
 </script></body></html>
