@@ -405,7 +405,7 @@ async function boot(){
   apply(d);loadAvatars();
   setInterval(refresh,45000);
 }
-function apply(d){PEOPLE=d.people;BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));MSG=d.messages||[];
+function apply(d){PEOPLE=d.people.filter(p=>!p.hide);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));MSG=d.messages||[];
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render()}
 async function refresh(){try{const d=await get({action:'messages'});if(d.ok){MSG=d.messages;render();if(open)renderMsgs(open)}}catch(e){}}
 async function loadAvatars(){
