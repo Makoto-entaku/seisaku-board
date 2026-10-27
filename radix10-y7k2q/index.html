@@ -325,6 +325,17 @@ body{font-weight:600;-webkit-font-smoothing:auto}
 body,.sheet.full{background-color:#f6f5f1;background-image:var(--paper)!important;background-size:720px 720px!important;background-repeat:repeat;background-attachment:scroll!important}
 .bar,.bar-b,body::before{background-color:#f6f5f1!important;background-image:var(--paper)!important;background-size:720px 720px!important;background-attachment:scroll!important}
 @media (prefers-color-scheme:dark){body,.sheet.full,.bar,.bar-b,body::before{background-image:none!important}}
+
+.maru{position:absolute;left:-16%;top:-14%;width:132%;height:128%;pointer-events:none;z-index:2;overflow:visible}
+.card.att .av{z-index:1}
+.att-t{position:absolute;right:-12px;bottom:-6px;z-index:3;font-style:normal;font-family:var(--mincho);font-weight:800;font-size:12px;color:#d62d20;border:1.5px solid #d62d20;border-radius:50%;width:34px;height:34px;display:grid;place-items:center;background:rgba(255,255,255,.85);transform:rotate(-12deg)}
+.attline{margin-top:6px;font-size:14px!important;color:#d62d20!important;letter-spacing:.08em}.attline em{font-style:normal;font-size:22px;font-weight:700;margin:0 .15em}
+.cta-b{position:sticky;bottom:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;padding:14px max(16px,calc((100% - 960px)/2));padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:2px solid #d62d20}
+.sheet.full>.cta-b{margin-left:0!important;margin-right:0!important}
+.cta-b p{margin:0;display:flex;flex-direction:column;gap:2px}.cta-b small{font-size:12px;color:var(--muted);letter-spacing:.06em}.cta-b b{font-family:var(--mincho);font-size:22px;font-weight:800;color:#d62d20;letter-spacing:.06em}
+.cta-b .btn{background:#d62d20;color:#fff;border:0;border-radius:999px;padding:12px 26px;font-size:16px;font-weight:700;white-space:nowrap}
+.cta-b .att-stamp{margin-left:auto;font-family:var(--mincho);font-weight:800;font-size:15px;color:#d62d20;border:2px solid #d62d20;border-radius:50%;width:56px;height:56px;display:grid;place-items:center;transform:rotate(-10deg)}
+.cta-b .link{background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;font-family:inherit}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -341,7 +352,7 @@ body,.sheet.full{background-color:#f6f5f1;background-image:var(--paper)!importan
     </div>
     </figure>
     <div class="big" aria-live="polite">
-      <div><span>みんなから集まったメッセージ</span><b><span id="bigMsg" style="all:unset">0</span><small style="font-size:.22em;letter-spacing:0;margin-left:.15em;font-weight:500">件</small></b></div>
+      <div><span>みんなから集まったメッセージ</span><b><span id="bigMsg" style="all:unset">0</span><small style="font-size:.22em;letter-spacing:0;margin-left:.15em;font-weight:500">件</small></b><span class="attline">12/19 総会 出席 <em id="bigAtt">0</em> 人</span></div>
     </div>
   </header>
   <div class="bar">
@@ -411,9 +422,9 @@ async function boot(){
   apply(d);loadAvatars();prefetchPhotos();
   setInterval(refresh,45000);
 }
-function apply(d){PEOPLE=d.people.filter(p=>!p.hide);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));MSG=(d.messages||[]).filter(m=>m.to!=='__review__');
+function apply(d){PEOPLE=d.people.filter(p=>!p.hide);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));setMsgs(d.messages||[]);
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render()}
-async function refresh(){try{const d=await get({action:'messages'});if(d.ok){MSG=d.messages.filter(m=>m.to!=='__review__');render();if(open)renderMsgs(open)}}catch(e){}}
+async function refresh(){try{const d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
 async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))].filter(k=>!AV[k]);
   const jobs=[];for(let i=0;i<keys.length;i+=20){const ids=keys.slice(i,i+20).map(k=>'av:'+k);
@@ -470,6 +481,10 @@ async function prefetchPhotos(){
   await Promise.all(Array.from({length:10},worker));
 }
 function warm(n){const p=BYN[n];if(!p)return;const ids=(p.ph||[]).map(x=>x[0]).filter(id=>!PH[id]);if(ids.length&&!warm.busy?.[n]){(warm.busy=warm.busy||{})[n]=1;get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok)gotPhotos(d.photos)}).catch(()=>{})}}
+let ATT=new Set();
+const MARU='<svg class="maru" viewBox="0 0 100 100" aria-hidden="true"><path d="M52 5C82 4 98 26 95 53C92 81 69 97 45 94C19 91 3 70 6 45C9 21 30 7 58 9" fill="none" stroke="#d62d20" stroke-width="3.2" stroke-linecap="round"/></svg>';
+function setMsgs(all){MSG=all.filter(m=>!String(m.to).startsWith('__'));ATT=new Set();all.filter(m=>m.to==='__rsvp__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{if(m.text==='出席')ATT.add(m.from);else ATT.delete(m.from)})}
+function ctaHtml(n){const a=ATT.has(n);return `<div class="cta-b${a?' on':''}" id="ctaB"><p><small>12月19日（土） SAKIYOMI 総会</small><b>${a?'待ってる。ありがとう。':'来てくれ。'}</b></p>${a?`<span class="att-stamp">出席</span><button class="link" id="rsvpX">取り消す</button>`:`<button class="btn" id="rsvp">出席する</button>`}</div>`}
 const count=n=>MSG.filter(m=>m.to===n).length;
 const mineTo=n=>MSG.some(m=>m.to===n&&m.from===ME);
 function render(){
@@ -477,9 +492,9 @@ function render(){
   const list=PEOPLE.filter(p=>(showCur||!p.cur)&&(ROLE==='all'||p.cur||p.role===ROLE)&&(!q||p.n.toLowerCase().includes(q)));
   const st=p=>String((p.span||[])[0]||'9999');list.sort((a,b)=>(a.cur-b.cur)||st(a).localeCompare(st(b))||a.n.localeCompare(b.n));
   $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
-    return `<button class="card${p.cur?' cur':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
+    const at=ATT.has(p.n);return `<button class="card${p.cur?' cur':''}${at?' att':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}${at?MARU+'<i class="att-t">出席</i>':''}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
   const targets=PEOPLE.filter(p=>!p.cur),done=targets.filter(p=>count(p.n)>0).length,mine=ME?MSG.filter(m=>m.from===ME).length:0;
-  $('#bigMsg').textContent=MSG.length;
+  $('#bigMsg').textContent=MSG.length;if($('#bigAtt'))$('#bigAtt').textContent=[...ATT].filter(n=>BYN[n]&&!BYN[n].cur).length;
   $('#stat').textContent=ME?`あなた ${mine}件`:'';
   void `メッセージ ${MSG.length}件 ・ 届いた人 ${done}/${targets.length}人${ME?` ・ あなた ${mine}件`:''}`;
   $('#progBar').style.width=(targets.length?done/targets.length*100:0)+'%';
@@ -545,11 +560,11 @@ function openSheet(n){
       <div class="row"><button class="btn wide" id="send">寄せ書きに貼る</button></div>
     </div></div>`;
     $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">←</button><div class="bt">${esc(p.n)}さんへの寄せ書き</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
-      <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div><button class="btn writebig" data-opencompose>＋ メッセージを書く</button></header>
+      <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div><button class="btn writebig" data-opencompose>＋ メッセージを書く</button></header>
       ${photosB}
       ${own?`<h3 class="sec-h">当時の投稿<small>横にスワイプ →</small></h3><div class="poststrip">${own}</div>`:''}
       <h3 class="sec-h">寄せ書き <span id="bcount"></span></h3>
-      <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>${composeB}`;
+      <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="next">次の人へ →</button></div></section>${p.cur?'':ctaHtml(p.n)}${composeB}`;
     $('#sheet').classList.add('full');
     if(window._hw)window._hw.stop();setTimeout(()=>{const f=$('#heroWords');if(f)window._hw=placeTyper(f,{n:46,keep:true,vert:.35,maxLen:16,cls:'sm',gap:3,tries:80,step:45,size:()=>11+Math.random()*12|0,op:()=>.28+Math.random()*.4,avoid:[...document.querySelectorAll('.hero .av,.hero h2,.hero .sub,.hero .writebig')]})},150);
   }else{$('#sheet').classList.remove('full');$('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH}
@@ -570,6 +585,8 @@ $('#sheet').addEventListener('click',async e=>{
   if(e.target.closest('#close'))return closeSheet();
   const g=e.target.closest('[data-go]');if(g)return openSheet(g.dataset.go);
   const tb=e.target.closest('[data-tab]');if(tb){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b===tb));$('#tab-board').hidden=tb.dataset.tab!=='board';$('#tab-posts').hidden=tb.dataset.tab!=='posts';return}
+  if(e.target.closest('#rsvp')||e.target.closest('#rsvpX')){const n=open,on=!!e.target.closest('#rsvp');if(on)ATT.add(n);else ATT.delete(n);$('#ctaB').outerHTML=ctaHtml(n);const av=document.querySelector('.hero .av');if(av){av.querySelector('.maru')?.remove();if(on)av.insertAdjacentHTML('beforeend',MARU)}render();
+    try{const r=await post({action:'post',to:'__rsvp__',from:n,text:on?'出席':'取消'});if(!r.ok)throw 0}catch(err){if(on)ATT.delete(n);else ATT.add(n);$('#ctaB').outerHTML=ctaHtml(n);render();alert('送れませんでした。もう一度押してください')}return}
   if(e.target.closest('[data-opencompose]')){$('#composeBox').hidden=false;setTimeout(()=>$('#txt').focus(),50);return}
   if(e.target.id==='composeBox'){stopMic();$('#composeBox').hidden=true;return}
   if(e.target.closest('#mic')){toggleMic();return}
