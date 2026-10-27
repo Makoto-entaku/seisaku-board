@@ -397,7 +397,7 @@ async function boot(){
   typing.stop();$('#gate').hidden=true;$('#app').hidden=false;
   runMosaic().catch(()=>{});
   let cached=null;try{cached=JSON.parse(localStorage.getItem('yk_data')||'null')}catch(e){}
-  try{const a=JSON.parse(localStorage.getItem('yk_av')||'null');if(a)Object.assign(AV,a)}catch(e){}
+  try{const a=JSON.parse(localStorage.getItem('yk_av2')||'null');if(a)Object.assign(AV,a)}catch(e){}
   if(cached&&cached.people)apply(cached);else $('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">みんなの顔を読み込んでいます…</p>';
   let d;try{d=await get({action:'data'})}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
@@ -412,7 +412,7 @@ async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))];
   const jobs=[];for(let i=0;i<keys.length;i+=40){const ids=keys.slice(i,i+40).map(k=>'av:'+k);
     jobs.push(get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok){for(const k in d.photos)AV[k.slice(3)]=d.photos[k];render()}}).catch(()=>{}))}
-  await Promise.all(jobs);try{localStorage.setItem('yk_av',JSON.stringify(AV))}catch(e){}prefetchPhotos()
+  await Promise.all(jobs);try{localStorage.setItem('yk_av2',JSON.stringify(AV))}catch(e){}prefetchPhotos()
 }
 (function(){if(!matchMedia('(prefers-reduced-motion:reduce)').matches){document.documentElement.classList.add('mz-pre')}})();
 function mosaicAbort(){document.documentElement.classList.remove('mz-pre')}
@@ -468,7 +468,7 @@ const mineTo=n=>MSG.some(m=>m.to===n&&m.from===ME);
 function render(){
   const q=$('#q').value.trim().toLowerCase(),showCur=$('#showCur').checked;
   const list=PEOPLE.filter(p=>(showCur||!p.cur)&&(ROLE==='all'||p.cur||p.role===ROLE)&&(!q||p.n.toLowerCase().includes(q)));
-  list.sort((a,b)=>(count(a.n)-count(b.n))||(mineTo(a.n)-mineTo(b.n))||a.n.localeCompare(b.n));
+  const st=p=>String((p.span||[])[0]||'9999');list.sort((a,b)=>(a.cur-b.cur)||st(a).localeCompare(st(b))||a.n.localeCompare(b.n));
   $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
     return `<button class="card${p.cur?' cur':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
   const targets=PEOPLE.filter(p=>!p.cur),done=targets.filter(p=>count(p.n)>0).length,mine=ME?MSG.filter(m=>m.from===ME).length:0;
