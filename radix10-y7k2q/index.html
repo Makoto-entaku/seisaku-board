@@ -444,7 +444,7 @@ async function boot(){
   setInterval(refresh,45000);
 }
 function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));setMsgs(d.messages||[]);
-  $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV&&open!==INV){document.body.classList.add('inv');openSheet(INV)}}
+  $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV){if(open!==INV){document.body.classList.add('inv');openSheet(INV)}else renderMsgs(INV)}}
 async function refresh(){try{const d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
 async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))].filter(k=>!AV[k]);
@@ -583,7 +583,7 @@ function openSheet(n){
     const boardB=`<h3 class="sec-h">${isInv?'あなたへのメッセージ':'寄せ書き'} <span id="bcount"></span></h3>
       <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="close2">← みんなの一覧に戻る</button><button class="btn ghost" id="next">次の人へ →</button></div></section>`;
     $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">← 一覧へ</button><div class="bt">${esc(p.n)}さんへの${isInv?'招待状':'寄せ書き'}</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
-      <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div>${isInv?`<p class="inv-lead">12月19日、SAKIYOMI 10周年の総会へ。<br>あなたに <b>${nMsg}</b> 件のメッセージが届いています。</p>`:`<button class="btn writebig" data-opencompose>＋ メッセージを書く</button>`}</header>
+      <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div>${isInv?`<p class="inv-lead">12月19日、SAKIYOMI 10周年の総会へ。<br>あなたに <b id="invN">${nMsg}</b> 件のメッセージが届いています。</p>`:`<button class="btn writebig" data-opencompose>＋ メッセージを書く</button>`}</header>
       ${isInv?boardB:''}
       ${photosB}
       ${own?`<h3 class="sec-h">当時の投稿<small>横にスワイプ →</small></h3><div class="poststrip">${own}</div>`:''}
@@ -596,7 +596,7 @@ function openSheet(n){
   const pic=ph.map(x=>x[0]);renderMsgs(n);loadPhotos([...new Set(pic)].filter(id=>!PH[id]));
 }
 async function loadPhotos(ids){if(!ids.length)return;const sp=[];for(let i=0;i<ids.length;i+=2)sp.push(ids.slice(i,i+2));await Promise.all(sp.map(c=>get({action:'photos',ids:c.join(',')}).then(d=>{if(d.ok)gotPhotos(d.photos)}).catch(()=>{})))}
-function renderMsgs(n){const el=$('#msgs');if(!el)return;const all=MSG.filter(m=>m.to===n);const ms=INV===n?all:all.filter(m=>MINE.includes(m.id)||(ME&&m.from===ME));const lk=all.length-ms.length;
+function renderMsgs(n){const el=$('#msgs');if(!el)return;const all=MSG.filter(m=>m.to===n);const ms=INV===n?all:all.filter(m=>MINE.includes(m.id)||(ME&&m.from===ME));const lk=all.length-ms.length;if(INV===n&&$('#invN'))$('#invN').textContent=all.length;
   if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=all.length?`${all.length}`:'';
     el.innerHTML=(all.length||INV===n?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+(INV===n&&!all.length?'<p class="note">メッセージはこれから届きます。</p>':'')+(lk?`<div class="tile lock"><p>🔒 ほか ${lk} 件</p><div class="meta"><span>本人だけが招待状で読めます</span></div></div>`:'')+ms.map(m=>`<div class="tile"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join('');return}
   el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初の一通をどうぞ。</p>'}
