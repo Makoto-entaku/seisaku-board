@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="only light">
+<title>写真と投稿の精査</title>
+<style>
+:root{--bg:#f6f5f1;--fg:#141210;--muted:#5d574d;--ng:#d2392b;color-scheme:only light}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:"Hiragino Sans","Noto Sans JP",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding:16px 16px 110px}
+h1{font-size:22px;margin:0 0 6px}p.lead{color:var(--muted);margin:0 0 12px;line-height:1.7;font-size:14px}
+.nav{position:sticky;top:0;background:var(--bg);z-index:3;padding:8px 0;border-bottom:1px solid #ddd;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nav select{font-size:14px;padding:6px;border-radius:8px}
+.row{padding:16px 0;border-top:2px solid #ccc}
+.who{display:flex;gap:10px;align-items:center;margin-bottom:8px}.who img{width:48px;height:48px;border-radius:8px;object-fit:cover;background:#ddd}.who b{font-size:17px}.who small{color:var(--muted)}
+.lab{font-size:12px;color:var(--muted);margin:8px 0 4px}
+.phs{display:flex;gap:6px;flex-wrap:wrap}
+.ph{position:relative;width:120px;height:120px;border-radius:6px;overflow:hidden;cursor:pointer;background:#ddd}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph .d{position:absolute;left:4px;bottom:2px;font-size:10px;color:#fff;text-shadow:0 1px 2px #000}
+.ph.top{outline:3px solid #e8a33d}
+.x .ng,.ph.x::after{display:block}
+.ph.x img{opacity:.2}.ph.x::after{content:"✕ 外す";position:absolute;inset:0;display:grid;place-items:center;color:var(--ng);font-weight:700;font-size:16px}
+.posts{display:flex;flex-direction:column;gap:6px}
+.post{border:1px solid #ddd;background:#fff;border-radius:8px;padding:8px 10px;font-size:13px;line-height:1.6;cursor:pointer;position:relative;white-space:pre-wrap;max-height:7.5em;overflow:hidden}
+.post .m{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+.post.x{opacity:.35;text-decoration:line-through}.post.x::before{content:"✕ 外す";position:absolute;right:8px;top:6px;color:var(--ng);font-weight:700;text-decoration:none}
+.none{color:var(--muted);font-size:13px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid #ccc;padding:12px 16px;display:flex;gap:12px;align-items:center;justify-content:center}
+.bar button{font-size:16px;border:0;border-radius:999px;padding:12px 28px;background:var(--fg);color:var(--bg);cursor:pointer}
+#st{color:var(--muted);font-size:14px}
+</style></head><body><div class="wrap">
+<h1>写真と投稿の精査</h1>
+<p class="lead">いまサイトに載っている写真と「当時の投稿」の一覧です。外したいものをタップすると「✕ 外す」になります（もう一度押すと戻ります）。オレンジ枠の写真がトップに出る写真です。<br>途中で閉じても選択はこの端末に残ります。最後に「送信」を押してください。</p>
+<div class="nav"><span>人へ移動</span><select id="jump"></select><span id="cnt"></span></div>
+<div id="list">読み込んでいます…</div></div>
+<div class="bar"><span id="st"></span><button id="send">送信</button></div>
+<script>
+const API='https://script.google.com/macros/s/AKfycbwmzffnY-hwKJcy-DftwktmSfp2b22DRqWlML2y90UgYoNGGBSGqqqukoo53QsLBR-JQA/exec',KEY='radix10';
+const get=p=>fetch(API+'?'+new URLSearchParams({...p,key:KEY})).then(r=>r.json());
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let SEL={};try{SEL=JSON.parse(localStorage.getItem('seisa_draft')||'{}')}catch(e){}
+const ym=s=>String(s||'').replace('-','年')+'月';
+function cnt(){const n=Object.values(SEL).filter(Boolean).length;document.getElementById('cnt').textContent=n?`外す予定：${n}件`:''}
+(async()=>{const d=await get({action:'data'});
+ const P=d.people.filter(p=>!p.cur&&!p.hide).sort((a,b)=>String((a.span||[])[0]).localeCompare(String((b.span||[])[0]))||a.n.localeCompare(b.n));
+ try{const m=await get({action:'messages'});m.messages.filter(x=>x.to==='__review__'&&x.from==='seisa').flatMap(x=>String(x.text).split(';')).forEach(it=>{const a=it.split('|');if(a[0]==='X'||a[0]==='Y')SEL[a.slice(0,3).join('|')]=1})}catch(e){}
+ const list=document.getElementById('list');document.getElementById('jump').innerHTML=P.map((p,i)=>`<option value="p${i}">${esc(p.n)}</option>`).join('');
+ list.innerHTML=P.map((p,i)=>{const ph=[...(p.ph||[])].sort((a,b)=>(b[2]-a[2])||String(a[1]).localeCompare(String(b[1])));const own=p.own||[];
+  return `<div class="row" id="p${i}"><div class="who">${p.av?`<img data-id="av:${esc(p.av)}">`:''}<div><b>${esc(p.n)}</b><br><small>${esc((p.span||[]).join('〜'))}${p.group?'・集合写真で表示中':''}</small></div></div>
+  <div class="lab">写真 ${ph.length}枚</div><div class="phs">${ph.length?ph.map((x,j)=>{const k='X|'+p.n+'|'+x[0];return `<div class="ph${j===0?' top':''}${SEL[k]?' x':''}" data-k="${esc(k)}"><img data-id="${esc(x[0])}" loading="lazy"><span class="d">${esc(ym(x[1]))}</span></div>`}).join(''):'<span class="none">なし</span>'}</div>
+  <div class="lab">当時の投稿 ${own.length}件</div><div class="posts">${own.length?own.map((o,j)=>{const k='Y|'+p.n+'|'+j;return `<div class="post${SEL[k]?' x':''}" data-k="${esc(k)}"><span class="m">${esc(ym(o[1]))}${o[4]?' ・ #'+esc(o[4]):''}</span>${esc(String(o[0]).slice(0,400))}</div>`}).join(''):'<span class="none">なし</span>'}</div></div>`}).join('');
+ cnt();
+ document.getElementById('jump').onchange=e=>document.getElementById(e.target.value).scrollIntoView({behavior:'smooth'});
+ list.addEventListener('click',e=>{const el=e.target.closest('[data-k]');if(!el)return;const k=el.dataset.k;SEL[k]=SEL[k]?0:1;el.classList.toggle('x',!!SEL[k]);try{localStorage.setItem('seisa_draft',JSON.stringify(SEL))}catch(e){}cnt()});
+ const imgs=[...list.querySelectorAll('img[data-id]')];const ids=[...new Set(imgs.map(i=>i.dataset.id))];
+ const load=async c=>{try{const x=await get({action:'photos',ids:c.join(',')});for(const k in x.photos)list.querySelectorAll(`img[data-id="${CSS.escape(k)}"]`).forEach(im=>im.src=x.photos[k])}catch(e){}};
+ const ch=[];for(let i=0;i<ids.length;i+=15)ch.push(ids.slice(i,i+15));let q=0;await Promise.all(Array.from({length:8},async()=>{while(q<ch.length)await load(ch[q++])}));
+})();
+document.getElementById('send').onclick=async()=>{const st=document.getElementById('st'),btn=document.getElementById('send');btn.disabled=true;st.style.color='';st.textContent='送信中…';
+ const sid='S'+Date.now().toString(36);const items=Object.entries(SEL).map(([k,v])=>v?k:'R'+k.slice(1));
+ const chunks=[];let cur='';for(const it of items){if((cur+';'+it).length>360){chunks.push(cur);cur=it}else cur=cur?cur+';'+it:it}chunks.push(cur||'none');
+ let bad=0;for(const c of chunks){let ok=false;for(let t=0;t<5&&!ok;t++){try{const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'post',key:KEY,to:'__review__',from:'seisa',text:sid+';'+c})}).then(r=>r.json());ok=!!r.ok}catch(e){}if(!ok)await new Promise(r=>setTimeout(r,2500))}if(!ok)bad++}
+ let got=0;try{const m=await get({action:'messages'});got=m.messages.filter(x=>x.to==='__review__'&&String(x.text).startsWith(sid+';')).flatMap(x=>String(x.text).split(';').slice(1)).filter(t=>t&&t!=='none').length}catch(e){}
+ btn.disabled=false;if(bad||got<items.length){st.style.color='#d2392b';st.textContent='⚠ 届いたのは '+got+' / '+items.length+' 件です。もう一度「送信」を押してください';return}
+ st.textContent='✓ 届きました（外す：'+items.filter(x=>!x.startsWith('R')).length+'件）'};
+</script></body></html>
