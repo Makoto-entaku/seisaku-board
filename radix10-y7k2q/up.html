@@ -1,0 +1,7 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="only light"><title>写真の取り込み</title>
+<style>body{margin:0;background:#f6f5f1;color:#141210;font-family:sans-serif}.w{max-width:700px;margin:0 auto;padding:40px 16px;text-align:center}label{display:inline-block;font-size:20px;border-radius:999px;padding:18px 40px;background:#d62d20;color:#fff;cursor:pointer}#st{margin-top:20px;font-size:16px}</style></head><body><div class="w">
+<h1>写真の取り込み</h1><p>ボタンを押して、デスクトップの「yk_up」フォルダを選んでください。</p>
+<label>yk_up フォルダを選ぶ<input id="dir" type="file" webkitdirectory multiple hidden></label><div id="st"></div></div>
+<script>
+document.getElementById('dir').addEventListener('change',async e=>{const out={};for(const f of e.target.files){if(!/^up_.*\.(png|jpe?g)$/i.test(f.name))continue;const bm=await createImageBitmap(f);let L=640,q=.8,u;for(let t=0;t<10;t++){const s=Math.min(1,L/Math.max(bm.width,bm.height));const c=document.createElement('canvas');c.width=Math.round(bm.width*s);c.height=Math.round(bm.height*s);c.getContext('2d').drawImage(bm,0,0,c.width,c.height);u=c.toDataURL('image/jpeg',q);if(u.length<44000)break;q-=.08;if(q<.5){L-=80;q=.7}}out[f.name.replace(/\.\w+$/,'')]=u}window.__UPF=out;document.getElementById('st').textContent='✓ '+Object.keys(out).length+'枚を読み込みました。Claudeに「読み込んだ」と伝えてください'});
+</script></body></html>
