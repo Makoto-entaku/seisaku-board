@@ -538,8 +538,7 @@ function hints(p){
   h.push('一緒にやったことで、今でも覚えている場面は？');
   h.push('言われてうれしかった言葉、助けられたことは？');
   h.push('当時は言えなかった「ありがとう」は？');
-  h.push('今の'+p.n+'さんに伝えたいことは？');
-  return h.slice(0,4);
+  return [...h.slice(0,3),'今の'+p.n+'さんに話したいこと、聞いてほしいことは？'];
 }
 function openSheet(n){
   const p=BYN[n];if(!p)return;open=n;
