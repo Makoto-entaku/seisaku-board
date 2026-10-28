@@ -331,7 +331,7 @@ body,.sheet.full{background-color:#f6f5f1;background-image:var(--paper)!importan
 .att-t{position:absolute;right:-12px;bottom:-6px;z-index:3;font-style:normal;font-family:var(--mincho);font-weight:800;font-size:12px;color:#d62d20;border:1.5px solid #d62d20;border-radius:50%;width:34px;height:34px;display:grid;place-items:center;background:rgba(255,255,255,.85);transform:rotate(-12deg)}
 .attline{margin-top:6px;font-size:14px!important;color:#d62d20!important;letter-spacing:.08em}.attline em{font-style:normal;font-size:22px;font-weight:700;margin:0 .15em}
 body.inv #close,body.inv #close2,body.inv #next,body.inv .bar-b .pill,body.inv #scrim{display:none!important}
-.inv-lead{margin:10px 0 0;font-size:15px;line-height:1.8;text-align:center}.inv-lead b{font-size:22px;color:#d62d20}
+.inv-lead{position:relative;z-index:1;background:var(--bg);border-radius:10px;padding:6px 14px;margin:10px auto 0;font-size:15px;line-height:1.8;text-align:center}.inv-lead b{font-size:22px;color:#d62d20}
 .tile.lock{background:#f3f0ea;color:#555}
 .cta-b{position:sticky;bottom:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;padding:14px max(16px,calc((100% - 960px)/2));padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:2px solid #d62d20}
 .sheet.full>.cta-b{margin-left:0!important;margin-right:0!important}
@@ -589,7 +589,7 @@ function openSheet(n){
       ${own?`<h3 class="sec-h">当時の投稿<small>横にスワイプ →</small></h3><div class="poststrip">${own}</div>`:''}
       ${isInv?'':boardB}${p.cur&&!isInv?'':ctaHtml(p.n)}${composeB}`;
     $('#sheet').classList.add('full');
-    if(window._hw)window._hw.stop();setTimeout(()=>{const f=$('#heroWords');if(f)window._hw=placeTyper(f,{n:46,keep:true,vert:.35,maxLen:16,cls:'sm',gap:3,tries:80,step:45,size:()=>11+Math.random()*12|0,op:()=>.28+Math.random()*.4,avoid:[...document.querySelectorAll('.hero .av,.hero h2,.hero .sub,.hero .writebig')]})},150);
+    if(window._hw)window._hw.stop();setTimeout(()=>{const f=$('#heroWords');if(f)window._hw=placeTyper(f,{n:46,keep:true,vert:.35,maxLen:16,cls:'sm',gap:3,tries:80,step:45,size:()=>11+Math.random()*12|0,op:()=>.28+Math.random()*.4,avoid:[...document.querySelectorAll('.hero .av,.hero h2,.hero .sub,.hero .writebig,.hero .inv-lead')]})},150);
   }else{$('#sheet').classList.remove('full');$('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH}
   $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
   if($('#who'))$('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
