@@ -330,6 +330,9 @@ body,.sheet.full{background-color:#f6f5f1;background-image:var(--paper)!importan
 .card.att .av{z-index:1}
 .att-t{position:absolute;right:-12px;bottom:-6px;z-index:3;font-style:normal;font-family:var(--mincho);font-weight:800;font-size:12px;color:#d62d20;border:1.5px solid #d62d20;border-radius:50%;width:34px;height:34px;display:grid;place-items:center;background:rgba(255,255,255,.85);transform:rotate(-12deg)}
 .attline{margin-top:6px;font-size:14px!important;color:#d62d20!important;letter-spacing:.08em}.attline em{font-style:normal;font-size:22px;font-weight:700;margin:0 .15em}
+body.inv #close,body.inv #close2,body.inv #next,body.inv .bar-b .pill,body.inv #scrim{display:none!important}
+.inv-lead{margin:10px 0 0;font-size:15px;line-height:1.8;text-align:center}.inv-lead b{font-size:22px;color:#d62d20}
+.tile.lock{background:#f3f0ea;color:#555}
 .cta-b{position:sticky;bottom:0;z-index:4;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:20px;padding:14px max(16px,calc((100% - 960px)/2));padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));background:var(--bg);border-top:2px solid #d62d20}
 .sheet.full>.cta-b{margin-left:0!important;margin-right:0!important}
 .sheet.full:has(.cta-b){padding-bottom:0}
@@ -394,6 +397,8 @@ const KEY='radix10';
 let ME='';try{ME=localStorage.getItem('yk_me')||''}catch(e){}
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('yk_mine')||'[]')}catch(e){}
 let PEOPLE=[],BYN={},MSG=[],AV={},PH={},open=null;
+const tok=n=>{let x=2166136261;for(const ch of 'r10:'+n){x^=ch.codePointAt(0);x=Math.imul(x,16777619)>>>0}return x.toString(36)};
+const INV_T=new URLSearchParams(location.search).get('i');let INV=null;
 const IDB=(()=>{let db;const o=()=>db||(db=new Promise((r,j)=>{try{const q=indexedDB.open('yk',1);q.onupgradeneeded=()=>q.result.createObjectStore('img');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)}catch(e){j(e)}}));
   return{async load(){try{const d=await o();return await new Promise(r=>{const out={};const c=d.transaction('img').objectStore('img').openCursor();c.onsuccess=()=>{const x=c.result;if(x){out[x.key]=x.value;x.continue()}else r(out)};c.onerror=()=>r(out)})}catch(e){return{}}},
     async put(pre,obj){try{const d=await o();const t=d.transaction('img','readwrite'),st=t.objectStore('img');for(const k in obj)st.put(obj[k],pre+k)}catch(e){}}}})();
@@ -438,8 +443,8 @@ async function boot(){
   apply(d);loadAvatars();prefetchPhotos();
   setInterval(refresh,45000);
 }
-function apply(d){PEOPLE=d.people.filter(p=>!p.hide);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));setMsgs(d.messages||[]);
-  $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render()}
+function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));setMsgs(d.messages||[]);
+  $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV&&open!==INV){document.body.classList.add('inv');openSheet(INV)}}
 async function refresh(){try{const d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
 async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))].filter(k=>!AV[k]);
@@ -574,12 +579,15 @@ function openSheet(n){
       <label class="fromrow"><span>あなたの名前</span><input id="meB" list="names" value="${esc(ME)}" placeholder="例：岸原 誠" autocomplete="name"></label>
       <div class="row"><button class="btn wide" id="send">寄せ書きに貼る</button></div>
     </div></div>`;
-    $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">← 一覧へ</button><div class="bt">${esc(p.n)}さんへの寄せ書き</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
-      <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div><button class="btn writebig" data-opencompose>＋ メッセージを書く</button></header>
+    const isInv=INV===p.n,nMsg=count(p.n);
+    const boardB=`<h3 class="sec-h">${isInv?'あなたへのメッセージ':'寄せ書き'} <span id="bcount"></span></h3>
+      <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="close2">← みんなの一覧に戻る</button><button class="btn ghost" id="next">次の人へ →</button></div></section>`;
+    $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">← 一覧へ</button><div class="bt">${esc(p.n)}さんへの${isInv?'招待状':'寄せ書き'}</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
+      <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div>${isInv?`<p class="inv-lead">12月19日、SAKIYOMI 10周年の総会へ。<br>あなたに <b>${nMsg}</b> 件のメッセージが届いています。</p>`:`<button class="btn writebig" data-opencompose>＋ メッセージを書く</button>`}</header>
+      ${isInv?boardB:''}
       ${photosB}
       ${own?`<h3 class="sec-h">当時の投稿<small>横にスワイプ →</small></h3><div class="poststrip">${own}</div>`:''}
-      <h3 class="sec-h">寄せ書き <span id="bcount"></span></h3>
-      <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="close2">← みんなの一覧に戻る</button><button class="btn ghost" id="next">次の人へ →</button></div></section>${p.cur?'':ctaHtml(p.n)}${composeB}`;
+      ${isInv?'':boardB}${p.cur&&!isInv?'':ctaHtml(p.n)}${composeB}`;
     $('#sheet').classList.add('full');
     if(window._hw)window._hw.stop();setTimeout(()=>{const f=$('#heroWords');if(f)window._hw=placeTyper(f,{n:46,keep:true,vert:.35,maxLen:16,cls:'sm',gap:3,tries:80,step:45,size:()=>11+Math.random()*12|0,op:()=>.28+Math.random()*.4,avoid:[...document.querySelectorAll('.hero .av,.hero h2,.hero .sub,.hero .writebig')]})},150);
   }else{$('#sheet').classList.remove('full');$('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH}
@@ -588,11 +596,11 @@ function openSheet(n){
   const pic=ph.map(x=>x[0]);renderMsgs(n);loadPhotos([...new Set(pic)].filter(id=>!PH[id]));
 }
 async function loadPhotos(ids){if(!ids.length)return;const sp=[];for(let i=0;i<ids.length;i+=2)sp.push(ids.slice(i,i+2));await Promise.all(sp.map(c=>get({action:'photos',ids:c.join(',')}).then(d=>{if(d.ok)gotPhotos(d.photos)}).catch(()=>{})))}
-function renderMsgs(n){const el=$('#msgs');if(!el)return;const ms=MSG.filter(m=>m.to===n);
-  if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=ms.length?`${ms.length}`:'';
-    el.innerHTML=(ms.length?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+ms.map(m=>`<div class="tile"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join('');return}
+function renderMsgs(n){const el=$('#msgs');if(!el)return;const all=MSG.filter(m=>m.to===n);const ms=INV===n?all:all.filter(m=>MINE.includes(m.id)||(ME&&m.from===ME));const lk=all.length-ms.length;
+  if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=all.length?`${all.length}`:'';
+    el.innerHTML=(all.length||INV===n?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+(INV===n&&!all.length?'<p class="note">メッセージはこれから届きます。</p>':'')+(lk?`<div class="tile lock"><p>🔒 ほか ${lk} 件</p><div class="meta"><span>本人だけが招待状で読めます</span></div></div>`:'')+ms.map(m=>`<div class="tile"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join('');return}
   el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初の一通をどうぞ。</p>'}
-function closeSheet(){stopMic();if(window._hw){window._hw.stop();window._hw=null}open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
+function closeSheet(){if(INV)return;stopMic();if(window._hw){window._hw.stop();window._hw=null}open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
 $('#scrim').addEventListener('click',closeSheet);
 $('#lb').addEventListener('click',e=>{if(e.target.closest('.slk')&&!e.target.closest('.slk-close'))return;$('#lb').hidden=true});
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(!$('#lb').hidden){$('#lb').hidden=true;return}if(open)closeSheet()});
