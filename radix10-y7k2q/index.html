@@ -576,6 +576,13 @@ body.skui .sk-file{margin-top:10px;width:min(560px,100%);border:1px solid var(--
 body.skui .sk-file img{display:block;width:100%;height:auto}
 body.skui .sk-file span{display:block;font-size:12px;color:var(--sk-mu);padding:6px 10px;border-top:1px solid var(--sk-ln);background:#fff}
 body.skui .sk-pb{max-width:none}body.skui .sk-file{width:100%!important}
+body.skui .sk-media{display:block}
+body.skui .sk-media .sk-row{margin-top:12px}
+@media (min-width:1000px){body.skui .sk-media{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:14px;align-items:stretch;margin-top:10px}
+body.skui .sk-media .sk-file{margin-top:0!important;align-self:start}
+body.skui .sk-media .sk-row{flex-direction:column;margin-top:0;gap:12px}
+body.skui .sk-media .sk-stat,body.skui .sk-media .sk-cta{flex:1 1 0!important}
+body.skui .sk-media .sk-cta b{font-size:20px}}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -598,12 +605,11 @@ body.skui .sk-pb{max-width:none}body.skui .sk-file{width:100%!important}
 10年の歴史の中で、その背中を追いかけた人、一緒に走り抜けた人、背中を見せた相手。その瞬間、確かに存在していた。
 
 写真、言葉。それを見て、<b>あなたの言葉で年末総会へお誘いください。</b></div>
-      <div class="sk-file"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"><span>📎 sakiyomi_wall.jpg</span></div>
-    </div></div>
-    <div class="sk-row"><div class="sk-stat"><i style="background:#e8f5fa">💌</i><div><b id="bigMsg">0</b><span>集まったメッセージ</span></div></div>
+      <div class="sk-media"><div class="sk-file"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"><span>📎 sakiyomi_wall.jpg</span></div><div class="sk-row"><div class="sk-stat"><i style="background:#e8f5fa">💌</i><div><b id="bigMsg">0</b><span>集まったメッセージ</span></div></div>
     <div class="sk-stat"><i style="background:#e3f6ee">✅</i><div><b id="bigAtt">0</b><span>12/19 総会 出席</span></div><button type="button" class="sk-att" id="rsvpMe">出席する</button></div>
-    <button type="button" class="sk-cta" id="goMembers"><b>✍️ 誰かにメッセージを書く</b><span>下のメンバーをタップ → 一言でもOK</span></button></div>
-  </header>
+    <button type="button" class="sk-cta" id="goMembers"><b>✍️ 誰かにメッセージを書く</b><span>下のメンバーをタップ → 一言でもOK</span></button></div></div>
+    </div></div>
+    </header>
   <div class="bar">
     <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="cur">現メンバー</button></div>
     <span class="stat" id="stat"></span>
