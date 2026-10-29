@@ -682,7 +682,7 @@ body.skui .kv-art{width:auto!important;gap:0!important;align-items:center!import
 body.skui .kv-art .kv-img{width:min(250px,46vw)!important;aspect-ratio:489/756!important;height:auto!important;margin:0 8px 0 0}
 body.skui .kv-copy{margin-top:0!important;align-self:center!important}
 body.skui .kv-wall{max-width:680px;margin:40px auto 0;padding:0}body.skui .kv-wall img{display:block;width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
-body.skui .card.att{order:-1}body.skui .card.att .av{box-shadow:0 0 0 4px #fff,0 0 0 7px #395DC8!important}body.skui .card.att .av:after{display:none!important}body.skui .card:not(.att){opacity:.5;filter:grayscale(.6)}body.skui .card:not(.att):hover{opacity:1;filter:none}body.skui .card.att::after{content:'✓ 出席';display:inline-block;margin-top:6px;background:#395DC8;color:#fff;font-weight:700;font-size:12px;padding:3px 12px;border-radius:999px}
+body.skui .card.att{order:-1}body.skui .card.att .av{box-shadow:0 0 0 4px #fff,0 0 0 7px #395DC8!important}body.skui .card.att .av:after{content:'出席'!important;display:grid!important;place-items:center;position:absolute!important;right:-26px!important;left:auto!important;top:auto!important;bottom:-14px!important;width:58px!important;height:58px!important;border-radius:50%!important;border:3px solid #d62d20!important;outline:1.5px solid #d62d20;outline-offset:-8px;background:rgba(255,255,255,.88)!important;color:#d62d20!important;font-family:'Hiragino Mincho ProN','Yu Mincho',serif;font-weight:900!important;font-size:17px!important;letter-spacing:.05em;padding:0!important;transform:rotate(-14deg);z-index:4;animation:stampIn .45s cubic-bezier(.2,1.6,.4,1) both}@keyframes stampIn{0%{transform:rotate(-14deg) scale(2.4);opacity:0}60%{opacity:1}100%{transform:rotate(-14deg) scale(1);opacity:1}}body.skui .card:not(.att){opacity:.5;filter:grayscale(.6)}body.skui .card:not(.att):hover{opacity:1;filter:none}body.skui .card.att::after{content:none;display:none!important;display:inline-block;margin-top:6px;background:#395DC8;color:#fff;font-weight:700;font-size:12px;padding:3px 12px;border-radius:999px}
 body.skui #msgs.board{display:block!important;background:#fff!important;border:1px solid #ddd!important;border-radius:8px!important;padding:0!important;overflow:hidden;box-shadow:none!important;font-family:Lato,"Hiragino Sans","Noto Sans JP",sans-serif;color:#1d1c1d}
 body.skui #msgs .tile.add{margin:12px}
 #msgs .th-h{display:flex;align-items:baseline;gap:8px;padding:12px 16px;border-bottom:1px solid #e8e8e8}#msgs .th-h b{font-size:16px;font-weight:900}#msgs .th-h span{font-size:13px;color:#616061}
@@ -710,7 +710,7 @@ body.skui .kv-hd p.kv-msg{line-height:2.1!important}body.skui .kv-hd p.kv-msg b{
   </div></section>
   <div class="kv-lab sk-mh">— 話したい人を選ぶ —</div>
   <div class="bar">
-    <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="cur">現メンバー</button></div>
+    <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="att">出席予定 <span id="attN"></span></button></div>
     <span class="stat" id="stat"></span><div class="prog" aria-hidden="true"><i id="progBar"></i></div>
   </div>
   <datalist id="names"></datalist>
@@ -843,7 +843,7 @@ const count=n=>MSG.filter(m=>m.to===n).length;
 const mineTo=n=>MSG.some(m=>m.to===n&&m.from===ME);
 function render(){
   const q=$('#q').value.trim().toLowerCase();
-  const list=PEOPLE.filter(p=>(ROLE==='cur'?p.cur:(!p.cur&&(ROLE==='all'||p.role===ROLE)))&&(!q||p.n.toLowerCase().includes(q)));if($('#memN'))$('#memN').textContent=list.length;
+  const list=PEOPLE.filter(p=>(ROLE==='cur'?p.cur:ROLE==='att'?(!p.cur&&ATT.has(p.n)):(!p.cur&&(ROLE==='all'||p.role===ROLE)))&&(!q||p.n.toLowerCase().includes(q)));if($('#memN'))$('#memN').textContent=list.length;if($('#attN'))$('#attN').textContent=PEOPLE.filter(p=>!p.cur&&ATT.has(p.n)).length;
   const st=p=>String((p.span||[])[0]||'9999');list.sort((a,b)=>(a.cur-b.cur)||st(a).localeCompare(st(b))||a.n.localeCompare(b.n));
   $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
     const at=ATT.has(p.n);return `<button class="card${p.cur?' cur':''}${at?' att':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}${at?MARU+'<i class="att-t">出席</i>':''}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
