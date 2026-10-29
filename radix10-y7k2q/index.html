@@ -663,6 +663,9 @@ body.skui .hero h2,body.skui .bar-b .bt{font-family:-apple-system,BlinkMacSystem
 body.skui .kv-art{position:relative;aspect-ratio:1/1;overflow:hidden}
 body.skui .kv-art .kv-img{position:absolute;left:0;bottom:0;width:90%;height:auto;aspect-ratio:971/1010;object-fit:contain;background:none!important;box-shadow:none!important;border-radius:0!important}
 body.skui .kv-copy{position:absolute;right:8%;top:8%;margin:0;writing-mode:vertical-rl;color:var(--kv-b);font-weight:800;font-size:clamp(22px,3vw,40px);line-height:1.5;letter-spacing:.12em;font-family:"Zen Maru Gothic","M PLUS Rounded 1c","Hiragino Maru Gothic ProN",-apple-system,sans-serif}
+body.skui .kv-art{aspect-ratio:auto!important;overflow:visible!important;display:flex;align-items:center;justify-content:center;gap:4%;min-height:0}
+body.skui .kv-art .kv-img{position:static!important;width:78%!important;max-width:520px;aspect-ratio:1/1!important;height:auto}
+body.skui .kv-copy{position:static!important;align-self:flex-start;margin-top:6%!important}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -759,7 +762,7 @@ async function boot(){
 function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));setMsgs(d.messages||[]);
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV){if(open!==INV){document.body.classList.add('inv');openSheet(INV)}else renderMsgs(INV)}}
 async function refresh(){try{const d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
-async function loadKV(){const im=$('#kvImg');if(!im)return;const ids=[...Array(5).keys()].map(i=>'il1:'+i);const put=()=>{if(ids.every(k=>PH[k]))im.src=ids.map(k=>PH[k]).join('')};put();if(im.src)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){gotPhotos(d.photos);put()}}catch(e){}}
+async function loadKV(){const im=$('#kvImg');if(!im)return;const ids=[...Array(4).keys()].map(i=>'il2:'+i);const put=()=>{if(ids.every(k=>PH[k]))im.src=ids.map(k=>PH[k]).join('')};put();if(im.src)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){gotPhotos(d.photos);put()}}catch(e){}}
 async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))].filter(k=>!AV[k]);
   const jobs=[];for(let i=0;i<keys.length;i+=20){const ids=keys.slice(i,i+20).map(k=>'av:'+k);
