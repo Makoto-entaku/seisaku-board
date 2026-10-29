@@ -570,11 +570,17 @@ body.skui .sk-file span{display:block;font-size:12px;color:var(--sk-mu);padding:
 body.skui .sk-pb{max-width:none}body.skui .sk-file{width:100%!important}
 body.skui .sk-media{display:block}
 body.skui .sk-media .sk-row{margin-top:12px}
-@media (min-width:1000px){body.skui .sk-media{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(250px,1fr);gap:14px;align-items:stretch;margin-top:10px}
-body.skui .sk-media .sk-file{margin-top:0!important;align-self:start}
-body.skui .sk-media .sk-row{flex-direction:column;margin-top:0;gap:12px}
-body.skui .sk-media .sk-stat,body.skui .sk-media .sk-cta{flex:1 1 0!important}
-body.skui .sk-media .sk-cta b{font-size:20px}}
+@media (min-width:1200px){body.skui .sk-media{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(300px,1fr);gap:14px;align-items:start;margin-top:10px}
+body.skui .sk-media .sk-file{margin-top:0!important}
+body.skui .sk-media .sk-row{flex-direction:column;margin-top:0;gap:10px}
+body.skui .sk-media .sk-stat,body.skui .sk-media .sk-cta{flex:none!important}}
+body.skui .sk-stat{display:grid!important;grid-template-columns:44px 1fr auto;align-items:center;gap:4px 12px;padding:12px 14px!important}
+body.skui .sk-stat span,body.skui .sk-stat b{white-space:nowrap}
+body.skui .sk-stat .sk-att{margin:0!important;width:auto!important}
+body.skui .sk-cta{padding:14px 18px!important}
+body.skui .sk-cta b{font-size:17px!important;white-space:nowrap}
+body.skui .sk-cta span{white-space:nowrap}
+@media (max-width:860px){body.skui .sk-stat{grid-template-columns:36px 1fr}body.skui .sk-stat .sk-att{grid-column:1/-1;width:100%!important}}
 body.skui .tile{align-items:flex-start!important;text-align:left!important}
 body.skui .tile .t-b{display:flex!important;flex-direction:column-reverse!important;align-items:flex-start!important;justify-content:flex-start!important;text-align:left!important}
 body.skui .tile .meta{display:flex!important;justify-content:flex-start!important;align-items:baseline!important;gap:8px!important;width:auto!important;flex-wrap:wrap}
@@ -606,7 +612,7 @@ body.skui .sk-dock .cta-b .to b{color:var(--sk-fg)!important;font-size:16px!impo
 
 写真、言葉。それを見て、<b>あなたの言葉で年末総会へお誘いください。</b></div>
       <div class="sk-media"><div class="sk-file"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"><span>📎 sakiyomi_wall.jpg</span></div><div class="sk-row"><div class="sk-stat"><i style="background:#e8f5fa">💌</i><div><b id="bigMsg">0</b><span>集まったメッセージ</span></div></div>
-    <div class="sk-stat"><i style="background:#e3f6ee">✅</i><div><b id="bigAtt">0</b><span>12/19 総会 出席</span></div><button type="button" class="sk-att" id="rsvpMe">出席する</button></div>
+    <div class="sk-stat"><i style="background:#e3f6ee">✅</i><div><b id="bigAtt">0</b><span>12/19 出席</span></div><button type="button" class="sk-att" id="rsvpMe">出席する</button></div>
     <button type="button" class="sk-cta" id="goMembers"><b>✍️ 誰かにメッセージを書く</b><span>下のメンバーをタップ → 一言でもOK</span></button></div></div>
     </div></div>
     </header>
