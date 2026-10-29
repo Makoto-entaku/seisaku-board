@@ -792,7 +792,7 @@ async function loadKV(){const im=$('#kvImg');if(!im)return;const ids=[...Array(4
 async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))].filter(k=>!AV[k]);
   const jobs=[];for(let i=0;i<keys.length;i+=20){const ids=keys.slice(i,i+20).map(k=>'av:'+k);
-    jobs.push(get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok){const n={};for(const k in d.photos){AV[k.slice(3)]=d.photos[k];n[k.slice(3)]=d.photos[k]}IDB.put('a:',n);render()}}).catch(()=>{}))}
+    jobs.push(get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok){const n={};for(const k in d.photos){AV[k.slice(3)]=d.photos[k];n[k.slice(3)]=d.photos[k]}IDB.put('a:',n);render();if(window.__pmDraw&&$('#pickMe'))__pmDraw()}}).catch(()=>{}))}
   await Promise.all(jobs);
 }
 (function(){if(!matchMedia('(prefers-reduced-motion:reduce)').matches){document.documentElement.classList.add('mz-pre')}})();
@@ -953,7 +953,7 @@ function resolveName(v){v=String(v||'').trim();if(!v)return '';if(BYN[v])return 
 function setMe(n){ME=n;save('yk_me',ME);if($('#me'))$('#me').value=ME;const pk=$('#pickMe');if(pk)pk.remove();document.body.style.overflow='';toast(n+' さんとして設定しました');render();if(open&&typeof openSheet==='function')openSheet(open)}
 function showPicker(force){if($('#pickMe'))return;if(!force){try{if(sessionStorage.getItem('yk_skip'))return}catch(e){}}
   const d=document.createElement('div');d.id='pickMe';d.innerHTML=`<div class="pm-box"><h2>あなたはだれ？</h2><p>最初に一度だけ選んでください。<br>次からは自動で入ります。</p><input id="pmQ" placeholder="名前でさがす（ローマ字）" autocomplete="off"><div class="pm-list" id="pmL"></div><button type="button" class="pm-skip" id="pmSkip">あとで選ぶ</button></div>`;document.body.appendChild(d);document.body.style.overflow='hidden';
-  const draw=()=>{const q=$('#pmQ').value.trim().toLowerCase();const L=PEOPLE.filter(p=>!q||p.n.toLowerCase().includes(q)).sort((a,b)=>a.n.localeCompare(b.n));$('#pmL').innerHTML=L.map(p=>`<button type="button" data-me="${esc(p.n)}"><span class="pm-av">${avHtml(p)}</span><span>${esc(p.n)}</span></button>`).join('')||'<p class="note">見つかりません</p>'};draw();
+  const draw=window.__pmDraw=()=>{if(!$('#pmQ'))return;const q=$('#pmQ').value.trim().toLowerCase();const L=PEOPLE.filter(p=>!q||p.n.toLowerCase().includes(q)).sort((a,b)=>a.n.localeCompare(b.n));$('#pmL').innerHTML=L.map(p=>`<button type="button" data-me="${esc(p.n)}"><span class="pm-av">${avHtml(p)}</span><span>${esc(p.n)}</span></button>`).join('')||'<p class="note">見つかりません</p>'};draw();
   $('#pmQ').addEventListener('input',draw);d.addEventListener('click',e=>{const b=e.target.closest('[data-me]');if(b){setMe(b.dataset.me);return}if(e.target.id==='pmSkip'||e.target===d){try{sessionStorage.setItem('yk_skip','1')}catch(x){}d.remove();document.body.style.overflow=''}})}
 document.addEventListener('click',e=>{if(e.target.closest('[data-pickme]')){e.preventDefault();showPicker(true)}});
 function renderMsgs(n){const el=$('#msgs');if(!el)return;const all=MSG.filter(m=>m.to===n);const ms=INV===n?all:all.filter(m=>MINE.includes(m.id)||(ME&&m.from===ME));const lk=all.length-ms.length;if(INV===n&&$('#invN'))$('#invN').textContent=all.length;
