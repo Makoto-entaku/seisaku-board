@@ -666,6 +666,7 @@ body.skui .kv-copy{position:absolute;right:8%;top:8%;margin:0;writing-mode:verti
 body.skui .kv-art{aspect-ratio:auto!important;overflow:visible!important;display:flex;align-items:center;justify-content:center;gap:4%;min-height:0}
 body.skui .kv-art .kv-img{position:static!important;width:78%!important;max-width:520px;aspect-ratio:1/1!important;height:auto}
 body.skui .kv-copy{position:static!important;align-self:flex-start;margin-top:6%!important}
+body.skui .kv-img:not([src]){visibility:hidden}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -749,6 +750,7 @@ const typing=(()=>{const f=document.getElementById('typefield');if(!f)return{sto
 async function boot(){
   typing.stop();$('#gate').hidden=true;$('#app').hidden=false;
   runMosaic().catch(()=>{});
+  setTimeout(()=>loadKV(),0);
   let cached=null;try{cached=JSON.parse(localStorage.getItem('yk_data')||'null')}catch(e){}
   try{localStorage.removeItem('yk_av2');localStorage.removeItem('yk_av')}catch(e){}
   try{const c=await Promise.race([IDB.load(),new Promise(r=>setTimeout(()=>r({}),1500))]);for(const k in c){if(k.startsWith('a:'))AV[k.slice(2)]=c[k];else if(k.startsWith('p:'))PH[k.slice(2)]=c[k]}}catch(e){}
@@ -756,7 +758,7 @@ async function boot(){
   let d;try{d=await get({action:'data'})}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
   try{localStorage.setItem('yk_data',JSON.stringify(d))}catch(e){}
-  apply(d);loadAvatars();prefetchPhotos();loadKV();
+  apply(d);loadAvatars();prefetchPhotos();
   setInterval(refresh,45000);
 }
 function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));setMsgs(d.messages||[]);
