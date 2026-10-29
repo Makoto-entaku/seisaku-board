@@ -694,6 +694,15 @@ body.skui #msgs .tile.add{margin:12px}
 #msgs .th-lk{display:flex;gap:8px;padding:10px 16px 12px;color:#616061;font-size:14px;align-items:center}#msgs .th-lk i{width:36px;height:36px;border-radius:6px;background:#f2f2f2;display:grid;place-items:center;font-style:normal}
 body.skui .kv-hd p.kv-msg{line-height:1.6!important;color:#395DC8!important;font-weight:700!important;margin-top:36px!important}body.skui .kv-hd p.kv-msg b{font-size:20px;color:#395DC8;font-weight:800;letter-spacing:.06em}
 body.skui .kv-msg .gap{display:block;height:14px}
+#pickMe{position:fixed;inset:0;z-index:9000;background:rgba(31,42,85,.45);display:grid;place-items:center;padding:16px}
+#pickMe .pm-box{background:#fff;border-radius:18px;width:min(520px,100%);max-height:86vh;display:flex;flex-direction:column;padding:22px 18px 14px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+#pickMe h2{margin:0;text-align:center;color:#395DC8;font-size:22px;font-weight:800}#pickMe p{text-align:center;color:#3b4570;font-size:14px;line-height:1.6;margin:8px 0 12px}
+#pmQ{border:1.5px solid #c9d3f0;border-radius:999px;padding:10px 16px;font-size:16px;outline:none}#pmQ:focus{border-color:#395DC8}
+.pm-list{overflow:auto;margin-top:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;padding:2px}
+.pm-list button{display:flex;align-items:center;gap:8px;border:1px solid #e3e8f6;background:#fff;border-radius:12px;padding:6px 8px;font-size:13px;color:#1f2a55;text-align:left;cursor:pointer}.pm-list button:hover{border-color:#395DC8;background:#f3f6fd}
+.pm-av{width:34px;height:34px;border-radius:50%;overflow:hidden;flex:none;background:#395DC8;color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}.pm-av img{width:100%;height:100%;object-fit:cover}
+.pm-skip{margin:10px auto 0;background:none;border:0;color:#8a90b0;font-size:13px;text-decoration:underline;cursor:pointer}
+.as-me{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#3b4570}.as-me b{color:#1f2a55}.as-av{width:22px;height:22px;border-radius:50%;overflow:hidden;display:inline-grid;place-items:center;background:#395DC8;color:#fff;font-size:11px}.as-av img{width:100%;height:100%;object-fit:cover}.as-me .link{background:none;border:0;color:#395DC8;text-decoration:underline;font-size:12px;cursor:pointer;padding:0 0 0 4px}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -773,10 +782,10 @@ async function boot(){
   let d;try{d=await get({action:'data'})}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
   try{localStorage.setItem('yk_data',JSON.stringify(d))}catch(e){}
-  apply(d);loadAvatars();prefetchPhotos();
+  apply(d);loadAvatars();prefetchPhotos();if(!ME&&!INV)showPicker();
   setInterval(refresh,45000);
 }
-function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));setMsgs(d.messages||[]);
+function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));{const FX={'Akira Okubo':'fx_akira','Kenta Ogawa':'fx_kenta','Ryusei Kato':'fx_ryusei'};PEOPLE.forEach(p=>{if(FX[p.n])p.av=FX[p.n]})}if(INV&&!ME){ME=INV;save('yk_me',ME)}if(ME){const rn=resolveName(ME);if(rn&&rn!==ME){ME=rn;save('yk_me',ME)}}setMsgs(d.messages||[]);
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV){if(open!==INV){document.body.classList.add('inv');openSheet(INV)}else renderMsgs(INV)}}
 async function refresh(){try{const d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
 async function loadKV(){const im=$('#kvImg');if(!im)return;const ids=[...Array(4).keys()].map(i=>'il2:'+i);const put=()=>{if(ids.every(k=>PH[k]))im.src=ids.map(k=>PH[k]).join('')};put();if(im.src)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){gotPhotos(d.photos);put()}}catch(e){}}
@@ -863,7 +872,7 @@ $('#goMembers').addEventListener('click',()=>{$('.sk-mh').scrollIntoView({behavi
 $('#rsvpMe').addEventListener('click',async()=>{ME=$('#me').value.trim();if(!ME){toast('右上の「あなた」に名前を入れてください');$('#me').focus();return}if(!BYN[ME]){toast('右上の名前は、候補に出てくる名簿の名前（ローマ字）を選んでください');$('#me').focus();return}save('yk_me',ME);const on=!ATT.has(ME);if(on)ATT.add(ME);else ATT.delete(ME);render();try{const r=await post({action:'post',to:'__rsvp__',from:ME,text:on?'出席':'取消'});if(!r.ok)throw 0;toast(on?'出席にしました。待ってる！':'出席を取り消しました')}catch(e){if(on)ATT.delete(ME);else ATT.add(ME);render();toast('送れませんでした。もう一度押してください')}});
 $('#skCh').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(b)setRole(b.dataset.r)});
 $('#q').addEventListener('input',render);
-$('#me').addEventListener('change',()=>{ME=$('#me').value.trim();save('yk_me',ME);render()});
+$('#me').addEventListener('change',()=>{const v=$('#me').value.trim();const rn=resolveName(v);if(v&&!rn){toast('名簿から選んでね');$('#me').value=ME;return}ME=rn;save('yk_me',ME);render();if(open)openSheet(open)});$('#me').addEventListener('focus',e=>{e.target.blur();showPicker(true)});
 
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,recBase='';
 function stopMic(){if(rec){try{rec.stop()}catch(e){}rec=null}const b=$('#mic');if(b){b.classList.remove('on');b.setAttribute('aria-pressed','false');b.querySelector('span').textContent='話して書く'}}
@@ -920,7 +929,7 @@ function openSheet(n){
       <div class="sk-comp"><div class="sk-tb"><span><b>B</b></span><span><i>I</i></span><span><s>S</s></span><span>🔗</span><span>☰</span><span>❝</span></div>
       <textarea id="txt" maxlength="600" rows="2" placeholder="今あなたが伝えたいこと、話したいこと、自慢したいこと…"></textarea>
       <div class="sk-cbt"><span class="ic">＋</span><span class="ic">Aa</span><span class="ic">☺</span><span class="ic">@</span>${mic}<span class="sp"></span><button class="btn" id="send">送信 ➤</button></div></div>
-      <div class="sk-from"><label>送信者：<input id="meB" list="names" value="${esc(ME)}" placeholder="名簿から選ぶ（例 Makoto Kishihara）" autocomplete="off"></label><details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details></div>
+      <div class="sk-from">${ME&&BYN[ME]?`<span class="as-me"><span class="as-av">${avHtml(BYN[ME])}</span><b>${esc(ME)}</b> として送信<button type="button" class="link" data-pickme>変更</button></span>`:`<label>送信者：<input id="meB" list="names" value="${esc(ME)}" placeholder="名簿から選ぶ（例 Makoto Kishihara）" autocomplete="off"></label>`}<details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details></div>
     </div>`;
     const isInv=INV===p.n,nMsg=count(p.n);
     const boardB=`<h3 class="sec-h">✉️ ${isInv?'あなたへのメッセージ':'メッセージ'} <small><span id="bcount"></span>件</small></h3>
@@ -940,6 +949,13 @@ function openSheet(n){
 }
 async function loadPhotos(ids){if(!ids.length)return;const sp=[];for(let i=0;i<ids.length;i+=2)sp.push(ids.slice(i,i+2));await Promise.all(sp.map(c=>get({action:'photos',ids:c.join(',')}).then(d=>{if(d.ok)gotPhotos(d.photos)}).catch(()=>{})))}
 function resolveName(v){v=String(v||'').trim();if(!v)return '';if(BYN[v])return v;const AL={'岸原誠':'Makoto Kishihara','岸原':'Makoto Kishihara'};if(AL[v])return AL[v];const k=v.toLowerCase().replace(/[\s　]+/g,' ');const sw=k.split(' ').reverse().join(' ');let h=PEOPLE.find(p=>{const l=p.n.toLowerCase();return l===k||l===sw});if(h)return h.n;if(k.length>=3){const c=PEOPLE.filter(p=>p.n.toLowerCase().includes(k));if(c.length===1)return c[0].n}return ''}
+
+function setMe(n){ME=n;save('yk_me',ME);if($('#me'))$('#me').value=ME;const pk=$('#pickMe');if(pk)pk.remove();document.body.style.overflow='';toast(n+' さんとして設定しました');render();if(open&&typeof openSheet==='function')openSheet(open)}
+function showPicker(force){if($('#pickMe'))return;if(!force){try{if(sessionStorage.getItem('yk_skip'))return}catch(e){}}
+  const d=document.createElement('div');d.id='pickMe';d.innerHTML=`<div class="pm-box"><h2>あなたはだれ？</h2><p>最初に一度だけ選んでください。<br>次からは自動で入ります。</p><input id="pmQ" placeholder="名前でさがす（ローマ字）" autocomplete="off"><div class="pm-list" id="pmL"></div><button type="button" class="pm-skip" id="pmSkip">あとで選ぶ</button></div>`;document.body.appendChild(d);document.body.style.overflow='hidden';
+  const draw=()=>{const q=$('#pmQ').value.trim().toLowerCase();const L=PEOPLE.filter(p=>!q||p.n.toLowerCase().includes(q)).sort((a,b)=>a.n.localeCompare(b.n));$('#pmL').innerHTML=L.map(p=>`<button type="button" data-me="${esc(p.n)}"><span class="pm-av">${avHtml(p)}</span><span>${esc(p.n)}</span></button>`).join('')||'<p class="note">見つかりません</p>'};draw();
+  $('#pmQ').addEventListener('input',draw);d.addEventListener('click',e=>{const b=e.target.closest('[data-me]');if(b){setMe(b.dataset.me);return}if(e.target.id==='pmSkip'||e.target===d){try{sessionStorage.setItem('yk_skip','1')}catch(x){}d.remove();document.body.style.overflow=''}})}
+document.addEventListener('click',e=>{if(e.target.closest('[data-pickme]')){e.preventDefault();showPicker(true)}});
 function renderMsgs(n){const el=$('#msgs');if(!el)return;const all=MSG.filter(m=>m.to===n);const ms=INV===n?all:all.filter(m=>MINE.includes(m.id)||(ME&&m.from===ME));const lk=all.length-ms.length;if(INV===n&&$('#invN'))$('#invN').textContent=all.length;
   if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=all.length;
     const tm=x=>{const d=x?new Date(x):null;return d&&!isNaN(d)?d.toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'long',day:'numeric'})+' '+d.toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit'}):''};
