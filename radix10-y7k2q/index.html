@@ -681,7 +681,7 @@ body.skui .kv-nums,body.skui .kv-btns{justify-content:center}
 body.skui .kv-art{width:auto!important;gap:0!important;align-items:center!important}
 body.skui .kv-art .kv-img{width:min(250px,46vw)!important;aspect-ratio:489/756!important;height:auto!important;margin:0 8px 0 0}
 body.skui .kv-copy{margin-top:0!important;align-self:center!important}
-body.skui .kv-wall{max-width:680px;margin:40px auto 0;padding:0}body.skui .kv-wall img{display:block;width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(57,93,200,.12)}
+body.skui .kv-wall{max-width:680px;margin:40px auto 0;padding:0}body.skui .kv-wall img{display:block;width:100%;height:auto;-webkit-mask-image:radial-gradient(ellipse 72% 70% at 50% 50%,#000 60%,transparent 100%);mask-image:radial-gradient(ellipse 72% 70% at 50% 50%,#000 60%,transparent 100%)}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -697,7 +697,7 @@ body.skui .kv-wall{max-width:680px;margin:40px auto 0;padding:0}body.skui .kv-wa
     <div class="kv-nums"><div><span>集まったメッセージ</span><b><em id="bigMsg">0</em><small>件</small></b></div><div><span>12/19 出席</span><b><em id="bigAtt">0</em><small>人</small></b></div></div>
     <div class="kv-btns"><button type="button" class="kv-p" id="rsvpMe">出席する</button><button type="button" class="kv-o" id="goMembers">メッセージを書く ↓</button></div>
   </div></section>
-  <figure class="kv-wall"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"></figure>
+  <figure class="kv-wall"><img id="wallImg" src="wall_blue.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"></figure>
   <div class="kv-lab sk-mh">— 話したい人を選ぶ —</div>
   <div class="bar">
     <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="cur">現メンバー</button></div>
