@@ -806,7 +806,11 @@ $('#sheet').addEventListener('click',async e=>{
       else toast('送れませんでした（'+r.error+'）')}catch(err){toast('送れませんでした。通信状況を確認してください')}
     b.disabled=false;b.textContent='送信 ➤'}
 });
-boot();
+(function(){let seen=null;try{seen=localStorage.getItem('yk_intro')}catch(e){}
+  if(seen){$('#gate').hidden=true;boot();return}
+  try{localStorage.setItem('yk_intro','1')}catch(e){}
+  const g=$('#gateErr');if(g)g.textContent='';
+  setTimeout(()=>{const gt=$('#gate');gt.style.transition='opacity .6s';gt.style.opacity='0';setTimeout(boot,600)},3200)})();
 </script>
 </body>
 </html>
