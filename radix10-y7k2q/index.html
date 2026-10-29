@@ -451,11 +451,11 @@ body.skui .sk-comp:focus-within{border-color:#1d1c1d;box-shadow:0 0 0 1px #1d1c1
 body.skui .sk-tb{display:flex;gap:2px;padding:4px 6px;background:#f8f8f8;border-bottom:1px solid var(--sk-ln);color:var(--sk-mu);font-size:14px}
 body.skui .sk-tb span{width:28px;height:28px;display:grid;place-items:center;border-radius:4px}
 body.skui .sk-comp textarea{border:0!important;outline:0;border-radius:0!important;box-shadow:none!important;background:#fff!important;width:100%;min-height:140px!important;padding:10px 12px!important;font-size:15px!important;line-height:1.46!important;font-family:inherit!important;resize:vertical}
-body.skui .sk-bt{display:flex;align-items:center;gap:4px;padding:4px 6px 6px;color:var(--sk-mu)}
-body.skui .sk-bt .ic{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;font-size:15px}
-body.skui .sk-bt .sp{flex:1}
-body.skui .sk-bt #send{width:auto!important;background:var(--sk-gr)!important;color:#fff!important;border:0!important;border-radius:6px!important;padding:6px 14px!important;font-size:14px!important;font-weight:700;display:flex;gap:6px;align-items:center}
-body.skui .sk-bt #mic{border:0;background:none;padding:4px 8px;font-size:12px;color:var(--sk-mu)}
+body.skui .sk-cbt{display:flex;align-items:center;gap:4px;padding:4px 6px 6px;color:var(--sk-mu)}
+body.skui .sk-cbt .ic{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;font-size:15px}
+body.skui .sk-cbt .sp{flex:1}
+body.skui .sk-cbt #send{width:auto!important;background:var(--sk-gr)!important;color:#fff!important;border:0!important;border-radius:6px!important;padding:6px 14px!important;font-size:14px!important;font-weight:700;display:flex;gap:6px;align-items:center}
+body.skui .sk-cbt #mic{border:0;background:none;padding:4px 8px;font-size:12px;color:var(--sk-mu)}
 body.skui .cb-tools{margin-top:8px}
 body.skui .fromrow{margin-top:10px}
 body.skui .fromrow input{border-radius:6px;background:#fff}
@@ -486,12 +486,12 @@ body.skui .sk-tb{display:flex;gap:2px;padding:3px 6px;background:#f8f8f8;border-
 body.skui .sk-tb span{width:28px;height:24px;display:grid;place-items:center}
 body.skui .sk-comp textarea{display:block;border:0!important;outline:0;border-radius:0!important;box-shadow:none!important;background:#fff!important;width:100%;min-height:44px!important;max-height:40vh;padding:9px 12px!important;font-size:15px!important;line-height:1.46!important;font-family:inherit!important;resize:none;transition:min-height .15s}
 body.skui .sk-comp textarea:focus{min-height:120px!important}
-body.skui .sk-bt{display:flex;align-items:center;gap:2px;padding:2px 6px 6px;color:var(--sk-mu)}
-body.skui .sk-bt .ic{width:28px;height:28px;display:grid;place-items:center;font-size:15px}
-body.skui .sk-bt .sp{flex:1}
-body.skui .sk-bt #send{background:var(--sk-gr)!important;color:#fff!important;border:0!important;border-radius:6px!important;padding:6px 14px!important;font-size:14px!important;font-weight:700;width:auto!important}
-body.skui .sk-bt .mic{border:0!important;background:none!important;padding:4px 6px!important;font-size:12px!important;color:var(--sk-mu)!important}
-body.skui .sk-bt .mic span{display:none}
+body.skui .sk-cbt{display:flex;align-items:center;gap:2px;padding:2px 6px 6px;color:var(--sk-mu)}
+body.skui .sk-cbt .ic{width:28px;height:28px;display:grid;place-items:center;font-size:15px}
+body.skui .sk-cbt .sp{flex:1}
+body.skui .sk-cbt #send{background:var(--sk-gr)!important;color:#fff!important;border:0!important;border-radius:6px!important;padding:6px 14px!important;font-size:14px!important;font-weight:700;width:auto!important}
+body.skui .sk-cbt .mic{border:0!important;background:none!important;padding:4px 6px!important;font-size:12px!important;color:var(--sk-mu)!important}
+body.skui .sk-cbt .mic span{display:none}
 body.skui .sk-from{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;margin-top:6px;font-size:12px;color:var(--sk-mu)}
 body.skui .sk-from input{border:1px solid #ccc;border-radius:6px;padding:4px 8px;font-size:13px;width:150px;margin-left:4px}
 body.skui .sk-from .hintd summary{cursor:pointer}
@@ -530,10 +530,6 @@ body.skui .card .av img{border-radius:8px!important}
 body.skui .card .nm,body.skui .card .cnt,body.skui .sk-mh,body.skui .bar .me label{font-family:inherit!important;letter-spacing:0!important}
 body.skui .sk-hero{padding:16px 20px 0!important}
 body.skui .sk-ban{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-radius:12px;overflow:hidden;background:#3f0e40;color:#fff}
-body.skui .sk-bt{padding:30px 32px;display:flex;flex-direction:column;justify-content:center;gap:8px}
-body.skui .sk-bt small{font-size:12px;letter-spacing:.2em;opacity:.8}
-body.skui .sk-bt h1{font-family:inherit!important;font-size:clamp(28px,3.4vw,44px)!important;font-weight:900!important;line-height:1.2!important;margin:4px 0 6px!important;color:#fff!important;letter-spacing:0!important}
-body.skui .sk-bt p{font-size:15px;line-height:1.75;margin:0;opacity:.95}
 body.skui .sk-ban img{display:block;width:100%;height:auto;object-fit:contain;background:#000;align-self:center}
 body.skui .sk-row{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
 body.skui .sk-stat{flex:1 1 200px;border:1px solid var(--sk-ln);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px}
@@ -549,15 +545,11 @@ body.skui .sk-top .me input{background:rgba(255,255,255,.15);border:1px solid rg
 body.skui .sk-top .me input::placeholder{color:rgba(255,255,255,.6)}
 @media (min-width:861px){body.skui .bar{display:none!important}}
 @media (max-width:860px){body.skui .sk-top{flex-wrap:wrap;height:auto;padding:8px 12px;row-gap:6px}body.skui .sk-top #q{order:3;flex:1 1 100%;max-width:none}body.skui .sk-top .me{margin-left:auto}body.skui .sk-top .me input{width:130px}body.skui .sk-ch{top:84px}
-body.skui .sk-ban{grid-template-columns:1fr}body.skui .sk-ban img{order:-1}body.skui .sk-bt{padding:18px 18px 20px}body.skui .sk-hero{padding:12px 14px 0!important}body.skui .sk-stat{flex:1 1 140px;padding:12px}body.skui .sk-stat b{font-size:24px}body.skui .sk-att{margin:8px 0 0;width:100%}body.skui .sk-stat{flex-wrap:wrap}}
-body.skui .sk-bt,body.skui .sk-bt *{text-align:left!important;color:#fff!important;font-family:inherit!important}
-body.skui .sk-bt p{color:rgba(255,255,255,.92)!important;font-weight:400!important;letter-spacing:0!important}
-body.skui .sk-bt small{color:rgba(255,255,255,.75)!important}
+body.skui .sk-ban{grid-template-columns:1fr}body.skui .sk-ban img{order:-1}body.skui .sk-hero{padding:12px 14px 0!important}body.skui .sk-stat{flex:1 1 140px;padding:12px}body.skui .sk-stat b{font-size:24px}body.skui .sk-att{margin:8px 0 0;width:100%}body.skui .sk-stat{flex-wrap:wrap}}
 body.skui .sk-top .me{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0 0 0 auto!important;border-radius:0!important;width:auto!important}
 body.skui .sk-top .me label{color:rgba(255,255,255,.8)!important;font-size:12px!important;font-family:inherit!important}
 body.skui .sk-top .me input{background:rgba(255,255,255,.15)!important;border:1px solid rgba(255,255,255,.3)!important;color:#fff!important;box-shadow:none!important}
 body.skui .sk-top #q{margin:0 auto!important}
-body.skui .sk-bt{align-items:flex-start!important}body.skui .sk-bt h1{align-self:flex-start!important;margin-left:0!important;margin-right:0!important;width:auto!important}
 body.skui .sk-stat>div{flex:1 1 0;min-width:0}
 @media (max-width:860px){body.skui .sk-stat i{width:36px;height:36px;font-size:18px}body.skui .sk-stat .sk-att{flex:1 1 100%}}
 @media (max-width:860px){body.skui .grid{grid-template-columns:1fr!important}body.skui .bar .seg{display:flex!important;overflow-x:auto;max-width:100%;flex-wrap:nowrap}body.skui .bar .seg button{white-space:nowrap!important;flex:none!important;padding:6px 12px!important;font-size:13px!important}}
@@ -820,7 +812,7 @@ function openSheet(n){
     const composeB=`<div class="sk-dockc" id="composeDock">
       <div class="sk-comp"><div class="sk-tb"><span><b>B</b></span><span><i>I</i></span><span><s>S</s></span><span>🔗</span><span>☰</span><span>❝</span></div>
       <textarea id="txt" maxlength="600" rows="2" placeholder="今の${esc(p.n)}さんに話したいこと…"></textarea>
-      <div class="sk-bt"><span class="ic">＋</span><span class="ic">Aa</span><span class="ic">☺</span><span class="ic">@</span>${mic}<span class="sp"></span><button class="btn" id="send">送信 ➤</button></div></div>
+      <div class="sk-cbt"><span class="ic">＋</span><span class="ic">Aa</span><span class="ic">☺</span><span class="ic">@</span>${mic}<span class="sp"></span><button class="btn" id="send">送信 ➤</button></div></div>
       <div class="sk-from"><label>送信者：<input id="meB" list="names" value="${esc(ME)}" placeholder="あなたの名前" autocomplete="name"></label><details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details></div>
     </div>`;
     const isInv=INV===p.n,nMsg=count(p.n);
