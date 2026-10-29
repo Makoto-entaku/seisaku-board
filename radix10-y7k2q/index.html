@@ -528,6 +528,39 @@ body.skui .card .av{transform:none!important;box-shadow:none!important;padding:0
 body.skui .card .av::before{display:none!important}
 body.skui .card .av img{border-radius:8px!important}
 body.skui .card .nm,body.skui .card .cnt,body.skui .sk-mh,body.skui .bar .me label{font-family:inherit!important;letter-spacing:0!important}
+body.skui .sk-hero{padding:16px 20px 0!important}
+body.skui .sk-ban{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border-radius:12px;overflow:hidden;background:#3f0e40;color:#fff}
+body.skui .sk-bt{padding:30px 32px;display:flex;flex-direction:column;justify-content:center;gap:8px}
+body.skui .sk-bt small{font-size:12px;letter-spacing:.2em;opacity:.8}
+body.skui .sk-bt h1{font-family:inherit!important;font-size:clamp(28px,3.4vw,44px)!important;font-weight:900!important;line-height:1.2!important;margin:4px 0 6px!important;color:#fff!important;letter-spacing:0!important}
+body.skui .sk-bt p{font-size:15px;line-height:1.75;margin:0;opacity:.95}
+body.skui .sk-ban img{display:block;width:100%;height:auto;object-fit:contain;background:#000;align-self:center}
+body.skui .sk-row{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap}
+body.skui .sk-stat{flex:1 1 200px;border:1px solid var(--sk-ln);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+body.skui .sk-stat i{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-size:22px;font-style:normal;flex:none}
+body.skui .sk-stat b{display:block;font-size:30px;font-weight:900;line-height:1}
+body.skui .sk-stat span{display:block;font-size:13px;color:var(--sk-mu);margin-top:4px}
+body.skui .sk-att{margin-left:auto;border:1px solid #d62d20;color:#d62d20;background:#fff;border-radius:6px;padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+body.skui .sk-att.on{background:#d62d20;color:#fff}
+body.skui .sk-cta{flex:1.3 1 260px;border:0;border-radius:12px;background:var(--sk-gr);color:#fff;padding:14px 20px;display:flex;flex-direction:column;justify-content:center;text-align:left;cursor:pointer;font-family:inherit}
+body.skui .sk-cta b{font-size:18px;font-weight:900}body.skui .sk-cta span{font-size:13px;opacity:.9;margin-top:4px}
+body.skui .sk-top .me{display:flex;align-items:center;gap:6px;font-size:12px;color:rgba(255,255,255,.8);white-space:nowrap}
+body.skui .sk-top .me input{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:4px 10px;color:#fff;font-size:13px;width:150px}
+body.skui .sk-top .me input::placeholder{color:rgba(255,255,255,.6)}
+@media (min-width:861px){body.skui .bar{display:none!important}}
+@media (max-width:860px){body.skui .sk-top{flex-wrap:wrap;height:auto;padding:8px 12px;row-gap:6px}body.skui .sk-top #q{order:3;flex:1 1 100%;max-width:none}body.skui .sk-top .me{margin-left:auto}body.skui .sk-top .me input{width:130px}body.skui .sk-ch{top:84px}
+body.skui .sk-ban{grid-template-columns:1fr}body.skui .sk-ban img{order:-1}body.skui .sk-bt{padding:18px 18px 20px}body.skui .sk-hero{padding:12px 14px 0!important}body.skui .sk-stat{flex:1 1 140px;padding:12px}body.skui .sk-stat b{font-size:24px}body.skui .sk-att{margin:8px 0 0;width:100%}body.skui .sk-stat{flex-wrap:wrap}}
+body.skui .sk-bt,body.skui .sk-bt *{text-align:left!important;color:#fff!important;font-family:inherit!important}
+body.skui .sk-bt p{color:rgba(255,255,255,.92)!important;font-weight:400!important;letter-spacing:0!important}
+body.skui .sk-bt small{color:rgba(255,255,255,.75)!important}
+body.skui .sk-top .me{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;margin:0 0 0 auto!important;border-radius:0!important;width:auto!important}
+body.skui .sk-top .me label{color:rgba(255,255,255,.8)!important;font-size:12px!important;font-family:inherit!important}
+body.skui .sk-top .me input{background:rgba(255,255,255,.15)!important;border:1px solid rgba(255,255,255,.3)!important;color:#fff!important;box-shadow:none!important}
+body.skui .sk-top #q{margin:0 auto!important}
+body.skui .sk-bt{align-items:flex-start!important}body.skui .sk-bt h1{align-self:flex-start!important;margin-left:0!important;margin-right:0!important;width:auto!important}
+body.skui .sk-stat>div{flex:1 1 0;min-width:0}
+@media (max-width:860px){body.skui .sk-stat i{width:36px;height:36px;font-size:18px}body.skui .sk-stat .sk-att{flex:1 1 100%}}
+@media (max-width:860px){body.skui .grid{grid-template-columns:1fr!important}body.skui .bar .seg{display:flex!important;overflow-x:auto;max-width:100%;flex-wrap:nowrap}body.skui .bar .seg button{white-space:nowrap!important;flex:none!important;padding:6px 12px!important;font-size:13px!important}}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -535,19 +568,19 @@ body.skui .card .nm,body.skui .card .cnt,body.skui .sk-mh,body.skui .bar .me lab
 <div class="gate" id="gate"><div class="typefield" id="typefield" aria-hidden="true"></div><div class="load"><h1>全員集合</h1><p class="note" id="gateErr">読み込んでいます…</p></div></div>
 
 <div class="wrap" id="app" hidden>
-  <div class="sk-top"><span class="ws">SAKIYOMI 10th</span><input id="q" type="search" placeholder="🔍 名前でさがす"></div>
+  <div class="sk-top"><span class="ws">SAKIYOMI 10th</span><input id="q" type="search" placeholder="🔍 名前でさがす"><div class="me"><label for="me">あなた</label><input id="me" list="names" placeholder="名前を入れる" autocomplete="name"></div></div>
   <div class="sk-shell">
   <aside class="sk-side"><div class="sws">株式会社SAKIYOMI<small>10周年 2016–2026</small></div><div class="sh">▾ チャンネル</div>
     <nav id="skCh"><a data-r="all" class="on"># 全員集合</a><a data-r="partner"># 元パートナー</a><a data-r="innovator"># 元イノベーター</a><a data-r="cur"># 現メンバー</a></nav></aside>
   <main class="sk-main">
   <div class="sk-ch"><span id="chName"># 全員集合</span><small>👤 <span id="memN">0</span></small></div>
-  <header><div class="sk-msg"><div class="sk-av">S</div><div class="sk-b"><div class="sk-hd"><b>SAKIYOMI 10周年</b><span class="app">アプリ</span><span class="t">12:00</span></div>
-    <div class="tate-hero"><h1>10周年だよ、全員集合</h1><p class="sub-t">Radix → SAKIYOMI 2016–2026</p><p class="lead">10年の歴史の中で、<br>その背中を追いかけた人、<br>一緒に走り抜けた人、<br>背中を見せた相手。<br>その瞬間、確かに存在していた。<br><br>写真、言葉。それを見て、<br>あなたの言葉で年末総会へお誘いください。</p></div>
-    <figure class="wall"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"></figure>
-    <div class="sk-re"><span class="b">💌 <b id="bigMsg">0</b> 件のメッセージ</span><span>✅ 12/19 出席 <b id="bigAtt">0</b> 人</span></div>
-  </div></div></header>
+  <header class="sk-hero">
+    <div class="sk-ban"><div class="sk-bt"><small>RADIX → SAKIYOMI 2016–2026</small><h1>10周年だよ、全員集合</h1><p>10年の歴史の中で、その背中を追いかけた人、一緒に走り抜けた人、背中を見せた相手。その瞬間、確かに存在していた。</p><p>写真、言葉。それを見て、あなたの言葉で年末総会へお誘いください。</p></div><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"></div>
+    <div class="sk-row"><div class="sk-stat"><i style="background:#e8f5fa">💌</i><div><b id="bigMsg">0</b><span>集まったメッセージ</span></div></div>
+    <div class="sk-stat"><i style="background:#e3f6ee">✅</i><div><b id="bigAtt">0</b><span>12/19 総会 出席</span></div><button type="button" class="sk-att" id="rsvpMe">出席する</button></div>
+    <button type="button" class="sk-cta" id="goMembers"><b>✍️ 誰かにメッセージを書く</b><span>下のメンバーをタップ → 一言でもOK</span></button></div>
+  </header>
   <div class="bar">
-    <div class="me"><label for="me">あなたの名前</label><input id="me" list="names" placeholder="例：岸原 誠" autocomplete="name"></div>
     <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="cur">現メンバー</button></div>
     <span class="stat" id="stat"></span>
     <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
@@ -687,7 +720,7 @@ function render(){
   $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
     const at=ATT.has(p.n);return `<button class="card${p.cur?' cur':''}${at?' att':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}${at?MARU+'<i class="att-t">出席</i>':''}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
   const targets=PEOPLE.filter(p=>!p.cur),done=targets.filter(p=>count(p.n)>0).length,mine=ME?MSG.filter(m=>m.from===ME).length:0;
-  $('#bigMsg').textContent=MSG.length;if($('#bigAtt'))$('#bigAtt').textContent=[...ATT].filter(n=>BYN[n]&&!BYN[n].cur).length;
+  $('#bigMsg').textContent=MSG.length;{const rb=$('#rsvpMe');if(rb){const on=ME&&ATT.has(ME);rb.textContent=on?'出席 ✓ 取り消す':'あなたも出席する';rb.classList.toggle('on',!!on)}}if($('#bigAtt'))$('#bigAtt').textContent=[...ATT].filter(n=>BYN[n]&&!BYN[n].cur).length;
   $('#stat').textContent=ME?`あなた ${mine}件`:'';
   void `メッセージ ${MSG.length}件 ・ 届いた人 ${done}/${targets.length}人${ME?` ・ あなた ${mine}件`:''}`;
   $('#progBar').style.width=(targets.length?done/targets.length*100:0)+'%';
@@ -697,6 +730,8 @@ $('#grid').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)o
 let ROLE='all';
 function setRole(r){ROLE=r;document.querySelectorAll('#seg [data-r],#skCh [data-r]').forEach(x=>x.classList.toggle('on',x.dataset.r===r));const a=document.querySelector('#skCh [data-r="'+r+'"]');if($('#chName')&&a)$('#chName').textContent=a.textContent;render()}
 $('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(b)setRole(b.dataset.r)});
+$('#goMembers').addEventListener('click',()=>{$('.sk-mh').scrollIntoView({behavior:'smooth',block:'start'})});
+$('#rsvpMe').addEventListener('click',async()=>{ME=$('#me').value.trim();if(!ME){toast('右上の「あなた」に名前を入れてください');$('#me').focus();return}if(!BYN[ME]){toast('右上の名前は、候補に出てくる名簿の名前（ローマ字）を選んでください');$('#me').focus();return}save('yk_me',ME);const on=!ATT.has(ME);if(on)ATT.add(ME);else ATT.delete(ME);render();try{const r=await post({action:'post',to:'__rsvp__',from:ME,text:on?'出席':'取消'});if(!r.ok)throw 0;toast(on?'出席にしました。待ってる！':'出席を取り消しました')}catch(e){if(on)ATT.delete(ME);else ATT.add(ME);render();toast('送れませんでした。もう一度押してください')}});
 $('#skCh').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(b)setRole(b.dataset.r)});
 $('#q').addEventListener('input',render);
 $('#me').addEventListener('change',()=>{ME=$('#me').value.trim();save('yk_me',ME);render()});
