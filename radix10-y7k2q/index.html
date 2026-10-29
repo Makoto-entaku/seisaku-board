@@ -589,6 +589,77 @@ body.skui .tile p{text-align:left!important;margin:2px 0 0!important}
 body.skui #tab-board .row.end{justify-content:flex-start;gap:8px}
 body.skui #tab-board .row.end .btn{border-radius:6px!important;font-size:13px!important;padding:6px 12px!important}
 body.skui .sk-dock .cta-b .to b{color:var(--sk-fg)!important;font-size:16px!important}
+
+/* ===== 招待状KVテーマ ===== */
+body.skui{--kv-b:#395DC8;--kv-bg:#F9EFEC;--kv-ink:#1f2a55;background:var(--kv-bg)!important;color:var(--kv-ink)}
+html:has(body.skui){background:#F9EFEC!important}
+body.skui .wrap{max-width:1160px!important;margin:0 auto!important;padding:0 24px 80px!important}
+body.skui .kv-top{position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:12px;padding:10px 0;background:rgba(249,239,236,.94);backdrop-filter:blur(6px);border-bottom:1px solid rgba(57,93,200,.15)}
+body.skui .kv-top .ws{font-weight:900;color:var(--kv-b);font-size:14px;white-space:nowrap}
+body.skui .kv-top #q{flex:1;max-width:420px;margin:0 auto;height:34px;border-radius:999px;border:1.5px solid rgba(57,93,200,.3);background:#fff;padding:0 14px;font-size:13px;color:var(--kv-ink)}
+body.skui .kv-top .me{display:flex;align-items:center;gap:6px;font-size:12px;color:#6a73a0;white-space:nowrap}
+body.skui .kv-top .me input{border:1.5px solid rgba(57,93,200,.3);border-radius:999px;padding:6px 12px;font-size:13px;width:170px;background:#fff;color:var(--kv-ink)}
+body.skui .kv-hero{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:48px;align-items:center;padding:28px 0 6px}
+body.skui .kv-img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:contain;background:transparent}
+body.skui .kv-hd small{display:block;color:var(--kv-b);font-weight:700;letter-spacing:.06em;font-size:15px}
+body.skui .kv-hd h2{color:var(--kv-b);font-size:clamp(24px,2.6vw,32px);font-weight:900;line-height:1.35;margin:6px 0 4px;font-family:inherit}
+body.skui .kv-date{color:var(--kv-b);font-weight:900;font-size:26px}body.skui .kv-date span{font-size:14px;margin-left:6px}
+body.skui .kv-hd p{margin:22px 0 0;font-size:15px;line-height:1.9;color:#3b4570}
+body.skui .kv-nums{display:flex;gap:36px;margin-top:24px}
+body.skui .kv-nums span{display:block;font-size:12px;color:#6a73a0;letter-spacing:.08em}
+body.skui .kv-nums b{display:flex;align-items:baseline;white-space:nowrap;color:var(--kv-b)}
+body.skui .kv-nums em{font-style:normal;font-size:56px;line-height:1.05;font-weight:900}
+body.skui .kv-nums small{font-size:16px;margin-left:3px;font-weight:700}
+body.skui .kv-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+body.skui .kv-btns button{padding:13px 26px;border-radius:999px;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
+body.skui .kv-p{background:var(--kv-b);color:#fff;border:2px solid var(--kv-b)}body.skui .kv-p.on{background:#fff;color:var(--kv-b)}
+body.skui .kv-o{background:transparent;color:var(--kv-b);border:2px solid var(--kv-b)}
+body.skui .kv-lab{font-size:12px;letter-spacing:.25em;color:#6a73a0;text-align:center;margin:48px 0 14px;font-weight:400;padding:0;border:0}
+body.skui .kv-slk{max-width:680px;margin:0 auto;background:#fff;border:1px solid #d6d6d6;border-radius:10px;box-shadow:0 8px 24px rgba(57,93,200,.12);overflow:hidden;color:#1d1c1d;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif}
+body.skui .kv-slk .s-top{background:#3f0e40;height:26px;display:flex;align-items:center;gap:6px;padding:0 12px}body.skui .kv-slk .s-top i{width:9px;height:9px;border-radius:50%;background:#ff5f57}body.skui .kv-slk .s-top i:nth-child(2){background:#febc2e}body.skui .kv-slk .s-top i:nth-child(3){background:#28c840}body.skui .kv-slk .s-top span{flex:1;margin:0 30px;height:16px;border-radius:5px;background:rgba(255,255,255,.18);color:rgba(255,255,255,.85);font-size:10px;display:flex;align-items:center;justify-content:center}
+body.skui .kv-ch{font-weight:700;font-size:15px;padding:9px 16px;border-bottom:1px solid #e2e2e2}
+body.skui .kv-slk .sk-post{padding:12px 16px 14px}
+body.skui .kv-slk .sk-pb{max-width:none}
+body.skui .kv-slk .sk-ttl{font-size:20px}
+body.skui .bar{position:static!important;display:flex!important;justify-content:center;background:none!important;border:0!important;padding:0 0 18px!important;margin:0!important}
+body.skui .bar .seg{display:flex!important;gap:8px;flex-wrap:wrap;justify-content:center;background:none!important;border:0!important;padding:0!important}
+body.skui .bar .seg button{border:1.5px solid #c7cdea!important;background:#fff!important;color:var(--kv-b)!important;border-radius:999px!important;padding:7px 16px!important;font-size:13px!important;white-space:nowrap}
+body.skui .bar .seg button.on{background:var(--kv-b)!important;color:#fff!important;border-color:var(--kv-b)!important}
+body.skui .grid{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(128px,1fr))!important;gap:22px 14px!important;padding:0!important;margin:0!important}
+body.skui .card{flex-direction:column!important;align-items:center!important;text-align:center!important;gap:0!important;padding:8px 4px!important;border-radius:14px!important}
+body.skui .card:hover{background:rgba(57,93,200,.06)!important}
+body.skui .card .av{width:92px!important;height:92px!important;border-radius:50%!important;border:3px solid #fff!important;box-shadow:0 4px 10px rgba(57,93,200,.15)!important;overflow:visible!important}
+body.skui .card .av img{border-radius:50%!important}
+body.skui .card.att .av:after{content:"出席"!important;position:absolute;right:-10px;top:-6px;left:auto;bottom:auto;width:auto!important;height:auto!important;background:var(--kv-b)!important;color:#fff;font-size:11px;font-weight:700;padding:3px 7px;border-radius:999px!important;border:0!important}
+body.skui .card .nm{margin-top:10px;font-size:14px!important;color:var(--kv-ink)!important;white-space:normal!important;flex:none!important}
+body.skui .card .cnt{font-size:12px!important;color:#8a90b3!important;background:none!important;padding:0!important;border-radius:0!important;font-weight:400!important}
+body.skui .card .cnt:not(.zero){color:var(--kv-b)!important;background:none!important;font-weight:700!important}
+body.skui .card .cnt.mine{color:var(--kv-b)!important}
+/* 個人ページ */
+body.skui .sheet.full{background:var(--kv-bg)!important}
+body.skui .bar-b{background:rgba(249,239,236,.95)!important;border-bottom:1px solid rgba(57,93,200,.15)!important}
+body.skui .bar-b .bt{color:var(--kv-b)!important}body.skui .bar-b .bt:before{content:""!important}
+body.skui .bar-b .pill{background:var(--kv-b)!important;border-radius:999px!important}
+body.skui .hero h2{color:var(--kv-b)!important}
+body.skui .hero .av{border-radius:50%!important}body.skui .hero .av img{border-radius:50%!important}
+body.skui .sec-h{color:var(--kv-b)!important;border-top:0!important;border-bottom:0!important;margin-top:28px!important;padding-top:0!important}
+body.skui .sec-h::after{content:"";flex:1;height:1px;background:rgba(57,93,200,.2);margin-left:8px;align-self:center}
+body.skui .sec-h .sw{order:3}
+body.skui .sheet.full .board{background:#fff;border-radius:10px;border:1px solid #e2e2e2;padding:6px!important}
+body.skui .sk-dock{background:rgba(249,239,236,.97)!important;border-top:1px solid rgba(57,93,200,.2)!important}
+body.skui .sk-dock .cta-b .to b{color:var(--kv-b)!important}
+body.skui .sk-dock .cta-b .btn{background:var(--kv-b)!important;border-color:var(--kv-b)!important;color:#fff!important;border-radius:999px!important}
+@media (max-width:860px){body.skui .wrap{padding:0 14px 60px!important}
+body.skui .kv-top{flex-wrap:wrap;row-gap:6px}body.skui .kv-top #q{order:3;flex:1 1 100%;max-width:none}body.skui .kv-top .me{margin-left:auto}body.skui .kv-top .me input{width:140px}
+body.skui .kv-hero{grid-template-columns:1fr;gap:18px;padding-top:12px}
+body.skui .kv-nums em{font-size:44px}body.skui .kv-btns button{padding:12px 18px;font-size:14px}
+body.skui .grid{grid-template-columns:repeat(3,1fr)!important;gap:16px 6px!important}body.skui .card .av{width:76px!important;height:76px!important}body.skui .card .nm{font-size:12px!important}}
+body.skui .kv-lab.sk-mh{display:block!important;text-align:center!important;font-size:12px!important;font-weight:400!important;padding:0!important;margin:48px 0 14px!important}
+body.skui .kv-top .me,body.skui .kv-top .me label{background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+body.skui .hero .av,body.skui .hero .av>*{transform:none!important;rotate:none!important;padding:0!important;border:0!important;box-shadow:none!important;background:none!important}
+body.skui .hero .av::before,body.skui .hero .av::after,body.skui .hero .av>*::before,body.skui .hero .av>*::after{display:none!important;content:none!important}
+body.skui .hero .av img{border-radius:50%!important;width:72px!important;height:72px!important;object-fit:cover}
+body.skui .hero h2,body.skui .bar-b .bt{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif!important;font-weight:900!important}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -596,13 +667,16 @@ body.skui .sk-dock .cta-b .to b{color:var(--sk-fg)!important;font-size:16px!impo
 <div class="gate" id="gate"><div class="typefield" id="typefield" aria-hidden="true"></div><div class="load"><h1>全員集合</h1><p class="note" id="gateErr">読み込んでいます…</p></div></div>
 
 <div class="wrap" id="app" hidden>
-  <div class="sk-top"><span class="ws">SAKIYOMI 10th</span><input id="q" type="search" placeholder="🔍 名前でさがす"><div class="me"><label for="me">あなた</label><input id="me" list="names" placeholder="名簿から選ぶ" autocomplete="off"></div></div>
-  <div class="sk-shell">
-  <aside class="sk-side"><div class="sws">株式会社SAKIYOMI<small>10周年 2016–2026</small></div><div class="sh">▾ チャンネル</div>
-    <nav id="skCh"><a data-r="all" class="on"># 全員集合</a><a data-r="partner"># 元パートナー</a><a data-r="innovator"># 元イノベーター</a><a data-r="cur"># 現メンバー</a></nav></aside>
-  <main class="sk-main">
-  <div class="sk-ch"><span id="chName"># 全員集合</span><small>👤 <span id="memN">0</span></small></div>
-  <header class="sk-hero">
+  <div class="kv-top"><span class="ws">SAKIYOMI 2026年度末 全社総会</span><input id="q" type="search" placeholder="🔍 名前でさがす"><div class="me"><label for="me">あなた</label><input id="me" list="names" placeholder="名簿から選ぶ" autocomplete="off"></div></div>
+  <nav id="skCh" hidden></nav>
+  <section class="kv-hero"><img id="kvImg" class="kv-img" alt="どうしても話したいことあってさ。SAKIYOMI 2026年度末 全社総会の招待状イラスト"><div class="kv-hd">
+    <small>SAKIYOMI Inc.</small><h2>2026年度末 全社総会</h2><div class="kv-date">2026.12.19<span>Sat</span></div>
+    <p>どうしても話したいこと、あってさ。<br>あの頃の写真と言葉を見て、<br>あなたの言葉で誘ってください。</p>
+    <div class="kv-nums"><div><span>集まったメッセージ</span><b><em id="bigMsg">0</em><small>件</small></b></div><div><span>12/19 出席</span><b><em id="bigAtt">0</em><small>人</small></b></div></div>
+    <div class="kv-btns"><button type="button" class="kv-p" id="rsvpMe">出席する</button><button type="button" class="kv-o" id="goMembers">メッセージを書く ↓</button></div>
+  </div></section>
+  <div class="kv-lab">— あの頃のSlackから —</div>
+  <div class="kv-slk"><div class="s-top"><i></i><i></i><i></i><span>株式会社SAKIYOMI</span></div><div class="kv-ch"># 全員集合</div>
     <div class="sk-post"><div class="sk-pav">S</div><div class="sk-pb"><div class="sk-phd"><b>SAKIYOMI 10周年</b><span class="app">アプリ</span><span class="t">12:00</span></div>
       <div class="sk-ptx"><span class="sk-bc">@channel</span>
 <b class="sk-ttl">🎉 10周年だよ、全員集合</b>
@@ -611,20 +685,15 @@ body.skui .sk-dock .cta-b .to b{color:var(--sk-fg)!important;font-size:16px!impo
 10年の歴史の中で、その背中を追いかけた人、一緒に走り抜けた人、背中を見せた相手。その瞬間、確かに存在していた。
 
 写真、言葉。それを見て、<b>あなたの言葉で年末総会へお誘いください。</b></div>
-      <div class="sk-media"><div class="sk-file"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"><span>📎 sakiyomi_wall.jpg</span></div><div class="sk-row"><div class="sk-stat"><i style="background:#e8f5fa">💌</i><div><b id="bigMsg">0</b><span>集まったメッセージ</span></div></div>
-    <div class="sk-stat"><i style="background:#e3f6ee">✅</i><div><b id="bigAtt">0</b><span>12/19 出席</span></div><button type="button" class="sk-att" id="rsvpMe">出席する</button></div>
-    <button type="button" class="sk-cta" id="goMembers"><b>✍️ 誰かにメッセージを書く</b><span>下のメンバーをタップ → 一言でもOK</span></button></div></div>
-    </div></div>
-    </header>
+      <div class="sk-file"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"><span>📎 sakiyomi_wall.jpg</span></div></div></div>
+  </div>
+  <div class="kv-lab sk-mh">— 話したい人を選ぶ —</div>
   <div class="bar">
     <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="cur">現メンバー</button></div>
-    <span class="stat" id="stat"></span>
-    <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
+    <span class="stat" id="stat"></span><div class="prog" aria-hidden="true"><i id="progBar"></i></div>
   </div>
-  <div class="sk-mh">メンバー<small>タップしてメッセージを送る</small></div>
   <datalist id="names"></datalist>
   <div class="grid" id="grid"></div>
-  </main></div>
 </div>
 
 <div class="scrim" id="scrim" hidden></div>
@@ -681,12 +750,13 @@ async function boot(){
   let d;try{d=await get({action:'data'})}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
   try{localStorage.setItem('yk_data',JSON.stringify(d))}catch(e){}
-  apply(d);loadAvatars();prefetchPhotos();
+  apply(d);loadAvatars();prefetchPhotos();loadKV();
   setInterval(refresh,45000);
 }
 function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));setMsgs(d.messages||[]);
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV){if(open!==INV){document.body.classList.add('inv');openSheet(INV)}else renderMsgs(INV)}}
 async function refresh(){try{const d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
+async function loadKV(){const im=$('#kvImg');if(!im)return;const ids=[...Array(8).keys()].map(i=>'kv1:'+i);const put=()=>{if(ids.every(k=>PH[k]))im.src=ids.map(k=>PH[k]).join('')};put();if(im.src)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){gotPhotos(d.photos);put()}}catch(e){}}
 async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))].filter(k=>!AV[k]);
   const jobs=[];for(let i=0;i<keys.length;i+=20){const ids=keys.slice(i,i+20).map(k=>'av:'+k);
@@ -756,7 +826,7 @@ function render(){
   $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
     const at=ATT.has(p.n);return `<button class="card${p.cur?' cur':''}${at?' att':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}${at?MARU+'<i class="att-t">出席</i>':''}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
   const targets=PEOPLE.filter(p=>!p.cur),done=targets.filter(p=>count(p.n)>0).length,mine=ME?MSG.filter(m=>m.from===ME).length:0;
-  $('#bigMsg').textContent=MSG.length;{const rb=$('#rsvpMe');if(rb){const on=ME&&ATT.has(ME);rb.textContent=on?'出席 ✓ 取り消す':'あなたも出席する';rb.classList.toggle('on',!!on)}}if($('#bigAtt'))$('#bigAtt').textContent=[...ATT].filter(n=>BYN[n]&&!BYN[n].cur).length;
+  $('#bigMsg').textContent=MSG.length;{const rb=$('#rsvpMe');if(rb){const on=ME&&ATT.has(ME);rb.textContent=on?'出席 ✓（取り消す）':'出席する';rb.classList.toggle('on',!!on)}}if($('#bigAtt'))$('#bigAtt').textContent=[...ATT].filter(n=>BYN[n]&&!BYN[n].cur).length;
   $('#stat').textContent=ME?`あなた ${mine}件`:'';
   void `メッセージ ${MSG.length}件 ・ 届いた人 ${done}/${targets.length}人${ME?` ・ あなた ${mine}件`:''}`;
   $('#progBar').style.width=(targets.length?done/targets.length*100:0)+'%';
