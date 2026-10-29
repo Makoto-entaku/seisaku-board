@@ -591,10 +591,10 @@ body.skui #tab-board .row.end .btn{border-radius:6px!important;font-size:13px!im
 body.skui .sk-dock .cta-b .to b{color:var(--sk-fg)!important;font-size:16px!important}
 
 /* ===== 招待状KVテーマ ===== */
-body.skui{--kv-b:#395DC8;--kv-bg:#F9EFEC;--kv-ink:#1f2a55;background:var(--kv-bg)!important;color:var(--kv-ink)}
-html:has(body.skui){background:#F9EFEC!important}
+body.skui{--kv-b:#395DC8;--kv-bg:#FFFFFF;--kv-ink:#1f2a55;background:var(--kv-bg)!important;color:var(--kv-ink)}
+html:has(body.skui){background:#FFFFFF!important}
 body.skui .wrap{max-width:1160px!important;margin:0 auto!important;padding:0 24px 80px!important}
-body.skui .kv-top{position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:12px;padding:10px 0;background:rgba(249,239,236,.94);backdrop-filter:blur(6px);border-bottom:1px solid rgba(57,93,200,.15)}
+body.skui .kv-top{position:sticky;top:0;z-index:8;display:flex;align-items:center;gap:12px;padding:10px 0;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:1px solid rgba(57,93,200,.15)}
 body.skui .kv-top .ws{font-weight:900;color:var(--kv-b);font-size:14px;white-space:nowrap}
 body.skui .kv-top #q{flex:1;max-width:420px;margin:0 auto;height:34px;border-radius:999px;border:1.5px solid rgba(57,93,200,.3);background:#fff;padding:0 14px;font-size:13px;color:var(--kv-ink)}
 body.skui .kv-top .me{display:flex;align-items:center;gap:6px;font-size:12px;color:#6a73a0;white-space:nowrap}
@@ -637,7 +637,7 @@ body.skui .card .cnt:not(.zero){color:var(--kv-b)!important;background:none!impo
 body.skui .card .cnt.mine{color:var(--kv-b)!important}
 /* 個人ページ */
 body.skui .sheet.full{background:var(--kv-bg)!important}
-body.skui .bar-b{background:rgba(249,239,236,.95)!important;border-bottom:1px solid rgba(57,93,200,.15)!important}
+body.skui .bar-b{background:rgba(255,255,255,.95)!important;border-bottom:1px solid rgba(57,93,200,.15)!important}
 body.skui .bar-b .bt{color:var(--kv-b)!important}body.skui .bar-b .bt:before{content:""!important}
 body.skui .bar-b .pill{background:var(--kv-b)!important;border-radius:999px!important}
 body.skui .hero h2{color:var(--kv-b)!important}
@@ -646,7 +646,7 @@ body.skui .sec-h{color:var(--kv-b)!important;border-top:0!important;border-botto
 body.skui .sec-h::after{content:"";flex:1;height:1px;background:rgba(57,93,200,.2);margin-left:8px;align-self:center}
 body.skui .sec-h .sw{order:3}
 body.skui .sheet.full .board{background:#fff;border-radius:10px;border:1px solid #e2e2e2;padding:6px!important}
-body.skui .sk-dock{background:rgba(249,239,236,.97)!important;border-top:1px solid rgba(57,93,200,.2)!important}
+body.skui .sk-dock{background:rgba(255,255,255,.97)!important;border-top:1px solid rgba(57,93,200,.2)!important}
 body.skui .sk-dock .cta-b .to b{color:var(--kv-b)!important}
 body.skui .sk-dock .cta-b .btn{background:var(--kv-b)!important;border-color:var(--kv-b)!important;color:#fff!important;border-radius:999px!important}
 @media (max-width:860px){body.skui .wrap{padding:0 14px 60px!important}
@@ -681,7 +681,7 @@ body.skui .kv-nums,body.skui .kv-btns{justify-content:center}
 body.skui .kv-art{width:auto!important;gap:0!important;align-items:center!important}
 body.skui .kv-art .kv-img{width:min(250px,46vw)!important;aspect-ratio:489/756!important;height:auto!important;margin:0 8px 0 0}
 body.skui .kv-copy{margin-top:0!important;align-self:center!important}
-body.skui .kv-wall{max-width:680px;margin:40px auto 0;padding:0}body.skui .kv-wall img{display:block;width:100%;height:auto;-webkit-mask-image:radial-gradient(ellipse 72% 70% at 50% 50%,#000 60%,transparent 100%);mask-image:radial-gradient(ellipse 72% 70% at 50% 50%,#000 60%,transparent 100%)}
+body.skui .kv-wall{max-width:680px;margin:40px auto 0;padding:0}body.skui .kv-wall img{display:block;width:100%;height:auto;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -697,7 +697,7 @@ body.skui .kv-wall{max-width:680px;margin:40px auto 0;padding:0}body.skui .kv-wa
     <div class="kv-nums"><div><span>集まったメッセージ</span><b><em id="bigMsg">0</em><small>件</small></b></div><div><span>12/19 出席</span><b><em id="bigAtt">0</em><small>人</small></b></div></div>
     <div class="kv-btns"><button type="button" class="kv-p" id="rsvpMe">出席する</button><button type="button" class="kv-o" id="goMembers">メッセージを書く ↓</button></div>
   </div></section>
-  <figure class="kv-wall"><img id="wallImg" src="wall_blue.jpg?v=2" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"></figure>
+  <figure class="kv-wall"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"></figure>
   <div class="kv-lab sk-mh">— 話したい人を選ぶ —</div>
   <div class="bar">
     <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="cur">現メンバー</button></div>
