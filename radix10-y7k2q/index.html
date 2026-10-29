@@ -922,7 +922,7 @@ function openSheet(n){
       <div class="sk-from"><label>送信者：<input id="meB" list="names" value="${esc(ME)}" placeholder="名簿から選ぶ（例 Makoto Kishihara）" autocomplete="off"></label><details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details></div>
     </div>`;
     const isInv=INV===p.n,nMsg=count(p.n);
-    const boardB=`<h3 class="sec-h">✉️ ${isInv?'あなたへのメッセージ':'寄せ書き'} <small><span id="bcount"></span>件</small></h3>
+    const boardB=`<h3 class="sec-h">✉️ ${isInv?'あなたへのメッセージ':'メッセージ'} <small><span id="bcount"></span>件</small></h3>
       <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="close2">← みんなの一覧に戻る</button><button class="btn ghost" id="next">次の人へ →</button></div></section>`;
     $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">← 一覧へ</button><div class="bt">${esc(p.n)}${isInv?' さんへの招待状':''}</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
       <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div>${isInv?`<p class="inv-lead">12月19日、SAKIYOMI 10周年の総会へ。<br>あなたに <b id="invN">${nMsg}</b> 件のメッセージが届いています。</p>`:''}</header>
