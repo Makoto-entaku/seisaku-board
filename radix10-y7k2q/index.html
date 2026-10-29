@@ -575,6 +575,13 @@ body.skui .sk-media .sk-file{margin-top:0!important;align-self:start}
 body.skui .sk-media .sk-row{flex-direction:column;margin-top:0;gap:12px}
 body.skui .sk-media .sk-stat,body.skui .sk-media .sk-cta{flex:1 1 0!important}
 body.skui .sk-media .sk-cta b{font-size:20px}}
+body.skui .tile{align-items:flex-start!important;text-align:left!important}
+body.skui .tile .t-b{display:flex!important;flex-direction:column-reverse!important;align-items:flex-start!important;justify-content:flex-start!important;text-align:left!important}
+body.skui .tile .meta{display:flex!important;justify-content:flex-start!important;align-items:baseline!important;gap:8px!important;width:auto!important;flex-wrap:wrap}
+body.skui .tile .meta .del{border:0!important;background:none!important;color:var(--sk-mu)!important;font-size:12px!important;padding:0!important;font-weight:400!important;text-decoration:underline;cursor:pointer;min-height:0!important}
+body.skui .tile p{text-align:left!important;margin:2px 0 0!important}
+body.skui #tab-board .row.end{justify-content:flex-start;gap:8px}
+body.skui #tab-board .row.end .btn{border-radius:6px!important;font-size:13px!important;padding:6px 12px!important}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -582,7 +589,7 @@ body.skui .sk-media .sk-cta b{font-size:20px}}
 <div class="gate" id="gate"><div class="typefield" id="typefield" aria-hidden="true"></div><div class="load"><h1>全員集合</h1><p class="note" id="gateErr">読み込んでいます…</p></div></div>
 
 <div class="wrap" id="app" hidden>
-  <div class="sk-top"><span class="ws">SAKIYOMI 10th</span><input id="q" type="search" placeholder="🔍 名前でさがす"><div class="me"><label for="me">あなた</label><input id="me" list="names" placeholder="名前を入れる" autocomplete="name"></div></div>
+  <div class="sk-top"><span class="ws">SAKIYOMI 10th</span><input id="q" type="search" placeholder="🔍 名前でさがす"><div class="me"><label for="me">あなた</label><input id="me" list="names" placeholder="名簿から選ぶ" autocomplete="off"></div></div>
   <div class="sk-shell">
   <aside class="sk-side"><div class="sws">株式会社SAKIYOMI<small>10周年 2016–2026</small></div><div class="sh">▾ チャンネル</div>
     <nav id="skCh"><a data-r="all" class="on"># 全員集合</a><a data-r="partner"># 元パートナー</a><a data-r="innovator"># 元イノベーター</a><a data-r="cur"># 現メンバー</a></nav></aside>
@@ -813,7 +820,7 @@ function openSheet(n){
       <div class="sk-comp"><div class="sk-tb"><span><b>B</b></span><span><i>I</i></span><span><s>S</s></span><span>🔗</span><span>☰</span><span>❝</span></div>
       <textarea id="txt" maxlength="600" rows="2" placeholder="今の${esc(p.n)}さんに話したいこと…"></textarea>
       <div class="sk-cbt"><span class="ic">＋</span><span class="ic">Aa</span><span class="ic">☺</span><span class="ic">@</span>${mic}<span class="sp"></span><button class="btn" id="send">送信 ➤</button></div></div>
-      <div class="sk-from"><label>送信者：<input id="meB" list="names" value="${esc(ME)}" placeholder="あなたの名前" autocomplete="name"></label><details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details></div>
+      <div class="sk-from"><label>送信者：<input id="meB" list="names" value="${esc(ME)}" placeholder="名簿から選ぶ（例 Makoto Kishihara）" autocomplete="off"></label><details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details></div>
     </div>`;
     const isInv=INV===p.n,nMsg=count(p.n);
     const boardB=`<h3 class="sec-h">✉️ ${isInv?'あなたへのメッセージ':'寄せ書き'} <small><span id="bcount"></span>件</small></h3>
