@@ -561,6 +561,20 @@ body.skui .sk-bt{align-items:flex-start!important}body.skui .sk-bt h1{align-self
 body.skui .sk-stat>div{flex:1 1 0;min-width:0}
 @media (max-width:860px){body.skui .sk-stat i{width:36px;height:36px;font-size:18px}body.skui .sk-stat .sk-att{flex:1 1 100%}}
 @media (max-width:860px){body.skui .grid{grid-template-columns:1fr!important}body.skui .bar .seg{display:flex!important;overflow-x:auto;max-width:100%;flex-wrap:nowrap}body.skui .bar .seg button{white-space:nowrap!important;flex:none!important;padding:6px 12px!important;font-size:13px!important}}
+body.skui .sk-post{display:flex;gap:10px;padding:6px 0 4px}
+body.skui .sk-pav{width:40px;height:40px;border-radius:8px;background:#3f0e40;color:#fff;font-weight:900;display:grid;place-items:center;flex:none;font-size:18px}
+body.skui .sk-pb{flex:1;min-width:0}
+body.skui .sk-phd b{font-size:15px;font-weight:900;margin-right:6px}
+body.skui .sk-phd .app{font-size:10px;background:rgba(29,28,29,.13);color:var(--sk-mu);border-radius:3px;padding:1px 4px;font-weight:700;margin-right:6px;vertical-align:2px}
+body.skui .sk-phd .t{font-size:12px;color:var(--sk-mu)}
+body.skui .sk-ptx{white-space:pre-wrap;font-size:15px;line-height:1.6;margin-top:2px;color:var(--sk-fg)}
+body.skui .sk-ptx b{font-weight:900}
+body.skui .sk-bc{background:rgba(242,199,68,.4);border-radius:3px;padding:0 3px;font-weight:700}
+body.skui .sk-ttl{font-size:clamp(20px,2.6vw,28px);line-height:1.5}
+body.skui .sk-sub{color:var(--sk-mu);font-size:13px}
+body.skui .sk-file{margin-top:10px;width:min(560px,100%);border:1px solid var(--sk-ln);border-radius:8px;overflow:hidden;background:#f8f8f8}
+body.skui .sk-file img{display:block;width:100%;height:auto}
+body.skui .sk-file span{display:block;font-size:12px;color:var(--sk-mu);padding:6px 10px;border-top:1px solid var(--sk-ln);background:#fff}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -575,7 +589,16 @@ body.skui .sk-stat>div{flex:1 1 0;min-width:0}
   <main class="sk-main">
   <div class="sk-ch"><span id="chName"># 全員集合</span><small>👤 <span id="memN">0</span></small></div>
   <header class="sk-hero">
-    <div class="sk-ban"><div class="sk-bt"><small>RADIX → SAKIYOMI 2016–2026</small><h1>10周年だよ、全員集合</h1><p>10年の歴史の中で、その背中を追いかけた人、一緒に走り抜けた人、背中を見せた相手。その瞬間、確かに存在していた。</p><p>写真、言葉。それを見て、あなたの言葉で年末総会へお誘いください。</p></div><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"></div>
+    <div class="sk-post"><div class="sk-pav">S</div><div class="sk-pb"><div class="sk-phd"><b>SAKIYOMI 10周年</b><span class="app">アプリ</span><span class="t">12:00</span></div>
+      <div class="sk-ptx"><span class="sk-bc">@channel</span>
+<b class="sk-ttl">🎉 10周年だよ、全員集合</b>
+<span class="sk-sub">Radix → SAKIYOMI 2016–2026</span>
+
+10年の歴史の中で、その背中を追いかけた人、一緒に走り抜けた人、背中を見せた相手。その瞬間、確かに存在していた。
+
+写真、言葉。それを見て、<b>あなたの言葉で年末総会へお誘いください。</b></div>
+      <div class="sk-file"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"><span>📎 sakiyomi_wall.jpg</span></div>
+    </div></div>
     <div class="sk-row"><div class="sk-stat"><i style="background:#e8f5fa">💌</i><div><b id="bigMsg">0</b><span>集まったメッセージ</span></div></div>
     <div class="sk-stat"><i style="background:#e3f6ee">✅</i><div><b id="bigAtt">0</b><span>12/19 総会 出席</span></div><button type="button" class="sk-att" id="rsvpMe">出席する</button></div>
     <button type="button" class="sk-cta" id="goMembers"><b>✍️ 誰かにメッセージを書く</b><span>下のメンバーをタップ → 一言でもOK</span></button></div>
