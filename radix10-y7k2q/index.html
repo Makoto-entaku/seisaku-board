@@ -850,7 +850,7 @@ const MARU='<svg class="maru" viewBox="0 0 100 100" aria-hidden="true"><path d="
 function setMsgs(all){MSG=all.filter(m=>!String(m.to).startsWith('__'));ATT=new Set();all.filter(m=>m.to==='__rsvp__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{if(m.text==='出席')ATT.add(m.from);else ATT.delete(m.from)})}
 function ctaHtml(n){const a=ATT.has(n);return `<div class="cta-b${a?' on':''}" id="ctaB">${INV===n?'':`<p class="to"><b>${esc(n)}さんへ</b></p>`}${a?`<span class="att-stamp">出席</span><button class="link" id="rsvpX">取り消す</button>`:`<button class="btn" id="rsvp">出席する</button>`}</div>`}
 const count=n=>MSG.filter(m=>m.to===n).length;
-const mineTo=n=>MSG.some(m=>m.to===n&&m.from===ME);
+const mineTo=n=>MSG.some(m=>m.to===n&&ME&&(m.from===ME||resolveName(m.from)===ME));
 function render(){
   const q=$('#q').value.trim().toLowerCase();
   const list=PEOPLE.filter(p=>(ROLE==='cur'?p.cur:ROLE==='att'?(!p.cur&&ATT.has(p.n)):(!p.cur&&(ROLE==='all'||p.role===ROLE)))&&(!q||p.n.toLowerCase().includes(q)));if($('#memN'))$('#memN').textContent=list.length;if($('#attN'))$('#attN').textContent=PEOPLE.filter(p=>!p.cur&&ATT.has(p.n)).length;
