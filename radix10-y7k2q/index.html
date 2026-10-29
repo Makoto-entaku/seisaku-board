@@ -367,35 +367,191 @@ body.inv #close,body.inv #close2,body.inv #next,body.inv .bar-b .pill,body.inv #
 .howto{list-style:none;margin:22px 0 0;padding:14px 16px;display:flex;flex-direction:column;gap:8px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);border-radius:12px;max-width:520px}
 .howto li{display:flex;gap:10px;align-items:baseline;color:#fff;font-size:15px;line-height:1.5;font-weight:600}
 .howto b{flex:none;width:22px;height:22px;border-radius:50%;background:#d62d20;color:#fff;font-size:13px;display:grid;place-items:center}
+/* ===== Slack UI モード ===== */
+body.slk{--sk-au:#3f0e40;--sk-au2:#350d36;--sk-fg:#1d1c1d;--sk-mu:#616061;--sk-ln:#e2e2e2;--sk-bl:#1264a3;--sk-gr:#007a5a;background:#fff!important;color:var(--sk-fg);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;-webkit-font-smoothing:antialiased}
+body.slk::before{display:none!important}
+body.slk .wrap{max-width:none;padding:0 0 80px;margin:0}
+.sk-top{display:none}
+body.slk .sk-top{display:flex;position:sticky;top:0;z-index:8;align-items:center;gap:10px;height:44px;padding:0 12px;background:var(--sk-au2);color:#fff}
+body.slk .sk-top .ws{font-weight:700;font-size:15px;white-space:nowrap}
+body.slk .sk-top #q{flex:1;max-width:560px;margin:0 auto;height:28px;border-radius:6px;border:0;background:rgba(255,255,255,.2);color:#fff;padding:0 10px;font-size:13px}
+body.slk .sk-top #q::placeholder{color:rgba(255,255,255,.75)}
+body.slk .sk-shell{display:flex;align-items:stretch;min-height:calc(100dvh - 44px)}
+.sk-side{display:none}
+body.slk .sk-side{display:block;width:250px;flex:none;background:var(--sk-au);color:rgba(255,255,255,.75);padding:10px 0;position:sticky;top:44px;height:calc(100dvh - 44px);overflow:auto}
+body.slk .sk-side .sws{color:#fff;font-weight:900;font-size:17px;padding:4px 16px 12px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:10px}
+body.slk .sk-side .sws small{display:block;font-weight:400;font-size:12px;opacity:.7;margin-top:2px}
+body.slk .sk-side .sh{font-size:14px;padding:6px 16px;opacity:.85}
+body.slk .sk-side a{display:flex;gap:8px;align-items:center;padding:4px 16px 4px 26px;font-size:15px;cursor:pointer;color:inherit;text-decoration:none;border-radius:6px;margin:0 8px}
+body.slk .sk-side a.on{background:#1164a3;color:#fff;font-weight:700}
+body.slk .sk-side a:hover:not(.on){background:rgba(255,255,255,.08)}
+body.slk .sk-main{flex:1;min-width:0}
+body.slk .sk-ch{position:sticky;top:44px;z-index:6;background:#fff;border-bottom:1px solid var(--sk-ln);display:flex;align-items:center;gap:8px;padding:10px 20px;font-weight:900;font-size:18px}
+body.slk .sk-ch small{margin-left:auto;font-weight:400;font-size:13px;color:var(--sk-mu);border:1px solid var(--sk-ln);border-radius:6px;padding:3px 8px}
+body.slk header{display:block;padding:0 20px}
+body.slk .sk-msg{display:flex;gap:10px;padding:16px 0 8px}
+body.slk .sk-msg .sk-av{width:40px;height:40px;border-radius:8px;background:var(--sk-au);color:#fff;font-weight:900;display:grid;place-items:center;flex:none;font-size:18px}
+body.slk .sk-msg .sk-b{min-width:0;flex:1}
+body.slk .sk-hd b{font-size:15px;font-weight:900;margin-right:6px}.sk-hd .app{font-size:10px;background:rgba(29,28,29,.13);color:var(--sk-mu);border-radius:3px;padding:1px 4px;font-weight:700;margin-right:6px;vertical-align:2px}
+body.slk .sk-hd span.t{font-size:12px;color:var(--sk-mu)}
+body.slk .tate-hero{writing-mode:horizontal-tb!important;height:auto!important;margin:2px 0 0!important;gap:6px!important;display:block!important;overflow:visible!important;padding:0!important;position:static!important;color:var(--sk-fg)!important;text-shadow:none!important;background:none!important}
+body.slk .tate-hero h1{font-family:inherit!important;font-size:22px!important;font-weight:900!important;line-height:1.4!important;margin:2px 0 4px!important;color:var(--sk-fg)!important}
+body.slk .tate-hero h1 br{display:none}
+body.slk .tate-hero .sub-t{font-size:13px!important;color:var(--sk-mu)!important;margin:0 0 8px!important;writing-mode:horizontal-tb!important}
+body.slk .tate-hero .lead{font-size:15px!important;line-height:1.6!important;margin:0!important;color:var(--sk-fg)!important;font-family:inherit!important;writing-mode:horizontal-tb!important;font-weight:400!important}
+body.slk .wall{margin:10px 0 0!important;width:min(520px,100%)!important;max-width:100%!important;border-radius:8px;overflow:hidden;border:1px solid var(--sk-ln);position:relative}
+body.slk .wall img{max-height:300px!important;width:100%;object-fit:cover;border-radius:0!important}
+body.slk .wall canvas{display:none!important}
+body.slk .bar{position:static!important;margin:0!important;padding:10px 20px!important;background:#fff!important;border:0!important;border-top:1px solid var(--sk-ln)!important}
+body.slk .bar .stat,body.slk .bar .prog{display:none}
+body.slk .bar .seg{border-radius:6px}
+body.slk .sk-mh{padding:14px 20px 0;font-weight:900;font-size:15px;display:flex;align-items:baseline;gap:8px}
+body.slk .sk-mh small{font-weight:400;font-size:13px;color:var(--sk-mu)}
+body.slk .grid{padding:0 20px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))!important;gap:2px 16px!important;margin-top:8px!important}
+body.slk .card{flex-direction:row!important;align-items:center!important;text-align:left!important;gap:10px!important;padding:8px 10px!important;border-radius:8px!important;border:0!important;background:none!important}
+body.slk .card:hover{background:#f8f8f8!important}
+body.slk .card .av{width:44px!important;height:44px!important;border-radius:8px!important;font-size:16px;position:relative;overflow:visible}
+body.slk .card .av img{border-radius:8px}
+body.slk .card .nm{font-size:15px!important;font-weight:700!important;color:var(--sk-fg)!important;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.slk .card .cnt{font-size:12px!important;color:var(--sk-mu)!important;background:none!important;padding:0!important;white-space:nowrap}
+body.slk .card .cnt:not(.zero){color:#fff!important;background:#e01e5a!important;border-radius:10px;padding:1px 7px!important;font-weight:700}
+body.slk .card .cnt.mine{background:var(--sk-gr)!important}
+body.slk .card.att .av:after{content:"";position:absolute;right:-3px;bottom:-3px;width:12px;height:12px;border-radius:50%;background:#2bac76;border:2px solid #fff}
+body.slk .card .att-t{display:none!important}
+body.slk .card .maru{display:none!important}
+/* 個人ページ */
+body.slk .sheet.full{background:#fff!important}
+body.slk .bar-b{background:#fff!important;border-bottom:1px solid var(--sk-ln)!important;padding-top:10px!important}
+body.slk .bar-b .bt{font-weight:900;font-size:17px;color:var(--sk-fg)}
+body.slk .bar-b .bt:before{content:"@ ";color:var(--sk-mu);font-weight:400}
+body.slk .bar-b .back{border-radius:6px;border:1px solid var(--sk-ln);background:#fff;color:var(--sk-fg);font-size:13px;padding:5px 10px}
+body.slk .bar-b .pill,body.slk .btn.writebig{background:var(--sk-gr)!important;color:#fff!important;border-radius:6px!important;border:0!important;font-weight:700}
+body.slk .hero{background:none!important;align-items:flex-start!important;padding:24px 0 12px!important}
+body.slk .hero .av{width:96px!important;height:96px!important;border-radius:12px!important}
+body.slk .hero h2{font-weight:900!important;font-family:inherit!important}
+body.slk .heroWords{display:none!important}
+body.slk .sec-h{font-weight:900;font-size:15px;border-top:1px solid var(--sk-ln);padding-top:16px}
+body.slk .sheet.full .board{display:block!important;columns:auto!important;flex-direction:column!important}
+body.slk .tile{writing-mode:horizontal-tb!important;display:flex!important;gap:10px;background:none!important;border:0!important;border-radius:6px!important;padding:8px 8px!important;margin:0!important;box-shadow:none!important;width:100%!important;max-width:none!important;height:auto!important;transform:none!important;font-family:inherit!important}
+body.slk .tile:hover{background:#f8f8f8!important}
+.t-av{display:none}
+body.slk .t-av{display:grid;place-items:center;width:36px;height:36px;border-radius:8px;overflow:hidden;background:#e8e8e8;color:var(--sk-mu);font-weight:700;flex:none}
+body.slk .t-av img,body.slk .t-av>*{width:36px!important;height:36px!important;border-radius:8px!important;object-fit:cover}
+body.slk .tile .t-b{flex:1;min-width:0;display:flex;flex-direction:column-reverse;justify-content:flex-end}
+body.slk .tile p{font-size:15px!important;line-height:1.46!important;margin:2px 0 0!important;font-family:inherit!important;color:var(--sk-fg)!important;font-weight:400!important;letter-spacing:0!important}
+body.slk .tile .meta{font-size:15px!important;font-weight:900!important;color:var(--sk-fg)!important;margin:0!important;font-family:inherit!important;display:flex;gap:8px;align-items:baseline}
+body.slk .tile .meta .tm{font-size:12px;font-weight:400;color:var(--sk-mu)}
+body.slk .tile.lock{color:var(--sk-mu)}
+body.slk .tile.add{border:1px dashed var(--sk-ln)!important;justify-content:center}
+/* メッセージ入力＝Slackのコンポーザー */
+body.slk .cb-head b{font-weight:900;font-size:16px}
+body.slk .cb-head b:before{content:"@ ";color:var(--sk-mu);font-weight:400}
+body.slk .sk-comp{border:1px solid #868686;border-radius:8px;margin-top:10px;overflow:hidden}
+body.slk .sk-comp:focus-within{border-color:#1d1c1d;box-shadow:0 0 0 1px #1d1c1d}
+body.slk .sk-tb{display:flex;gap:2px;padding:4px 6px;background:#f8f8f8;border-bottom:1px solid var(--sk-ln);color:var(--sk-mu);font-size:14px}
+body.slk .sk-tb span{width:28px;height:28px;display:grid;place-items:center;border-radius:4px}
+body.slk .sk-comp textarea{border:0!important;outline:0;border-radius:0!important;box-shadow:none!important;background:#fff!important;width:100%;min-height:140px!important;padding:10px 12px!important;font-size:15px!important;line-height:1.46!important;font-family:inherit!important;resize:vertical}
+body.slk .sk-bt{display:flex;align-items:center;gap:4px;padding:4px 6px 6px;color:var(--sk-mu)}
+body.slk .sk-bt .ic{width:28px;height:28px;display:grid;place-items:center;border-radius:50%;font-size:15px}
+body.slk .sk-bt .sp{flex:1}
+body.slk .sk-bt #send{width:auto!important;background:var(--sk-gr)!important;color:#fff!important;border:0!important;border-radius:6px!important;padding:6px 14px!important;font-size:14px!important;font-weight:700;display:flex;gap:6px;align-items:center}
+body.slk .sk-bt #mic{border:0;background:none;padding:4px 8px;font-size:12px;color:var(--sk-mu)}
+body.slk .cb-tools{margin-top:8px}
+body.slk .fromrow{margin-top:10px}
+body.slk .fromrow input{border-radius:6px;background:#fff}
+@media (max-width:860px){body.slk .sk-side{display:none}body.slk .sk-ch{top:44px;padding:10px 14px}body.slk header,body.slk .bar,body.slk .sk-mh,body.slk .grid{padding-left:14px;padding-right:14px}body.slk .grid{grid-template-columns:1fr 1fr!important;gap:0 6px!important}body.slk .card .av{width:38px!important;height:38px!important}body.slk .card .nm{font-size:14px!important}}
+
+body.slk .sk-re{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+body.slk .sk-re span{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:24px;background:rgba(29,28,29,.05);border:1px solid transparent;font-size:13px}
+body.slk .sk-re span.b{background:#e8f5fa;border-color:#1d9bd1}
+body.slk .bar{display:flex!important;flex-wrap:wrap;gap:8px 14px;align-items:center}
+body.slk .bar .me{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--sk-mu)}
+body.slk .bar .me input{border:1px solid #bbb;border-radius:6px;padding:6px 10px;font-size:14px;width:180px;background:#fff}
+body.slk .bar .seg button{border-radius:16px!important}
+@media (min-width:861px){body.slk .bar .seg{display:none!important}}
+body.slk .sec-h{display:flex!important;align-items:baseline;gap:8px;border-top:8px solid #f4f4f4!important;padding-top:16px!important;margin-top:18px!important;font-size:18px!important}
+body.slk .sec-h small{font-size:13px!important;color:var(--sk-mu)!important;font-weight:400}
+body.slk .sec-h .sw{margin-left:auto;font-size:12px;font-weight:400;color:var(--sk-mu)}
+body.slk .sheet.full .photos.b img{height:220px!important;border-radius:10px!important}
+body.slk .photos figcaption{font-size:12px;color:var(--sk-mu)}
+body.slk .slk2 .s-imgs{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+body.slk .slk2 .s-imgs img{height:140px;max-width:100%;border-radius:8px;object-fit:cover;background:#eee;cursor:zoom-in}
+body.slk .sk-dock{position:sticky;bottom:0;z-index:5;background:#fff;border-top:1px solid var(--sk-ln);margin:16px 0 0!important;padding:8px max(12px,calc((100% - 960px)/2)) calc(10px + env(safe-area-inset-bottom,0px))!important;box-shadow:0 -6px 16px rgba(0,0,0,.06)}
+body.slk .sk-dock .cta-b{position:static!important;margin:0 0 8px!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important}
+body.slk .sk-dock .cta-b b{font-size:18px!important}
+body.slk .sheet.full:has(.sk-dock){padding-bottom:0!important}
+body.slk .sk-comp{border:1px solid #868686;border-radius:8px;overflow:hidden;background:#fff}
+body.slk .sk-comp:focus-within{border-color:#1d1c1d;box-shadow:0 0 0 1px #1d1c1d}
+body.slk .sk-tb{display:flex;gap:2px;padding:3px 6px;background:#f8f8f8;border-bottom:1px solid var(--sk-ln);color:var(--sk-mu);font-size:14px}
+body.slk .sk-tb span{width:28px;height:24px;display:grid;place-items:center}
+body.slk .sk-comp textarea{display:block;border:0!important;outline:0;border-radius:0!important;box-shadow:none!important;background:#fff!important;width:100%;min-height:44px!important;max-height:40vh;padding:9px 12px!important;font-size:15px!important;line-height:1.46!important;font-family:inherit!important;resize:none;transition:min-height .15s}
+body.slk .sk-comp textarea:focus{min-height:120px!important}
+body.slk .sk-bt{display:flex;align-items:center;gap:2px;padding:2px 6px 6px;color:var(--sk-mu)}
+body.slk .sk-bt .ic{width:28px;height:28px;display:grid;place-items:center;font-size:15px}
+body.slk .sk-bt .sp{flex:1}
+body.slk .sk-bt #send{background:var(--sk-gr)!important;color:#fff!important;border:0!important;border-radius:6px!important;padding:6px 14px!important;font-size:14px!important;font-weight:700;width:auto!important}
+body.slk .sk-bt .mic{border:0!important;background:none!important;padding:4px 6px!important;font-size:12px!important;color:var(--sk-mu)!important}
+body.slk .sk-bt .mic span{display:none}
+body.slk .sk-from{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center;margin-top:6px;font-size:12px;color:var(--sk-mu)}
+body.slk .sk-from input{border:1px solid #ccc;border-radius:6px;padding:4px 8px;font-size:13px;width:150px;margin-left:4px}
+body.slk .sk-from .hintd summary{cursor:pointer}
+body.slk .sk-from .hints{margin:6px 0 0;padding-left:18px;font-size:13px;color:var(--sk-fg)}
+body.slk .hero .sub{color:var(--sk-mu)!important}
+body.slk .inv-lead{text-align:left!important;margin:8px 0 0!important;padding:0!important}
+html:has(body.slk){background:#fff!important}
+body.slk .tate-hero,body.slk .tate-hero *{text-align:left!important;letter-spacing:0!important}
+body.slk .tate-hero .lead br{display:none}
+body.slk .tate-hero .lead br+br{display:block;content:"";margin-top:6px}
+body.slk .bar-b .bt,body.slk .bar-b .back,body.slk .hero h2,body.slk .sec-h,body.slk .cta-b b,body.slk .cta-b small{font-family:inherit!important;letter-spacing:0!important}
+body.slk .hero{flex-direction:row!important;text-align:left!important;justify-content:flex-start!important;gap:14px!important;align-items:center!important}
+body.slk .hero>div,body.slk .hero h2,body.slk .hero .sub{text-align:left!important}
+body.slk .hero .av{transform:none!important;box-shadow:none!important;padding:0!important;border:0!important;background:#eee!important}
+body.slk .hero .av::before,body.slk .hero .av::after{display:none!important}
+body.slk .hero .av img{border-radius:12px!important}
+body.slk .sk-dock .cta-b{display:flex!important;align-items:center!important;gap:10px!important;margin-bottom:6px!important}
+body.slk .sk-dock .cta-b p{flex-direction:row!important;align-items:baseline;gap:8px!important}
+body.slk .sk-dock .cta-b small{font-size:12px!important}
+body.slk .sk-dock .cta-b b{font-size:15px!important;font-weight:900!important}
+body.slk .sk-dock .cta-b .btn{padding:6px 14px!important;font-size:13px!important;border-radius:6px!important;min-height:0!important}
+body.slk .sk-dock .att-stamp{font-size:12px!important}
+body.slk .sk-tb{display:none}
+body.slk .sk-comp:focus-within .sk-tb{display:flex}
+body.slk .sk-from{display:none}
+body.slk .sk-dock:focus-within .sk-from,body.slk .sk-dock .sk-from:has(input:placeholder-shown){display:flex}
+body.slk .sk-comp textarea{min-height:40px!important}
+body.slk .hero{display:grid!important;grid-template-columns:auto 1fr;column-gap:14px!important;row-gap:2px!important;align-items:center!important;align-content:center}
+body.slk .hero .av{grid-row:1/span 3;width:72px!important;height:72px!important}
+body.slk .hero h2{font-size:22px!important;align-self:end}
+body.slk .hero .sub{align-self:start;margin:0!important}
+body.slk .hero .inv-lead{grid-column:1/-1}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
-<body>
+<body class="slk">
 <div class="gate" id="gate"><div class="typefield" id="typefield" aria-hidden="true"></div><div class="load"><h1>全員集合</h1><p class="note" id="gateErr">読み込んでいます…</p></div></div>
 
 <div class="wrap" id="app" hidden>
-  <header>
-    <figure class="wall"><canvas id="mosaic" aria-hidden="true"></canvas><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager">
-    <div class="tate-hero on-photo">
-      <h1>10周年だよ、<br>全員集合</h1>
-      <p class="sub-t">Radix → SAKIYOMI 2016–2026</p>
-      <p class="lead">10年の歴史の中で、<br>その背中を追いかけた人、<br>一緒に走り抜けた人、<br>背中を見せた相手。<br>その瞬間、確かに存在していた。<br><br>写真、言葉。それを見て、<br>あなたの言葉で年末総会へお誘いください。</p>
-    </div>
-    </figure>
-    <div class="big" aria-live="polite">
-      <div><span>みんなから集まったメッセージ</span><b><span id="bigMsg" style="all:unset">0</span><small style="font-size:.22em;letter-spacing:0;margin-left:.15em;font-weight:500">件</small></b><span class="attline">12/19 総会 出席 <em id="bigAtt">0</em> 人</span></div>
-    </div>
-  </header>
+  <div class="sk-top"><span class="ws">SAKIYOMI 10th</span><input id="q" type="search" placeholder="🔍 名前でさがす"></div>
+  <div class="sk-shell">
+  <aside class="sk-side"><div class="sws">株式会社SAKIYOMI<small>10周年 2016–2026</small></div><div class="sh">▾ チャンネル</div>
+    <nav id="skCh"><a data-r="all" class="on"># 全員集合</a><a data-r="partner"># 元パートナー</a><a data-r="innovator"># 元イノベーター</a><a data-r="cur"># 現メンバー</a></nav></aside>
+  <main class="sk-main">
+  <div class="sk-ch"><span id="chName"># 全員集合</span><small>👤 <span id="memN">0</span></small></div>
+  <header><div class="sk-msg"><div class="sk-av">S</div><div class="sk-b"><div class="sk-hd"><b>SAKIYOMI 10周年</b><span class="app">アプリ</span><span class="t">12:00</span></div>
+    <div class="tate-hero"><h1>10周年だよ、全員集合</h1><p class="sub-t">Radix → SAKIYOMI 2016–2026</p><p class="lead">10年の歴史の中で、<br>その背中を追いかけた人、<br>一緒に走り抜けた人、<br>背中を見せた相手。<br>その瞬間、確かに存在していた。<br><br>写真、言葉。それを見て、<br>あなたの言葉で年末総会へお誘いください。</p></div>
+    <figure class="wall"><img id="wallImg" src="wall.jpg" alt="オフィスの壁に書かれたSAKIYOMIの文字と、みんなの言葉" loading="eager"></figure>
+    <div class="sk-re"><span class="b">💌 <b id="bigMsg">0</b> 件のメッセージ</span><span>✅ 12/19 出席 <b id="bigAtt">0</b> 人</span></div>
+  </div></div></header>
   <div class="bar">
     <div class="me"><label for="me">あなたの名前</label><input id="me" list="names" placeholder="例：岸原 誠" autocomplete="name"></div>
-    <input id="q" type="search" placeholder="名前でさがす">
-    <div class="filters"><span class="flabel">絞り込み</span><div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button></div>
-    <label class="chk"><input id="showCur" type="checkbox">現メンバーも表示</label></div>
+    <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="cur">現メンバー</button></div>
     <span class="stat" id="stat"></span>
     <div class="prog" aria-hidden="true"><i id="progBar"></i></div>
   </div>
+  <div class="sk-mh">メンバー<small>タップしてメッセージを送る</small></div>
   <datalist id="names"></datalist>
   <div class="grid" id="grid"></div>
+  </main></div>
 </div>
 
 <div class="scrim" id="scrim" hidden></div>
@@ -521,8 +677,8 @@ function ctaHtml(n){const a=ATT.has(n);return `<div class="cta-b${a?' on':''}" i
 const count=n=>MSG.filter(m=>m.to===n).length;
 const mineTo=n=>MSG.some(m=>m.to===n&&m.from===ME);
 function render(){
-  const q=$('#q').value.trim().toLowerCase(),showCur=$('#showCur').checked;
-  const list=PEOPLE.filter(p=>(showCur||!p.cur)&&(ROLE==='all'||p.cur||p.role===ROLE)&&(!q||p.n.toLowerCase().includes(q)));
+  const q=$('#q').value.trim().toLowerCase();
+  const list=PEOPLE.filter(p=>(ROLE==='cur'?p.cur:(!p.cur&&(ROLE==='all'||p.role===ROLE)))&&(!q||p.n.toLowerCase().includes(q)));if($('#memN'))$('#memN').textContent=list.length;
   const st=p=>String((p.span||[])[0]||'9999');list.sort((a,b)=>(a.cur-b.cur)||st(a).localeCompare(st(b))||a.n.localeCompare(b.n));
   $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
     const at=ATT.has(p.n);return `<button class="card${p.cur?' cur':''}${at?' att':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}${at?MARU+'<i class="att-t">出席</i>':''}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
@@ -535,8 +691,10 @@ function render(){
 $('#grid').addEventListener('click',e=>{const c=e.target.closest('.card');if(c)openSheet(c.dataset.n)});
 ['pointerover','touchstart','focusin'].forEach(t=>$('#grid').addEventListener(t,e=>{const c=e.target.closest('.card');if(c)warm(c.dataset.n)},{passive:true}));
 let ROLE='all';
-$('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(!b)return;ROLE=b.dataset.r;document.querySelectorAll('#seg button').forEach(x=>x.classList.toggle('on',x===b));render()});
-$('#q').addEventListener('input',render);$('#showCur').addEventListener('change',render);
+function setRole(r){ROLE=r;document.querySelectorAll('#seg [data-r],#skCh [data-r]').forEach(x=>x.classList.toggle('on',x.dataset.r===r));const a=document.querySelector('#skCh [data-r="'+r+'"]');if($('#chName')&&a)$('#chName').textContent=a.textContent;render()}
+$('#seg').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(b)setRole(b.dataset.r)});
+$('#skCh').addEventListener('click',e=>{const b=e.target.closest('[data-r]');if(b)setRole(b.dataset.r)});
+$('#q').addEventListener('input',render);
 $('#me').addEventListener('change',()=>{ME=$('#me').value.trim();save('yk_me',ME);render()});
 
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;let rec=null,recBase='';
@@ -570,7 +728,7 @@ function openSheet(n){
     t=t.replace(/&lt;!(channel|here|everyone)(?:\|[^&]*)?&gt;/g,'<span class="sb">@$1</span>').replace(/&lt;!subteam\^(\w+)(?:\|[^&]*)?&gt;/g,(_,id)=>`<span class="sm">${esc((S.SG||{})[id]||'@group')}</span>`).replace(/&lt;@(\w+)(?:\|[^&]*)?&gt;/g,(_,id)=>`<span class="sm">@${esc((S.UN||{})[id]||'user')}</span>`).replace(/&lt;#\w+\|([^&]*)&gt;/g,'<span class="sm">#$1</span>').replace(/&lt;(https?:[^|&]+)\|([^&]+)&gt;/g,'<a href="$1" target="_blank" rel="noopener">$2</a>').replace(/&lt;(https?:[^&]+)&gt;/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')
       .replace(/(^|[^\w*])\*([^*\n]+?)\*(?=[^\w*]|$)/gm,'$1<b>$2</b>').replace(/(^|[\s>])_([^_\n]+)_/g,'$1<i>$2</i>').replace(/(^|[\s>])~([^~\n]+)~/g,'$1<s>$2</s>').replace(/:([a-z0-9_+\-]+):/g,(m,n)=>(S.EM||{})[n]?((S.EM[n].startsWith('http'))?`<img class="se" src="${esc(S.EM[n])}" alt="">`:S.EM[n]):m);
     const re=(S.re||[]).map(([n,c,v])=>`<span class="sr">${v&&v.startsWith('http')?`<img src="${esc(v)}" alt=":${esc(n)}:" loading="lazy">`:`<em>${v||'🙂'}</em>`}<b>${c}</b></span>`).join('');
-    return `<article class="slk2"><div class="s-top"><i></i><i></i><i></i><span>株式会社SAKIYOMI</span></div><div class="s-ch"><svg width="15" height="15" viewBox="0 0 20 20" aria-hidden="true"><path fill="#1d1c1d" d="M7.5 2.5 6.3 7H3v1.5h2.9l-.8 3H2V13h2.7l-1.2 4.5H5L6.2 13h3.6l-1.2 4.5h1.5l1.2-4.5H15v-1.5h-3.3l.8-3H16V7h-3.1l1.2-4.5h-1.5L11.4 7H7.8L9 2.5zM7.4 8.5H11l-.8 3H6.6z"/></svg>${esc(o[4])}</div><div class="s-day"><span>${dd(+S.ts)}</span></div><div class="s-msg"><span class="s-av">${avHtml(p)}</span><div class="s-body"><div class="s-hd"><b>${esc(p.n)}</b><span>${tm(+S.ts)}</span></div><div class="s-tx">${t}</div><div class="s-res">${re}<span class="sr s-add">☺︎+</span></div>${S.rc?`<div class="s-th">${(S.rav||[]).map(a=>`<img src="${esc(a)}" alt="" loading="lazy">`).join('')}<a>${S.rc}件の返信</a>${S.last?`<span>最終返信：${dl(+S.last)}</span>`:''}</div>`:''}</div></div><button class="s-more" type="button">続きを読む</button></article>`};
+    return `<article class="slk2"><div class="s-top"><i></i><i></i><i></i><span>株式会社SAKIYOMI</span></div><div class="s-ch"><svg width="15" height="15" viewBox="0 0 20 20" aria-hidden="true"><path fill="#1d1c1d" d="M7.5 2.5 6.3 7H3v1.5h2.9l-.8 3H2V13h2.7l-1.2 4.5H5L6.2 13h3.6l-1.2 4.5h1.5l1.2-4.5H15v-1.5h-3.3l.8-3H16V7h-3.1l1.2-4.5h-1.5L11.4 7H7.8L9 2.5zM7.4 8.5H11l-.8 3H6.6z"/></svg>${esc(o[4])}</div><div class="s-day"><span>${dd(+S.ts)}</span></div><div class="s-msg"><span class="s-av">${avHtml(p)}</span><div class="s-body"><div class="s-hd"><b>${esc(p.n)}</b><span>${tm(+S.ts)}</span></div><div class="s-tx">${t}</div>${(o[5]||[]).length?`<div class="s-imgs">${o[5].slice(0,4).map(id=>`<img data-id="${esc(id)}" alt="" ${PH[id]?`src="${PH[id]}"`:''}>`).join('')}</div>`:''}<div class="s-res">${re}<span class="sr s-add">☺︎+</span></div>${S.rc?`<div class="s-th">${(S.rav||[]).map(a=>`<img src="${esc(a)}" alt="" loading="lazy">`).join('')}<a>${S.rc}件の返信</a>${S.last?`<span>最終返信：${dl(+S.last)}</span>`:''}</div>`:''}</div></div><button class="s-more" type="button">続きを読む</button></article>`};
   const posts=[...(p.own||[]).slice().sort((a,b)=>String(a[1]).localeCompare(String(b[1]))).map(o=>o[7]?slkHtml(o):postHtml(o[0],`${esc(p.n)}さんの投稿 ・ ${ym(o[1])} ・ #${esc(o[4])}`))];
   const own=posts.join('');
   const rel=(p.r||[]).filter(x=>BYN[x]).map(x=>`<button data-go="${esc(x)}"><span class="av">${avHtml(BYN[x])}</span>${esc(x)}</button>`).join('');
@@ -588,35 +746,34 @@ function openSheet(n){
   const msgsH=`<h3>届いているメッセージ</h3><div class="msgs" id="msgs"></div>`;
   const layoutB=true;
   if(layoutB){
-    const photosB=ph.length?`${p.group?`<h3 class="sec-h">${esc(p.n)}さんがいた頃のSAKIYOMI</h3>`:''}<div class="photos b" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:'';
+    const photosB=ph.length?`<h3 class="sec-h">📷 ${p.group?`${esc(p.n)}さんがいた頃のSAKIYOMI`:'懐かしい写真'}<small>${ph.length}枚</small>${ph.length>1?'<span class="sw">横にスワイプ →</span>':''}</h3><div class="photos b" id="photos">${ph.map(x=>`<figure><img data-id="${esc(x[0])}" alt="当時の写真" ${PH[x[0]]?`src="${PH[x[0]]}"`:''}><figcaption>${ym(x[1])}</figcaption></figure>`).join('')}</div>`:'';
     const mic=SR?`<button class="mic" id="mic" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-2.08A7 7 0 0 0 19 12h-2Z"/></svg><span>話して書く</span></button>`:'';
-    const composeB=`<div class="modal" id="composeBox" hidden><div class="modal-card" role="dialog" aria-label="メッセージを書く">
-      <div class="cb-head"><b>${esc(p.n)}さんへ</b><button class="x sm" data-closecompose aria-label="閉じる">×</button></div>
-      <textarea id="txt" maxlength="600" placeholder="今の${esc(p.n)}さんに話したいこと、聞いてほしいことを、そのまま言葉にしてください。"></textarea>
-      <div class="cb-tools">${mic}<details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details></div>
-      <label class="fromrow"><span>あなたの名前</span><input id="meB" list="names" value="${esc(ME)}" placeholder="例：岸原 誠" autocomplete="name"></label>
-      <div class="row"><button class="btn wide" id="send">寄せ書きに貼る</button></div>
-    </div></div>`;
+    const composeB=`<div class="sk-dockc" id="composeDock">
+      <div class="sk-comp"><div class="sk-tb"><span><b>B</b></span><span><i>I</i></span><span><s>S</s></span><span>🔗</span><span>☰</span><span>❝</span></div>
+      <textarea id="txt" maxlength="600" rows="2" placeholder="今の${esc(p.n)}さんに話したいこと…"></textarea>
+      <div class="sk-bt"><span class="ic">＋</span><span class="ic">Aa</span><span class="ic">☺</span><span class="ic">@</span>${mic}<span class="sp"></span><button class="btn" id="send">送信 ➤</button></div></div>
+      <div class="sk-from"><label>送信者：<input id="meB" list="names" value="${esc(ME)}" placeholder="あなたの名前" autocomplete="name"></label><details class="hintd"><summary>何を書くか迷ったら</summary><ul class="hints">${hints(p).map(t=>`<li>${esc(t)}</li>`).join('')}</ul></details></div>
+    </div>`;
     const isInv=INV===p.n,nMsg=count(p.n);
-    const boardB=`<h3 class="sec-h">${isInv?'あなたへのメッセージ':'寄せ書き'} <span id="bcount"></span></h3>
+    const boardB=`<h3 class="sec-h">✉️ ${isInv?'あなたへのメッセージ':'寄せ書き'} <small><span id="bcount"></span>件</small></h3>
       <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="close2">← みんなの一覧に戻る</button><button class="btn ghost" id="next">次の人へ →</button></div></section>`;
-    $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">← 一覧へ</button><div class="bt">${esc(p.n)}さんへの${isInv?'招待状':'寄せ書き'}</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
-      <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div>${isInv?`<p class="inv-lead">12月19日、SAKIYOMI 10周年の総会へ。<br>あなたに <b id="invN">${nMsg}</b> 件のメッセージが届いています。</p>`:`<button class="btn writebig" data-opencompose>＋ メッセージを書く</button>`}</header>
+    $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">← 一覧へ</button><div class="bt">${esc(p.n)}${isInv?' さんへの招待状':''}</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
+      <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div>${isInv?`<p class="inv-lead">12月19日、SAKIYOMI 10周年の総会へ。<br>あなたに <b id="invN">${nMsg}</b> 件のメッセージが届いています。</p>`:''}</header>
       ${isInv?boardB:''}
       ${photosB}
-      ${own?`<h3 class="sec-h">当時の投稿<small>横にスワイプ →</small></h3><div class="poststrip">${own}</div>`:''}
-      ${isInv?'':boardB}${p.cur&&!isInv?'':ctaHtml(p.n)}${composeB}`;
+      ${own?`<h3 class="sec-h">💬 懐かしい投稿<small>${(p.own||[]).length}件</small>${(p.own||[]).length>1?'<span class="sw">横にスワイプ →</span>':''}</h3><div class="poststrip">${own}</div>`:''}
+      ${isInv?'':boardB}<div class="sk-dock">${p.cur&&!isInv?'':ctaHtml(p.n)}${isInv?'':composeB}</div>`;
     $('#sheet').classList.add('full');
     if(window._hw)window._hw.stop();setTimeout(()=>{const f=$('#heroWords');if(f)window._hw=placeTyper(f,{n:46,keep:true,vert:.35,maxLen:16,cls:'sm',gap:3,tries:80,step:45,size:()=>11+Math.random()*12|0,op:()=>.28+Math.random()*.4,avoid:[...document.querySelectorAll('.hero .av,.hero h2,.hero .sub,.hero .writebig,.hero .inv-lead')]})},150);
   }else{$('#sheet').classList.remove('full');$('#sheet').innerHTML=top+photosH+postsH+composeH+msgsH}
   $('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;
   if($('#who'))$('#who').textContent=ME?`${ME} として送ります`:'上の「あなたの名前」を入れてください';
-  const pic=ph.map(x=>x[0]);renderMsgs(n);loadPhotos([...new Set(pic)].filter(id=>!PH[id]));
+  const pic=[...ph.map(x=>x[0]),...(p.own||[]).flatMap(o=>(o[5]||[]).slice(0,4))];renderMsgs(n);loadPhotos([...new Set(pic)].filter(id=>!PH[id]));
 }
 async function loadPhotos(ids){if(!ids.length)return;const sp=[];for(let i=0;i<ids.length;i+=2)sp.push(ids.slice(i,i+2));await Promise.all(sp.map(c=>get({action:'photos',ids:c.join(',')}).then(d=>{if(d.ok)gotPhotos(d.photos)}).catch(()=>{})))}
 function renderMsgs(n){const el=$('#msgs');if(!el)return;const all=MSG.filter(m=>m.to===n);const ms=INV===n?all:all.filter(m=>MINE.includes(m.id)||(ME&&m.from===ME));const lk=all.length-ms.length;if(INV===n&&$('#invN'))$('#invN').textContent=all.length;
-  if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=all.length?`${all.length}`:'';
-    el.innerHTML=(all.length||INV===n?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+(INV===n&&!all.length?'<p class="note">メッセージはこれから届きます。</p>':'')+(lk?`<div class="tile lock"><p>🔒 ほか ${lk} 件</p><div class="meta"><span>本人だけが招待状で読めます</span></div></div>`:'')+ms.map(m=>`<div class="tile"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join('');return}
+  if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=all.length;
+    el.innerHTML=(all.length||INV===n?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+(INV===n&&!all.length?'<p class="note">メッセージはこれから届きます。</p>':'')+(lk?`<div class="tile lock"><span class="t-av">🔒</span><div class="t-b"><p>本人だけが招待状で読めます</p><div class="meta"><span>ほか ${lk} 件</span></div></div></div>`:'')+ms.map(m=>{const fp=BYN[m.from];const d=m.ts?new Date(m.ts):null;const tm=d&&!isNaN(d)?d.toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'';return `<div class="tile"><span class="t-av">${fp?avHtml(fp):esc(String(m.from||'?').trim().slice(0,1))}</span><div class="t-b"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span><span class="tm">${esc(tm)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div></div>`}).join('');return}
   el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初の一通をどうぞ。</p>'}
 function closeSheet(){if(INV)return;stopMic();if(window._hw){window._hw.stop();window._hw=null}open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
 $('#scrim').addEventListener('click',closeSheet);
@@ -629,11 +786,9 @@ $('#sheet').addEventListener('click',async e=>{
   const tb=e.target.closest('[data-tab]');if(tb){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b===tb));$('#tab-board').hidden=tb.dataset.tab!=='board';$('#tab-posts').hidden=tb.dataset.tab!=='posts';return}
   if(e.target.closest('#rsvp')||e.target.closest('#rsvpX')){const n=open,on=!!e.target.closest('#rsvp');if(on)ATT.add(n);else ATT.delete(n);$('#ctaB').outerHTML=ctaHtml(n);const av=document.querySelector('.hero .av');if(av){av.querySelector('.maru')?.remove();if(on)av.insertAdjacentHTML('beforeend',MARU)}render();
     try{const r=await post({action:'post',to:'__rsvp__',from:n,text:on?'出席':'取消'});if(!r.ok)throw 0}catch(err){if(on)ATT.delete(n);else ATT.add(n);$('#ctaB').outerHTML=ctaHtml(n);render();alert('送れませんでした。もう一度押してください')}return}
-  if(e.target.closest('[data-opencompose]')){$('#composeBox').hidden=false;setTimeout(()=>$('#txt').focus(),50);return}
-  if(e.target.id==='composeBox'){stopMic();$('#composeBox').hidden=true;return}
-  if(e.target.closest('#mic')){toggleMic();return}
-  if(e.target.closest('[data-closecompose]')){stopMic();$('#composeBox').hidden=true;return}
-  const mp=e.target.closest('[data-moreposts]');if(mp){$('#morePosts').hidden=false;mp.remove();return}
+  if(e.target.closest('[data-opencompose]')){const t=$('#txt');if(t){t.focus();t.scrollIntoView({block:'center'})}return}
+    if(e.target.closest('#mic')){toggleMic();return}
+    const mp=e.target.closest('[data-moreposts]');if(mp){$('#morePosts').hidden=false;mp.remove();return}
   const mo=e.target.closest('[data-more]');if(mo){const p=mo.closest('.post');p.classList.toggle('open');mo.textContent=p.classList.contains('open')?'閉じる':'全文を読む';return}
   const im=e.target.closest('#sheet img[data-id]');if(im&&im.src){$('#lbImg').src=im.src;const p=BYN[open];const x=p&&(p.ph||[]).find(y=>y[0]===im.dataset.id);const c=x&&x[3];const box=$('#lbPost');
     if(c){box.innerHTML=`<div class="slk-ch"># ${esc(c.ch)}</div><div class="slk-msg"><span class="slk-av">${avHtml(p)}</span><div class="slk-body"><div class="slk-head"><b>${esc(p.n)}</b><span>${esc(c.at)}</span></div><p>${esc(c.t)}</p><img src="${im.src}" alt="" class="slk-img"></div></div>`;box.hidden=false;$('#lbImg').hidden=true}
@@ -649,7 +804,7 @@ $('#sheet').addEventListener('click',async e=>{
     try{const r=await post({action:'post',to:open,from:ME,text});
       if(r.ok){MSG.push({ts:new Date().toISOString(),id:r.id,to:open,from:ME,text});MINE.push(r.id);save('yk_mine',MINE);save('yk_me',ME);$('#txt').value='';if($('#composeBox')){stopMic();$('#composeBox').hidden=true}renderMsgs(open);render();toast('送りました。ありがとう！')}
       else toast('送れませんでした（'+r.error+'）')}catch(err){toast('送れませんでした。通信状況を確認してください')}
-    b.disabled=false;b.textContent='送る'}
+    b.disabled=false;b.textContent='送信 ➤'}
 });
 boot();
 </script>
