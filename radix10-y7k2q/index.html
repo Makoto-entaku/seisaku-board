@@ -660,6 +660,9 @@ body.skui .hero .av,body.skui .hero .av>*{transform:none!important;rotate:none!i
 body.skui .hero .av::before,body.skui .hero .av::after,body.skui .hero .av>*::before,body.skui .hero .av>*::after{display:none!important;content:none!important}
 body.skui .hero .av img{border-radius:50%!important;width:72px!important;height:72px!important;object-fit:cover}
 body.skui .hero h2,body.skui .bar-b .bt{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif!important;font-weight:900!important}
+body.skui .kv-art{position:relative;aspect-ratio:1/1;overflow:hidden}
+body.skui .kv-art .kv-img{position:absolute;left:0;bottom:0;width:90%;height:auto;aspect-ratio:971/1010;object-fit:contain;background:none!important;box-shadow:none!important;border-radius:0!important}
+body.skui .kv-copy{position:absolute;right:8%;top:8%;margin:0;writing-mode:vertical-rl;color:var(--kv-b);font-weight:800;font-size:clamp(22px,3vw,40px);line-height:1.5;letter-spacing:.12em;font-family:"Zen Maru Gothic","M PLUS Rounded 1c","Hiragino Maru Gothic ProN",-apple-system,sans-serif}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -669,9 +672,9 @@ body.skui .hero h2,body.skui .bar-b .bt{font-family:-apple-system,BlinkMacSystem
 <div class="wrap" id="app" hidden>
   <div class="kv-top"><span class="ws">SAKIYOMI 2026年度末 全社総会</span><input id="q" type="search" placeholder="🔍 名前でさがす"><div class="me"><label for="me">あなた</label><input id="me" list="names" placeholder="名簿から選ぶ" autocomplete="off"></div></div>
   <nav id="skCh" hidden></nav>
-  <section class="kv-hero"><img id="kvImg" class="kv-img" alt="どうしても話したいことあってさ。SAKIYOMI 2026年度末 全社総会の招待状イラスト"><div class="kv-hd">
+  <section class="kv-hero"><div class="kv-art"><img id="kvImg" class="kv-img" alt=""><p class="kv-copy">どうしても<br>話したいこと<br>あってさ。</p></div><div class="kv-hd">
     <small>SAKIYOMI Inc.</small><h2>2026年度末 全社総会</h2><div class="kv-date">2026.12.19<span>Sat</span></div>
-    <p>どうしても話したいこと、あってさ。<br>あの頃の写真と言葉を見て、<br>あなたの言葉で誘ってください。</p>
+    <p>あの頃の写真と言葉を見て、<br>あなたの言葉で誘ってください。</p>
     <div class="kv-nums"><div><span>集まったメッセージ</span><b><em id="bigMsg">0</em><small>件</small></b></div><div><span>12/19 出席</span><b><em id="bigAtt">0</em><small>人</small></b></div></div>
     <div class="kv-btns"><button type="button" class="kv-p" id="rsvpMe">出席する</button><button type="button" class="kv-o" id="goMembers">メッセージを書く ↓</button></div>
   </div></section>
@@ -756,7 +759,7 @@ async function boot(){
 function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));setMsgs(d.messages||[]);
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV){if(open!==INV){document.body.classList.add('inv');openSheet(INV)}else renderMsgs(INV)}}
 async function refresh(){try{const d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
-async function loadKV(){const im=$('#kvImg');if(!im)return;const ids=[...Array(8).keys()].map(i=>'kv1:'+i);const put=()=>{if(ids.every(k=>PH[k]))im.src=ids.map(k=>PH[k]).join('')};put();if(im.src)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){gotPhotos(d.photos);put()}}catch(e){}}
+async function loadKV(){const im=$('#kvImg');if(!im)return;const ids=[...Array(5).keys()].map(i=>'il1:'+i);const put=()=>{if(ids.every(k=>PH[k]))im.src=ids.map(k=>PH[k]).join('')};put();if(im.src)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){gotPhotos(d.photos);put()}}catch(e){}}
 async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))].filter(k=>!AV[k]);
   const jobs=[];for(let i=0;i<keys.length;i+=20){const ids=keys.slice(i,i+20).map(k=>'av:'+k);
