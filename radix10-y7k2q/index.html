@@ -858,7 +858,7 @@ function warm(n){const p=BYN[n];if(!p)return;const ids=(p.ph||[]).map(x=>x[0]).f
 let ATT=new Set();
 const MARU='<svg class="maru" viewBox="0 0 100 100" aria-hidden="true"><path d="M52 5C82 4 98 26 95 53C92 81 69 97 45 94C19 91 3 70 6 45C9 21 30 7 58 9" fill="none" stroke="#d62d20" stroke-width="3.2" stroke-linecap="round"/></svg>';
 function setMsgs(all){MSG=all.filter(m=>!String(m.to).startsWith('__'));ATT=new Set();all.filter(m=>m.to==='__rsvp__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{if(m.text==='出席')ATT.add(m.from);else ATT.delete(m.from)})}
-function ctaHtml(n){const a=ATT.has(n);return `<div class="cta-b${a?' on':''}" id="ctaB">${INV===n?'':`<p class="to"><b>${esc(n)}さんへ</b></p>`}${a?`<span class="att-stamp">出席</span><button class="link" id="rsvpX">取り消す</button>`:`<button class="btn" id="rsvp">出席する</button>`}</div>`}
+function ctaHtml(n){const a=ATT.has(n),own=n===ME||INV===n;return `<div class="cta-b${a?' on':''}" id="ctaB">${INV===n?'':`<p class="to"><b>${esc(n)}さんへ</b></p>`}${own?(a?`<span class="att-stamp">出席</span><button class="link" id="rsvpX">取り消す</button>`:`<button class="btn" id="rsvp">出席する</button>`):(a?`<span class="att-stamp">出席</span>`:'')}</div>`}
 const count=n=>MSG.filter(m=>m.to===n).length;
 const mineTo=n=>MSG.some(m=>m.to===n&&ME&&(m.from===ME||resolveName(m.from)===ME));
 function render(){
@@ -990,7 +990,7 @@ $('#sheet').addEventListener('click',async e=>{
   if(e.target.closest('.s-more')){e.target.closest('.slk2').classList.add('open');return}
   const g=e.target.closest('[data-go]');if(g)return openSheet(g.dataset.go);
   const tb=e.target.closest('[data-tab]');if(tb){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b===tb));$('#tab-board').hidden=tb.dataset.tab!=='board';$('#tab-posts').hidden=tb.dataset.tab!=='posts';return}
-  if(e.target.closest('#rsvp')||e.target.closest('#rsvpX')){const n=open,on=!!e.target.closest('#rsvp');if(on)ATT.add(n);else ATT.delete(n);$('#ctaB').outerHTML=ctaHtml(n);const av=document.querySelector('.hero .av');if(av){av.querySelector('.maru')?.remove();if(on)av.insertAdjacentHTML('beforeend',MARU)}render();
+  if(e.target.closest('#rsvp')||e.target.closest('#rsvpX')){const n=open;if(n!==ME&&INV!==n)return;const on=!!e.target.closest('#rsvp');if(on)ATT.add(n);else ATT.delete(n);$('#ctaB').outerHTML=ctaHtml(n);const av=document.querySelector('.hero .av');if(av){av.querySelector('.maru')?.remove();if(on)av.insertAdjacentHTML('beforeend',MARU)}render();
     try{const r=await post({action:'post',to:'__rsvp__',from:n,text:on?'出席':'取消'});if(!r.ok)throw 0}catch(err){if(on)ATT.delete(n);else ATT.add(n);$('#ctaB').outerHTML=ctaHtml(n);render();alert('送れませんでした。もう一度押してください')}return}
   if(e.target.closest('[data-opencompose]')){const t=$('#txt');if(t){t.focus();t.scrollIntoView({block:'center'})}return}
     if(e.target.closest('#mic')){toggleMic();return}
