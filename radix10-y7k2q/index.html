@@ -805,7 +805,7 @@ async function boot(){
   try{localStorage.removeItem('yk_av2');localStorage.removeItem('yk_av')}catch(e){}
   try{const c=await Promise.race([IDB.load(),new Promise(r=>setTimeout(()=>r({}),1500))]);for(const k in c){if(k.startsWith('a:'))AV[k.slice(2)]=c[k];else if(k.startsWith('p:'))PH[k.slice(2)]=c[k]}}catch(e){}
   if(cached&&cached.people)apply(cached);else $('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">みんなの顔を読み込んでいます…</p>';
-  let d;try{d=await get({action:'data'})}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
+  let d;try{d=await (window.__PRE||get({action:'data'}))}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
   try{localStorage.setItem('yk_data',JSON.stringify(d))}catch(e){}
   apply(d);loadAvatars();PEND.forEach(m=>sendPending(m));if(!ME&&!INV)showPicker();
@@ -1032,6 +1032,7 @@ $('#sheet').addEventListener('click',async e=>{
 (function(){let seen=null;try{seen=localStorage.getItem('yk_intro')}catch(e){}
   try{localStorage.setItem('yk_intro','1')}catch(e){}
   const g=$('#gateErr');if(g)g.textContent='';
+  try{window.__PRE=get({action:'data'});window.__PRE.then(d=>{if(!d||!d.people)return;const ks=[...new Set(d.people.map(p=>p.av).filter(Boolean))];ks.forEach(k=>sname(k).then(f=>fetch(SBASE+'a/'+f)).catch(()=>{}))}).catch(()=>{})}catch(e){}
   setTimeout(()=>{const gt=$('#gate');gt.style.transition='opacity .6s';gt.style.opacity='0';setTimeout(boot,600)},3200)})();
 </script>
 </body>
