@@ -779,7 +779,7 @@ let AVB=null;function loadAVB(){if(!AVB)AVB=sdec('avatars.bin').then(u=>{const n
 const _gasGet=get;
 get=async function(params){
   if(params.action==='photos'){const ids=String(params.ids||'').split(',').filter(Boolean);const out={},miss=[];const B=ids.some(i=>i.startsWith('av:'))?await loadAVB():null;await Promise.all(ids.map(async id=>{try{const av=id.startsWith('av:');if(av&&B){if(B.idx[id.slice(3)]){const [o,l]=B.idx[id.slice(3)];out[id]=await toDU(B.data.subarray(o,o+l))}return}const k=av?id.slice(3):id;out[id]=await toDU(await sdec((av?'a/':'p/')+await sname(k)))}catch(e){miss.push(id)}}));if(miss.length){try{const d=await _gasGet({...params,ids:miss.join(',')});Object.assign(out,(d&&d.photos)||{})}catch(e){}}return {ok:true,photos:out}}
-  if(params.action==='data'){try{const u=await sdec('people.bin');const people=JSON.parse(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text());let messages=[];try{const c=JSON.parse(localStorage.getItem('yk_data')||'null');if(c&&c.messages)messages=c.messages}catch(e){}setTimeout(()=>{try{refresh()}catch(e){}},30);return {ok:true,people,messages}}catch(e){return _gasGet(params)}}
+  if(params.action==='data'){try{const u=await sdec('people.bin');const people=JSON.parse(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text());let messages=[];try{const c=JSON.parse(localStorage.getItem('yk_data')||'null');if(c&&c.messages)messages=c.messages}catch(e){}return {ok:true,people,messages,_static:1}}catch(e){return _gasGet(params)}}
   return _gasGet(params)};
 async function post(body){let last;for(let i=0;i<4;i++){try{const r=await fetch(API,{method:'POST',body:JSON.stringify({...body,key:KEY})});const j=await r.json();if(j&&j.ok)return j;last=j;if(j&&j.error&&j.error!=='lock')return j}catch(e){last=e}if(i<3){try{toast('混み合っています。自動で送り直しています…（'+(i+2)+'回目）')}catch(x){}await new Promise(r=>setTimeout(r,1500+i*1500))}}if(last instanceof Error)throw last;return last||{ok:false}}
 
@@ -811,12 +811,12 @@ async function boot(){
   let d;try{d=await (window.__PRE||get({action:'data'}))}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
   try{localStorage.setItem('yk_data',JSON.stringify(d))}catch(e){}
-  apply(d);loadAvatars();PEND.forEach(m=>sendPending(m));if(!ME&&!INV)showPicker();
+  apply(d);loadAvatars();PEND.forEach(m=>sendPending(m));if(d._static)refresh();if(!ME&&!INV)showPicker();
   setInterval(refresh,90000);
 }
 function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));{const HID={};(d.messages||[]).filter(m=>m.to==='__hide__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{try{const o=JSON.parse(m.text);HID[o.k]=o.h}catch(e){}});const FIRST={};(d.messages||[]).filter(m=>m.to==='__first__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{try{const o=JSON.parse(m.text);FIRST[o.n]=o.k}catch(e){}});const pk=(p,o)=>'p:'+(o[7]&&o[7].ts?o[7].ts:p.n+':'+String(o[0]||'').slice(0,30));PEOPLE.forEach(p=>{if(p.own&&(FIRST[p.n]||p.firstK)){const i=p.own.findIndex(o=>o&&pk(p,o)===(FIRST[p.n]||p.firstK));if(i>=0){p.own[i].__f=1;if(i>0)p.own.unshift(p.own.splice(i,1)[0])}}});PEOPLE.forEach(p=>{if(p.own)p.own=p.own.filter(o=>!(o&&HID['p:'+(o[7]&&o[7].ts?o[7].ts:p.n+':'+String(o[0]||'').slice(0,30))]));if(p.ph)p.ph=p.ph.filter(x=>!HID['f:'+x[0]])})}{const FX={'Akira Okubo':'fx_akira','Kenta Ogawa':'fx_kenta','Ryusei Kato':'fx_ryusei'};PEOPLE.forEach(p=>{if(FX[p.n])p.av=FX[p.n]})}if(INV&&!ME){ME=INV;save('yk_me',ME)}if(ME){const rn=resolveName(ME);if(rn&&rn!==ME){ME=rn;save('yk_me',ME)}}setMsgs(d.messages||[]);
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV){if(open!==INV){document.body.classList.add('inv');openSheet(INV)}else renderMsgs(INV)}}
-async function refresh(){try{const d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
+async function refresh(){try{let d=null;if(window.__PREM){d=await window.__PREM;window.__PREM=null}if(!d||!d.ok)d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
 async function loadKV(){const im=$('#kvImg');if(!im)return;const ids=[...Array(4).keys()].map(i=>'il2:'+i);const put=()=>{if(ids.every(k=>PH[k]))im.src=ids.map(k=>PH[k]).join('')};put();if(im.src)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){gotPhotos(d.photos);put()}}catch(e){}}
 async function loadAvatars(){
   const keys=[...new Set(PEOPLE.map(p=>p.av).filter(Boolean))].filter(k=>!AV[k]);
@@ -1036,7 +1036,7 @@ $('#sheet').addEventListener('click',async e=>{
 (function(){let seen=null;try{seen=localStorage.getItem('yk_intro')}catch(e){}
   try{localStorage.setItem('yk_intro','1')}catch(e){}
   const g=$('#gateErr');if(g)g.textContent='';
-  try{window.__PRE=get({action:'data'});loadAVB()}catch(e){}
+  try{window.__PREM=_gasGet({action:'messages'}).catch(()=>null);window.__PRE=get({action:'data'});loadAVB()}catch(e){}
   setTimeout(()=>{const gt=$('#gate');gt.style.transition='opacity .6s';gt.style.opacity='0';setTimeout(boot,600)},3200)})();
 </script>
 </body>
