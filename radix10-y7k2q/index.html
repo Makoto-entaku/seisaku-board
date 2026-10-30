@@ -773,9 +773,10 @@ async function sdec(path){const r=await fetch(SBASE+path);if(!r.ok)throw new Err
 async function sname(k){const h=new Uint8Array(await crypto.subtle.digest('SHA-256',_TE.encode('r10:'+k)));return [...h].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,20)+'.bin'}
 function sniff(u){if(u[0]===0xFF&&u[1]===0xD8)return 'image/jpeg';if(u[0]===0x89&&u[1]===0x50)return 'image/png';if(u[0]===0x47&&u[1]===0x49)return 'image/gif';if(u[8]===0x57&&u[9]===0x45)return 'image/webp';return 'application/octet-stream'}
 const toDU=u=>new Promise(res=>{const f=new FileReader();f.onload=()=>res(f.result);f.readAsDataURL(new Blob([u],{type:sniff(u)}))});
+let AVB=null;function loadAVB(){if(!AVB)AVB=sdec('avatars.bin').then(u=>{const n=(u[0]<<24)|(u[1]<<16)|(u[2]<<8)|u[3];const idx=JSON.parse(new TextDecoder().decode(u.subarray(4,4+n)));return {idx,data:u.subarray(4+n)}}).catch(()=>null);return AVB}
 const _gasGet=get;
 get=async function(params){
-  if(params.action==='photos'){const ids=String(params.ids||'').split(',').filter(Boolean);const out={},miss=[];await Promise.all(ids.map(async id=>{try{const av=id.startsWith('av:');const k=av?id.slice(3):id;out[id]=await toDU(await sdec((av?'a/':'p/')+await sname(k)))}catch(e){miss.push(id)}}));if(miss.length){try{const d=await _gasGet({...params,ids:miss.join(',')});Object.assign(out,(d&&d.photos)||{})}catch(e){}}return {ok:true,photos:out}}
+  if(params.action==='photos'){const ids=String(params.ids||'').split(',').filter(Boolean);const out={},miss=[];const B=ids.some(i=>i.startsWith('av:'))?await loadAVB():null;await Promise.all(ids.map(async id=>{try{const av=id.startsWith('av:');if(av&&B&&B.idx[id.slice(3)]){const [o,l]=B.idx[id.slice(3)];out[id]=await toDU(B.data.subarray(o,o+l));return}const k=av?id.slice(3):id;out[id]=await toDU(await sdec((av?'a/':'p/')+await sname(k)))}catch(e){miss.push(id)}}));if(miss.length){try{const d=await _gasGet({...params,ids:miss.join(',')});Object.assign(out,(d&&d.photos)||{})}catch(e){}}return {ok:true,photos:out}}
   if(params.action==='data'){try{const u=await sdec('people.bin');const people=JSON.parse(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).text());let messages=[];try{const c=JSON.parse(localStorage.getItem('yk_data')||'null');if(c&&c.messages)messages=c.messages}catch(e){}setTimeout(()=>{try{refresh()}catch(e){}},30);return {ok:true,people,messages}}catch(e){return _gasGet(params)}}
   return _gasGet(params)};
 async function post(body){let last;for(let i=0;i<4;i++){try{const r=await fetch(API,{method:'POST',body:JSON.stringify({...body,key:KEY})});const j=await r.json();if(j&&j.ok)return j;last=j;if(j&&j.error&&j.error!=='lock')return j}catch(e){last=e}if(i<3){try{toast('混み合っています。自動で送り直しています…（'+(i+2)+'回目）')}catch(x){}await new Promise(r=>setTimeout(r,1500+i*1500))}}if(last instanceof Error)throw last;return last||{ok:false}}
@@ -803,7 +804,7 @@ async function boot(){
   
   let cached=null;try{cached=JSON.parse(localStorage.getItem('yk_data')||'null')}catch(e){}
   try{localStorage.removeItem('yk_av2');localStorage.removeItem('yk_av')}catch(e){}
-  try{const c=await Promise.race([IDB.load(),new Promise(r=>setTimeout(()=>r({}),1500))]);for(const k in c){if(k.startsWith('a:'))AV[k.slice(2)]=c[k];else if(k.startsWith('p:'))PH[k.slice(2)]=c[k]}}catch(e){}
+  try{const c=await Promise.race([IDB.load(),new Promise(r=>setTimeout(()=>r({}),300))]);for(const k in c){if(k.startsWith('a:'))AV[k.slice(2)]=c[k];else if(k.startsWith('p:'))PH[k.slice(2)]=c[k]}}catch(e){}
   if(cached&&cached.people)apply(cached);else $('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">みんなの顔を読み込んでいます…</p>';
   let d;try{d=await (window.__PRE||get({action:'data'}))}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
@@ -1032,7 +1033,7 @@ $('#sheet').addEventListener('click',async e=>{
 (function(){let seen=null;try{seen=localStorage.getItem('yk_intro')}catch(e){}
   try{localStorage.setItem('yk_intro','1')}catch(e){}
   const g=$('#gateErr');if(g)g.textContent='';
-  try{window.__PRE=get({action:'data'});window.__PRE.then(d=>{if(!d||!d.people)return;const ks=[...new Set(d.people.map(p=>p.av).filter(Boolean))];ks.forEach(k=>sname(k).then(f=>fetch(SBASE+'a/'+f)).catch(()=>{}))}).catch(()=>{})}catch(e){}
+  try{window.__PRE=get({action:'data'});loadAVB()}catch(e){}
   setTimeout(()=>{const gt=$('#gate');gt.style.transition='opacity .6s';gt.style.opacity='0';setTimeout(boot,600)},3200)})();
 </script>
 </body>
