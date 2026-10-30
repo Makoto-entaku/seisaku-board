@@ -718,6 +718,7 @@ html body.skui .kv-hero{display:block!important;width:100%!important}
 html body.skui .kv-art .kv-copy{display:none!important}
 .my-msgs{max-width:680px;margin:28px auto 6px;text-align:left;background:#fff;border:2px solid #395DC8;border-radius:16px;padding:14px 16px;box-shadow:0 8px 24px rgba(57,93,200,.15)}.my-msgs h2{margin:0 0 8px;font-size:17px;color:#395DC8}.my-msgs h2 b{font-size:22px}
 .mm-i{display:flex;gap:10px;padding:10px 0;border-top:1px solid #eef1fa;text-align:left}.mm-av{width:40px;height:40px;border-radius:8px;overflow:hidden;flex:none;background:#395DC8;color:#fff;display:grid;place-items:center;font-weight:700}.mm-av img{width:100%;height:100%;object-fit:cover}.mm-b{min-width:0;flex:1}.mm-h b{font-size:15px;color:#1d1c1d;margin-right:6px}.mm-h span{font-size:12px;color:#616061}.mm-b p{margin:3px 0 0;font-size:15px;line-height:1.6;white-space:pre-wrap;word-break:break-word;color:#1d1c1d}.mm-more{display:block;width:100%;margin-top:6px;border:0;background:#f3f6fd;color:#395DC8;font-weight:700;border-radius:10px;padding:10px;cursor:pointer}
+@media(min-width:1100px){html body.skui .kv-hd{position:relative}html body.skui .my-msgs{position:absolute;left:calc(50% + 300px);width:min(360px,calc(50% - 330px));margin:0!important;max-height:560px;overflow:auto}}
 </style>
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
@@ -730,8 +731,8 @@ html body.skui .kv-art .kv-copy{display:none!important}
   <div class="kv-title"><small>SAKIYOMI Inc.</small><h1>2026年度末 全社総会</h1><div class="kv-date">2026.12.19<span>Sat</span></div></div>
   <section class="kv-hero"><div class="kv-art"><img id="kvImg" class="kv-img" src="card2.webp" width="980" height="1225" fetchpriority="high" alt=""><p class="kv-copy">どうしても<br>話したいこと<br>あってさ。</p></div><div class="kv-hd">
     <p class="kv-msg">ふと、思い出す。<i class="gap"></i>背中を見せてくれたあの人。<br>一緒に走り抜けた、あの人。<br>背中を追いかけてくれた、あの人。<i class="gap"></i>今ごろ、どうしているんだろうか。<br>元気だったら嬉しいなぁ。<i class="gap"></i>進む道は違えど、根っこはおんなじ。<br>同じ青春を過ごしたあの人へ。<i class="gap"></i>あの頃、言いそびれたこと。<br>今なら話せるかもしれないこと。<br>ちょっと自慢したいこと。<i class="gap"></i>当時を振り返って、言葉にしてみませんか。<br><b>そしてお酒を片手に、年末話しませんか。</b></p>
-    <div class="kv-nums"><div><span>集まったメッセージ</span><b><em id="bigMsg">0</em><small>件</small></b></div><div><span>12/19 出席</span><b><em id="bigAtt">0</em><small>人</small></b></div></div>
-    <div id="meBox" class="me-box"></div><div class="kv-btns"><button type="button" class="kv-p" id="rsvpMe" hidden>出席する</button><button type="button" class="kv-o" id="goMembers">メッセージを書く ↓</button></div><section id="myMsgs" class="my-msgs" hidden></section>
+    <section id="myMsgs" class="my-msgs" hidden></section><div class="kv-nums"><div><span>集まったメッセージ</span><b><em id="bigMsg">0</em><small>件</small></b></div><div><span>12/19 出席</span><b><em id="bigAtt">0</em><small>人</small></b></div></div>
+    <div id="meBox" class="me-box"></div><div class="kv-btns"><button type="button" class="kv-p" id="rsvpMe" hidden>出席する</button><button type="button" class="kv-o" id="goMembers">メッセージを書く ↓</button></div>
   </div></section>
   <div class="kv-lab sk-mh">— 話したい人を選ぶ —</div>
   <div class="bar">
