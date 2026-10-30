@@ -717,7 +717,7 @@ body.skui .kv-msg .gap{display:block;height:14px}
 <link rel="preload" href="wall.jpg" as="image"><link rel="preload" href="tiles.jpg?v=3" as="image">
 </head>
 <body class="skui">
-<div class="gate" id="gate"><div class="typefield" id="typefield" aria-hidden="true"></div><div class="load"><h1>全員集合</h1><p class="note" id="gateErr">読み込んでいます…</p></div></div>
+<div class="gate" id="gate"><div class="typefield" id="typefield" aria-hidden="true"></div><div class="load"><h1><span style="white-space:nowrap">2026年度末</span> <span style="white-space:nowrap">全社総会</span></h1><p class="note" id="gateErr">読み込んでいます…</p></div></div>
 
 <div class="wrap" id="app" hidden>
   <div class="kv-top"><span class="ws">SAKIYOMI 2026年度末 全社総会</span><input id="q" type="search" placeholder="🔍 名前でさがす"><div class="me"><label for="me">あなた</label><button type="button" id="meChip" class="me-chip" data-pickme></button><input id="me" hidden list="names" placeholder="名簿から選ぶ" autocomplete="off"></div></div>
@@ -1014,7 +1014,6 @@ $('#sheet').addEventListener('click',async e=>{
     b.disabled=false;b.textContent='送信 ➤'}
 });
 (function(){let seen=null;try{seen=localStorage.getItem('yk_intro')}catch(e){}
-  if(seen){$('#gate').hidden=true;boot();return}
   try{localStorage.setItem('yk_intro','1')}catch(e){}
   const g=$('#gateErr');if(g)g.textContent='';
   setTimeout(()=>{const gt=$('#gate');gt.style.transition='opacity .6s';gt.style.opacity='0';setTimeout(boot,600)},3200)})();
