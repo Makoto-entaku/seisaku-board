@@ -795,8 +795,8 @@ async function boot(){
   let d;try{d=await get({action:'data'})}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
   try{localStorage.setItem('yk_data',JSON.stringify(d))}catch(e){}
-  apply(d);loadAvatars();prefetchPhotos();if(!ME&&!INV)showPicker();
-  setInterval(refresh,45000);
+  apply(d);loadAvatars();if(!ME&&!INV)showPicker();
+  setInterval(refresh,90000);
 }
 function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));{const HID={};(d.messages||[]).filter(m=>m.to==='__hide__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{try{const o=JSON.parse(m.text);HID[o.k]=o.h}catch(e){}});const FIRST={};(d.messages||[]).filter(m=>m.to==='__first__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{try{const o=JSON.parse(m.text);FIRST[o.n]=o.k}catch(e){}});const pk=(p,o)=>'p:'+(o[7]&&o[7].ts?o[7].ts:p.n+':'+String(o[0]||'').slice(0,30));PEOPLE.forEach(p=>{if(p.own&&FIRST[p.n]){const i=p.own.findIndex(o=>o&&pk(p,o)===FIRST[p.n]);if(i>=0){p.own[i].__f=1;if(i>0)p.own.unshift(p.own.splice(i,1)[0])}}});PEOPLE.forEach(p=>{if(p.own)p.own=p.own.filter(o=>!(o&&HID['p:'+(o[7]&&o[7].ts?o[7].ts:p.n+':'+String(o[0]||'').slice(0,30))]));if(p.ph)p.ph=p.ph.filter(x=>!HID['f:'+x[0]])})}{const FX={'Akira Okubo':'fx_akira','Kenta Ogawa':'fx_kenta','Ryusei Kato':'fx_ryusei'};PEOPLE.forEach(p=>{if(FX[p.n])p.av=FX[p.n]})}if(INV&&!ME){ME=INV;save('yk_me',ME)}if(ME){const rn=resolveName(ME);if(rn&&rn!==ME){ME=rn;save('yk_me',ME)}}setMsgs(d.messages||[]);
   $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV){if(open!==INV){document.body.classList.add('inv');openSheet(INV)}else renderMsgs(INV)}}
