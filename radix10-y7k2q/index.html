@@ -749,6 +749,8 @@ html body.skui .kv-art .kv-copy{display:none!important}
 const API='https://script.google.com/macros/s/AKfycbwmzffnY-hwKJcy-DftwktmSfp2b22DRqWlML2y90UgYoNGGBSGqqqukoo53QsLBR-JQA/exec';
 const KEY='radix10';
 let ME='';try{ME=localStorage.getItem('yk_me')||''}catch(e){}
+let PEND=[];try{PEND=JSON.parse(localStorage.getItem('yk_pend')||'[]')}catch(e){PEND=[]}
+
 let MINE=[];try{MINE=JSON.parse(localStorage.getItem('yk_mine')||'[]')}catch(e){}
 let PEOPLE=[],BYN={},MSG=[],AV={},PH={},open=null;
 const tok=n=>{let x=2166136261;for(const ch of 'r10:'+n){x^=ch.codePointAt(0);x=Math.imul(x,16777619)>>>0}return x.toString(36)};
@@ -795,7 +797,7 @@ async function boot(){
   let d;try{d=await get({action:'data'})}catch(e){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">つながりませんでした。通信状況を確認して、もう一度お試しください。</p>';return}
   if(!d.ok){if(!cached)$('#grid').innerHTML='<p class="note" style="grid-column:1/-1;text-align:center;padding:48px 0">読み込みに失敗しました。少し待ってから再読み込みしてください。</p>';return}
   try{localStorage.setItem('yk_data',JSON.stringify(d))}catch(e){}
-  apply(d);loadAvatars();if(!ME&&!INV)showPicker();
+  apply(d);loadAvatars();PEND.forEach(m=>sendPending(m));if(!ME&&!INV)showPicker();
   setInterval(refresh,90000);
 }
 function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T);if(ip)INV=ip.n}PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));{const HID={};(d.messages||[]).filter(m=>m.to==='__hide__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{try{const o=JSON.parse(m.text);HID[o.k]=o.h}catch(e){}});const FIRST={};(d.messages||[]).filter(m=>m.to==='__first__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{try{const o=JSON.parse(m.text);FIRST[o.n]=o.k}catch(e){}});const pk=(p,o)=>'p:'+(o[7]&&o[7].ts?o[7].ts:p.n+':'+String(o[0]||'').slice(0,30));PEOPLE.forEach(p=>{if(p.own&&FIRST[p.n]){const i=p.own.findIndex(o=>o&&pk(p,o)===FIRST[p.n]);if(i>=0){p.own[i].__f=1;if(i>0)p.own.unshift(p.own.splice(i,1)[0])}}});PEOPLE.forEach(p=>{if(p.own)p.own=p.own.filter(o=>!(o&&HID['p:'+(o[7]&&o[7].ts?o[7].ts:p.n+':'+String(o[0]||'').slice(0,30))]));if(p.ph)p.ph=p.ph.filter(x=>!HID['f:'+x[0]])})}{const FX={'Akira Okubo':'fx_akira','Kenta Ogawa':'fx_kenta','Ryusei Kato':'fx_ryusei'};PEOPLE.forEach(p=>{if(FX[p.n])p.av=FX[p.n]})}if(INV&&!ME){ME=INV;save('yk_me',ME)}if(ME){const rn=resolveName(ME);if(rn&&rn!==ME){ME=rn;save('yk_me',ME)}}setMsgs(d.messages||[]);
@@ -860,7 +862,7 @@ async function prefetchPhotos(){
 function warm(n){const p=BYN[n];if(!p)return;const ids=(p.ph||[]).map(x=>x[0]).filter(id=>!PH[id]);if(ids.length&&!warm.busy?.[n]){(warm.busy=warm.busy||{})[n]=1;get({action:'photos',ids:ids.join(',')}).then(d=>{if(d.ok)gotPhotos(d.photos)}).catch(()=>{})}}
 let ATT=new Set();
 const MARU='<svg class="maru" viewBox="0 0 100 100" aria-hidden="true"><path d="M52 5C82 4 98 26 95 53C92 81 69 97 45 94C19 91 3 70 6 45C9 21 30 7 58 9" fill="none" stroke="#d62d20" stroke-width="3.2" stroke-linecap="round"/></svg>';
-function setMsgs(all){MSG=all.filter(m=>!String(m.to).startsWith('__'));ATT=new Set();all.filter(m=>m.to==='__rsvp__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{if(m.text==='出席')ATT.add(m.from);else ATT.delete(m.from)})}
+function setMsgs(all){PEND=PEND.filter(p=>!all.some(m=>m.to===p.to&&m.from===p.from&&m.text===p.text));savePend();MSG=all.filter(m=>!String(m.to).startsWith('__')).concat(PEND);ATT=new Set();all.filter(m=>m.to==='__rsvp__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{if(m.text==='出席')ATT.add(m.from);else ATT.delete(m.from)})}
 function ctaHtml(n){const a=ATT.has(n),own=n===ME||INV===n;return `<div class="cta-b${a?' on':''}" id="ctaB">${INV===n?'':`<p class="to"><b>${esc(n)}さんへ</b></p>`}${own?(a?`<span class="att-stamp">出席</span><button class="link" id="rsvpX">取り消す</button>`:`<button class="btn" id="rsvp">出席する</button>`):(a?`<span class="att-stamp">出席</span>`:'')}</div>`}
 const count=n=>MSG.filter(m=>m.to===n).length;
 const mineTo=n=>MSG.some(m=>m.to===n&&ME&&(m.from===ME||resolveName(m.from)===ME));
@@ -979,10 +981,13 @@ function showPicker(force){if($('#pickMe'))return;if(!force){try{if(sessionStora
     if(e.target.id==='pmSkip'||e.target===d){try{sessionStorage.setItem('yk_skip','1')}catch(x){}closePicker()}});
   step1()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-pickme]')){e.preventDefault();showPicker(true)}if(e.target.closest('[data-rsvptoggle]')){e.preventDefault();$('#rsvpMe').click()}});
+
+function savePend(){try{localStorage.setItem('yk_pend',JSON.stringify(PEND.map(({ts,id,to,from,text})=>({ts,id,to,from,text,pending:1}))))}catch(e){}}
+async function sendPending(m){if(m._busy)return;m._busy=1;for(let k=0;k<12&&m.pending;k++){try{const r=await post({action:'post',to:m.to,from:m.from,text:m.text});if(r&&r.ok){const old=m.id;m.id=r.id;delete m.pending;MINE.push(r.id);save('yk_mine',MINE);PEND=PEND.filter(x=>x.id!==old);savePend();if(open===m.to)renderMsgs(open);break}}catch(e){}await new Promise(r=>setTimeout(r,5000+k*5000))}m._busy=0;if(m.pending&&open===m.to)renderMsgs(open)}
 function renderMsgs(n){const el=$('#msgs');if(!el)return;const all=MSG.filter(m=>m.to===n);const ms=all;const lk=all.length-ms.length;if(INV===n&&$('#invN'))$('#invN').textContent=all.length;
   if(el.classList.contains('board')){const bc=$('#bcount');if(bc)bc.textContent=all.length;
     const tm=x=>{const d=x?new Date(x):null;return d&&!isNaN(d)?d.toLocaleString('ja-JP',{timeZone:'Asia/Tokyo',month:'long',day:'numeric'})+' '+d.toLocaleTimeString('ja-JP',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit'}):''};
-    el.innerHTML=(all.length||INV===n?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+(INV===n&&!all.length?'<p class="note">メッセージはこれから届きます。</p>':'')+(all.length?`<div class="th-h"><b>スレッド</b><span># ${esc(n)} さんへ</span></div><div class="th-sep">${all.length}件の返信</div>`:'')+ms.map(m=>{const rn=resolveName(m.from),fp=BYN[rn];return `<div class="th-m"><span class="th-av">${fp?avHtml(fp):esc(String(m.from||'?').trim().slice(0,1))}</span><div class="th-b"><div class="th-hd"><b>${esc(rn||m.from)}</b><span>${esc(tm(m.ts))}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div><p>${esc(m.text)}</p></div></div>`}).join('')+(lk?`<div class="th-lk"><i>🔒</i>${ms.length?'ほか ':''}${lk} 件は、本人だけが招待状で読めます</div>`:'');return}
+    el.innerHTML=(all.length||INV===n?'':`<button class="tile add" data-opencompose><span>＋</span>最初のメッセージを書く</button>`)+(INV===n&&!all.length?'<p class="note">メッセージはこれから届きます。</p>':'')+(all.length?`<div class="th-h"><b>スレッド</b><span># ${esc(n)} さんへ</span></div><div class="th-sep">${all.length}件の返信</div>`:'')+ms.map(m=>{const rn=resolveName(m.from),fp=BYN[rn];return `<div class="th-m"><span class="th-av">${fp?avHtml(fp):esc(String(m.from||'?').trim().slice(0,1))}</span><div class="th-b"><div class="th-hd"><b>${esc(rn||m.from)}</b><span>${m.pending?'送信中…':esc(tm(m.ts))}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div><p>${esc(m.text)}</p></div></div>`}).join('')+(lk?`<div class="th-lk"><i>🔒</i>${ms.length?'ほか ':''}${lk} 件は、本人だけが招待状で読めます</div>`:'');return}
   el.innerHTML=ms.length?ms.map(m=>`<div class="msg"><p>${esc(m.text)}</p><div class="meta"><span>${esc(m.from)}</span>${MINE.includes(m.id)?`<button class="del" data-del="${esc(m.id)}">取り消す</button>`:''}</div></div>`).join(''):'<p class="note">まだありません。最初の一通をどうぞ。</p>'}
 function closeSheet(){if(INV)return;stopMic();if(window._hw){window._hw.stop();window._hw=null}open=null;$('#scrim').hidden=true;$('#sheet').hidden=true}
 $('#scrim').addEventListener('click',closeSheet);
@@ -1010,11 +1015,8 @@ $('#sheet').addEventListener('click',async e=>{
     if(ME){const rn=resolveName(ME);if(!rn){toast('名前は名簿から選んでね（例 Makoto Kishihara）');if($('#meB'))$('#meB').focus();return}ME=rn;$('#me').value=ME;if($('#meB'))$('#meB').value=ME}
     if(!ME){toast('「あなたの名前」を入れてください');if($('#meB')){$('#meB').focus()}else{closeSheet();$('#me').focus()}return}
     if(!text){toast('メッセージを入れてください');return}
-    const b=$('#send');b.disabled=true;b.textContent='送信中…';
-    try{const r=await post({action:'post',to:open,from:ME,text});
-      if(r.ok){MSG.push({ts:new Date().toISOString(),id:r.id,to:open,from:ME,text});MINE.push(r.id);save('yk_mine',MINE);save('yk_me',ME);$('#txt').value='';if($('#composeBox')){stopMic();$('#composeBox').hidden=true}renderMsgs(open);render();toast('送りました。ありがとう！')}
-      else toast('送れませんでした（'+r.error+'）')}catch(err){toast('送れませんでした。通信状況を確認してください')}
-    b.disabled=false;b.textContent='送信 ➤'}
+    const m={ts:new Date().toISOString(),id:'tmp'+Date.now()+Math.random().toString(36).slice(2,6),to:open,from:ME,text,pending:1};
+    PEND.push(m);savePend();MSG.push(m);save('yk_me',ME);$('#txt').value='';if($('#composeBox')){stopMic();$('#composeBox').hidden=true}renderMsgs(open);render();toast('送りました。ありがとう！');sendPending(m)}
 });
 (function(){let seen=null;try{seen=localStorage.getItem('yk_intro')}catch(e){}
   try{localStorage.setItem('yk_intro','1')}catch(e){}
