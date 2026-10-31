@@ -891,7 +891,7 @@ function warm(n){const p=BYN[n];if(!p)return;const ids=(p.ph||[]).map(x=>x[0]).f
 let ATT=new Set();
 const MARU='<svg class="maru" viewBox="0 0 100 100" aria-hidden="true"><path d="M52 5C82 4 98 26 95 53C92 81 69 97 45 94C19 91 3 70 6 45C9 21 30 7 58 9" fill="none" stroke="#d62d20" stroke-width="3.2" stroke-linecap="round"/></svg>';
 function demoMsgs(){const n=+(new URLSearchParams(location.search).get('demo')||0);if(!n||!ME)return [];const T=['久しぶり！元気してる？\nあの頃は毎日オフィスに遅くまで残って、みんなで投稿のネタを考えてたよね。\n正直しんどい時もあったけど、今思うとあの時間があったから今の自分がある。\n今は別の会社で働いてるけど、SAKIYOMIで学んだ「先を読む」って感覚はずっと使ってる。\n最初のプレゼンでボロボロだったのに、最後まで見捨てずに付き合ってくれてありがとう。\n実はあの時の資料、まだ保存してあるんよ笑\n総会では、その後の話もたくさん聞かせてほしい。\nこっちもちょっと自慢したいことがある。\nお酒片手に、ゆっくり話そう。\n12/19、楽しみにしてます！','総会、絶対行きます！話したいことたくさんある','あの時の深夜作業、今でも思い出すわ笑','最近どう？また飲みに行こう','インターン時代ほんまにお世話になりました','年末楽しみにしてる！','投稿見て懐かしくなった','会えるの楽しみ〜','元気そうで何より！','12/19待ってるで！','久しぶり！','また話そう'];const S=PEOPLE.filter(p=>!p.cur&&p.n!==ME).map(p=>p.n);return Array.from({length:Math.min(n,12)},(_,i)=>({ts:new Date(Date.now()-i*3600e3).toISOString(),id:'demo'+i,to:ME,from:S[(i*7)%S.length],text:T[i%T.length],demo:1}))}
-function setMsgs(all){PEND=PEND.filter(p=>!all.some(m=>m.to===p.to&&m.from===p.from&&m.text===p.text));savePend();MSG=all.filter(m=>!String(m.to).startsWith('__')).concat(PEND).concat(demoMsgs());ATT=new Set();all.filter(m=>m.to==='__rsvp__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{if(m.text==='出席')ATT.add(m.from);else ATT.delete(m.from)})}
+function setMsgs(all){PEND=PEND.filter(p=>!all.some(m=>m.to===p.to&&m.from===p.from&&m.text===p.text));savePend();{const seen=new Set();MSG=all.filter(m=>!String(m.to).startsWith('__')).concat(PEND).filter(m=>{const k=m.from+'|'+m.to+'|'+String(m.text).trim();if(seen.has(k))return false;seen.add(k);return true}).concat(demoMsgs())}ATT=new Set();all.filter(m=>m.to==='__rsvp__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{if(m.text==='出席')ATT.add(m.from);else ATT.delete(m.from)})}
 function ctaHtml(n){const a=ATT.has(n),own=n===ME||INV===n;return `<div class="cta-b${a?' on':''}" id="ctaB">${INV===n?'':`<p class="to"><b>${esc(n)}さんへ</b></p>`}${own?(a?`<span class="att-stamp">出席</span><button class="link" id="rsvpX">取り消す</button>`:`<button class="btn" id="rsvp">出席する</button>`):(a?`<span class="att-stamp">出席</span>`:'')}</div>`}
 const count=n=>MSG.filter(m=>m.to===n).length;
 const mineTo=n=>MSG.some(m=>m.to===n&&ME&&(m.from===ME||resolveName(m.from)===ME));
@@ -1046,6 +1046,7 @@ $('#sheet').addEventListener('click',async e=>{
     if(ME){const rn=resolveName(ME);if(!rn){toast('名前は名簿から選んでね（例 Makoto Kishihara）');if($('#meB'))$('#meB').focus();return}ME=rn;$('#me').value=ME;if($('#meB'))$('#meB').value=ME}
     if(!ME){toast('「あなたの名前」を入れてください');if($('#meB')){$('#meB').focus()}else{closeSheet();$('#me').focus()}return}
     if(!text){toast('メッセージを入れてください');return}
+    if(MSG.some(x=>x.from===ME&&x.to===open&&String(x.text).trim()===text)){$('#txt').value='';toast('同じメッセージはもう送ってあります');return}
     const m={ts:new Date().toISOString(),id:'tmp'+Date.now()+Math.random().toString(36).slice(2,6),to:open,from:ME,text,pending:1};
     PEND.push(m);savePend();MSG.push(m);save('yk_me',ME);$('#txt').value='';if($('#composeBox')){stopMic();$('#composeBox').hidden=true}renderMsgs(open);render();toast('送りました。ありがとう！');sendPending(m)}
 });
