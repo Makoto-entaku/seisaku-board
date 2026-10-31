@@ -749,7 +749,7 @@ html body.skui .kv-core{position:relative}html body.skui .my-scatter{display:blo
   </div></section>
   <div class="kv-lab sk-mh">— 話したい人を選ぶ —</div>
   <div class="bar">
-    <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="att">出席予定 <span id="attN"></span></button></div>
+    <div class="seg" role="tablist" id="seg"><button data-r="all" class="on">すべて</button><button data-r="partner">元パートナー</button><button data-r="innovator">元イノベーター</button><button data-r="att">出席予定 <span id="attN"></span></button><button data-r="zero">0件の人 <span id="zeroN"></span></button></div>
     <span class="stat" id="stat"></span><div class="prog" aria-hidden="true"><i id="progBar"></i></div>
   </div>
   <datalist id="names"></datalist>
@@ -897,7 +897,7 @@ const count=n=>MSG.filter(m=>m.to===n).length;
 const mineTo=n=>MSG.some(m=>m.to===n&&ME&&(m.from===ME||resolveName(m.from)===ME));
 function render(){
   const q=$('#q').value.trim().toLowerCase();
-  const list=PEOPLE.filter(p=>(ROLE==='cur'?p.cur:ROLE==='att'?ATT.has(p.n):(ROLE==='all'?(!p.cur||ATT.has(p.n)):(!p.cur&&p.role===ROLE)))&&(!q||p.n.toLowerCase().includes(q)));if($('#memN'))$('#memN').textContent=list.length;if($('#attN'))$('#attN').textContent=PEOPLE.filter(p=>ATT.has(p.n)).length;
+  const list=PEOPLE.filter(p=>(ROLE==='cur'?p.cur:ROLE==='att'?ATT.has(p.n):ROLE==='zero'?(!p.cur&&!count(p.n)):(ROLE==='all'?(!p.cur||ATT.has(p.n)):(!p.cur&&p.role===ROLE)))&&(!q||p.n.toLowerCase().includes(q)));if($('#memN'))$('#memN').textContent=list.length;if($('#attN'))$('#attN').textContent=PEOPLE.filter(p=>ATT.has(p.n)).length;if($('#zeroN'))$('#zeroN').textContent=PEOPLE.filter(p=>!p.cur&&!count(p.n)).length;
   const st=p=>String((p.span||[])[0]||'9999');list.sort((a,b)=>(ATT.has(b.n)-ATT.has(a.n))||(a.cur-b.cur)||st(a).localeCompare(st(b))||a.n.localeCompare(b.n));
   $('#grid').innerHTML=list.map(p=>{const c=count(p.n),m=ME&&mineTo(p.n);
     const at=ATT.has(p.n);return `<button class="card${p.cur?' cur':''}${at?' att':''}" data-n="${esc(p.n)}"><span class="av">${avHtml(p)}${at?MARU+'<i class="att-t">出席</i>':''}</span><span class="nm">${esc(p.n)}</span><span class="cnt${m?' mine':c?'':' zero'}">${m?'書いた ・ ':''}${c}件</span></button>`}).join('');
