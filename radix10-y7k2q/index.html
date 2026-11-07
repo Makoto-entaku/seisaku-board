@@ -1010,16 +1010,18 @@ function openSheet(n){
     const isInv=INV===p.n,nMsg=count(p.n);
     const boardB=`<h3 class="sec-h">✉️ ${isInv?'あなたへのメッセージ':'メッセージ'} <small><span id="bcount"></span>件</small></h3>
       <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="close2">← みんなの一覧に戻る</button><button class="btn ghost" id="next">次の人へ →</button></div></section>`;
+    const INFO_H='<section class="inv2-info"><h3 class="inv2-h">📍 当日のスケジュール・場所</h3><p class="inv2-soon">Coming soon</p><p class="inv2-sub">決まりしだい、お知らせします。</p></section>';
     if(isInv){$('#sheet').innerHTML=`<div class="inv2"><header class="inv2-hd"><span class="av">${avHtml(p)}</span><h2>${esc(p.n)} さんへ</h2><p>2026 SAKIYOMI 年末総会（12月19日）の招待状です。</p></header>
       <figure class="inv2-card" id="invCard"><img id="invImg" alt="招待状" ${window._invURL?`src="${window._invURL}"`:''}></figure>
       <div class="ivr-wrap">${invRsvpHtml(p.n)}</div>
-      <section class="inv2-info"><h3 class="inv2-h">📍 当日のスケジュール・場所</h3><p class="inv2-soon">Coming soon</p><p class="inv2-sub">決まりしだい、このページでお知らせします。</p></section>
+      ${INFO_H}
       <h3 class="inv2-h">💌 あなたに会いたい人たちから</h3>
       <div class="my-msgs invm" id="invMsgs"></div>
       <div id="invThxSec" hidden><h3 class="inv2-h">🙏 感謝アンケートで届いていた言葉</h3><p class="inv2-sub">在籍中に、Slackの感謝アンケートで送られていたメッセージです。</p>
       <div class="my-msgs invm" id="invThx"></div></div>
       ${own?`<h3 class="inv2-h">💬 あの頃のあなたの投稿${(p.own||[]).length>1?'<small>横にスワイプ →</small>':''}</h3><div class="poststrip">${own}</div>`:''}
-      <div class="ivr-wrap">${invRsvpHtml(p.n)}</div></div>`;
+      <div class="ivr-wrap">${invRsvpHtml(p.n)}</div>
+      ${INFO_H}</div>`;
       if(!window._invURL&&!window._invBusy){window._invBusy=1;const tryLoad=(k)=>sdec('v/'+tok(p.n)+'.bin?t='+Date.now()).then(u=>{window._invURL=URL.createObjectURL(new Blob([u],{type:'image/jpeg'}));const im=document.getElementById('invImg');if(im)im.src=window._invURL;window._invBusy=0}).catch(()=>{if(k<4)setTimeout(()=>tryLoad(k+1),2500*(k+1));else{window._invBusy=0;const f=document.getElementById('invCard');if(f)f.remove()}});tryLoad(0)}
       $('#sheet').classList.add('full');$('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;renderInvMsgs();loadPhotos([...new Set((p.own||[]).flatMap(o=>(o[5]||[]).slice(0,4)))].filter(id=>!PH[id]));return}
     $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">← 一覧へ</button><div class="bt">${esc(p.n)}${isInv?' さんへの招待状':''}</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
