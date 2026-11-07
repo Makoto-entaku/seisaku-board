@@ -740,6 +740,13 @@ html body #myMsgs.my-msgs{background:#fff;border:1px solid #ddd;border-radius:8p
 .mv-stage{position:absolute;inset:0}.mv-s{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;opacity:0;transition:opacity .6s ease}.mv-s.in{opacity:1}.mv-s.out{opacity:0}
 .mv-bar{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.25);z-index:3}.mv-bar i{display:block;height:100%;width:0;background:#fff}
 .mv-play{position:absolute;inset:0;z-index:4;border:0;background:rgba(31,42,85,.55);color:#fff;font:inherit;font-size:16px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer}.mv-play span{display:grid;place-items:center;width:68px;height:68px;border-radius:50%;background:#fff;color:#1f2a55;font-size:26px}.mv-play.hide{display:none}
+.mv-stage.mv2{background:#14110f}.mv2 .mv-s{transition:opacity 1.1s ease;padding:0}
+.mv2-title{background:radial-gradient(ellipse at 50% 40%,#3a2f28,#14110f 75%);color:#f6efe6!important;font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;padding:28px!important}.mv2-title h3{font-size:28px;font-weight:500;letter-spacing:.08em;line-height:1.6;margin:10px 0;color:#f6efe6}.mv2-title p{font-size:14px;letter-spacing:.2em;opacity:.85;margin:6px 0;color:#f6efe6}.mv2-title h3.e{font-size:23px;white-space:nowrap}.mv2-title .sm{font-size:11px;letter-spacing:.25em;opacity:.6}
+.mv2-photo .bgb{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);object-fit:cover;filter:blur(20px) brightness(.45)}.mv2-photo .fg{position:absolute;left:6%;top:6%;width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 10px 24px rgba(0,0,0,.5));animation:mv2kb 4.5s ease-out forwards;filter:saturate(.9) contrast(1.02)}.mv2-photo.r .fg{animation-name:mv2kb2}.mv2-photo:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.45))}
+@keyframes mv2kb{from{transform:scale(1.02)}to{transform:scale(1.14) translate(-2%,-1%)}}@keyframes mv2kb2{from{transform:scale(1.14) translate(2%,1%)}to{transform:scale(1.02)}}
+.mv2-q .bgb{position:absolute;inset:-30px;width:calc(100% + 60px);height:calc(100% + 60px);object-fit:cover;filter:blur(18px) brightness(.38) saturate(.8)}.mv2-q .qw{position:relative;padding:0 30px;color:#fff;animation:mv2up 2.6s ease-out both}
+.mv2-q p{font-family:"Hiragino Mincho ProN","Yu Mincho","Noto Serif JP",serif;font-size:21px;line-height:1.75;letter-spacing:.04em;margin:0 0 18px;color:#fff;text-shadow:0 2px 12px rgba(0,0,0,.4)}.mv2-q b{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:500;letter-spacing:.08em;opacity:.85;color:#fff}.mv2-q .av{width:24px;height:24px;border-radius:50%;overflow:hidden;display:inline-block}.mv2-q .av img,.mv2-q .av *{width:100%;height:100%;object-fit:cover;border-radius:50%}
+@keyframes mv2up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .mv-play small{font-size:12px;font-weight:400;opacity:.85;margin-top:-4px}
 .mv-chat{padding:16px;background:linear-gradient(160deg,#395DC8,#24357a)}.mv-win{width:100%!important;height:100%;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.3)}.mv-win .s-ch{flex:none}.mv-feed{flex:1;overflow-y:auto;position:relative;overflow-x:hidden;padding:4px 0 10px;scrollbar-width:none}.mv-feed::-webkit-scrollbar{display:none}
 .mv-feed .s-msg{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease;text-align:left}.mv-feed .s-msg.on{opacity:1;transform:none}.mv-feed .s-tx{font-size:14px;line-height:21px;font-weight:400;max-height:none;white-space:pre-wrap}.mv-feed .s-tx:after{display:none}.mv-feed .s-hd b{font-size:14px}.mv-feed .ini{display:grid;place-items:center;width:36px;height:36px;border-radius:8px;background:#395DC8;color:#fff;font-weight:700}
@@ -972,7 +979,23 @@ function mvPhotoIds(p){return [...[...(p.own||[]),...(p.about||[])].flatMap(o=>(
 let MV=null;
 function mvMsgs(n){const by=(a,b)=>String(a.ts).localeCompare(String(b.ts));const A=MSG.filter(m=>m.to===n).sort(by),B=THX.filter(m=>m.to===n&&thxOk(m)).sort((a,b)=>String(b.text).length-String(a.text).length);
   const L=[],budget=22000;let t=0;for(const m of A.concat(B)){const d=Math.max(1800,Math.min(4800,1300+String(m.text).length*22));if(L.length>=3&&t+d>budget)break;L.push({m,d});t+=d}const f=L.length?budget/t:1;L.forEach(x=>x.d=Math.round(x.d*f));return L}
-function playMovie(){const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(!st||!INV)return;if(MV){MV.ts.forEach(clearTimeout);if(MV.au){MV.au.pause()}}
+
+let MVX={};
+function playMovie2(X){const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(MV){MV.ts.forEach(clearTimeout);if(MV.au)MV.au.pause()}
+  const p=BYN[INV],n=INV;MV={ts:[],au:null};const at=(ms,fn)=>MV.ts.push(setTimeout(fn,ms));
+  try{const au=new Audio('static/bgm.mp3');au.volume=.6;MV.au=au;au.play().catch(()=>{})}catch(e){}
+  bt.classList.add('hide');st.innerHTML='';st.classList.add('mv2');pr.style.transition='none';pr.style.width='0';void pr.offsetWidth;pr.style.transition='width 30s linear';pr.style.width='100%';
+  const show=(cls,html)=>{const el=document.createElement('div');el.className='mv-s '+cls;el.innerHTML=html;st.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('in')));[...st.children].slice(0,-1).forEach(o=>{setTimeout(()=>o.classList.add('out'),300);setTimeout(()=>o.remove(),1500)})};
+  const all=MSG.concat(THX),ph=X.ph.filter(id=>PH[id]);let bg=ph[0]?PH[ph[0]]:'';
+  const qs=X.q.map(([id,t])=>{const m=all.find(x=>x.id===id);return m&&String(m.text).includes(t)?{m,t}:null}).filter(Boolean);
+  const seq=[];const per=Math.ceil(qs.length/Math.max(1,ph.length));let qi=0;ph.forEach((id,i)=>{seq.push({ph:id});for(let k=0;k<per&&qi<qs.length;k++)seq.push(qs[qi++])});while(qi<qs.length)seq.push(qs[qi++]);
+  const T0=3000,END=3400,body=30000-T0-END,nP=seq.filter(x=>x.ph).length,dP=2600,dQ=(body-nP*dP)/Math.max(1,seq.length-nP);
+  show('mv2-title',`<p class="sm">2026 SAKIYOMI 年末総会</p><h3>${esc(n)} さんへ</h3><p>みんなからの、ひとこと。</p>`);
+  let t=T0;seq.forEach((x,i)=>{at(t,()=>{if(x.ph){bg=PH[x.ph];show('mv2-photo'+(i%2?' r':''),`<img class="bgb" src="${bg}" alt=""><img class="fg" src="${bg}" alt="">`)}else{const rn=resolveName(x.m.from)||x.m.from,fp=BYN[rn];show('mv2-q',`${bg?`<img class="bgb" src="${bg}" alt="">`:''}<div class="qw"><p>${esc(x.t)}</p><b>${fp?`<span class="av">${avHtml(fp)}</span>`:''}${esc(rn)}</b></div>`)}});t+=x.ph?dP:dQ});
+  at(30000-END,()=>show('mv2-title end',`<h3 class="e">12月19日、<br>会いにきてください。</h3><p class="sm">2026 SAKIYOMI 年末総会</p>`));
+  at(29200,()=>{if(MV.au){const a=MV.au;let v=a.volume;const f=setInterval(()=>{v-=.05;if(v<=0){a.pause();clearInterval(f)}else a.volume=v},90)}});
+  at(31000,()=>{bt.innerHTML='<span>↻</span>もう一度見る';bt.classList.remove('hide')})}
+function playMovie(){if(INV&&MVX[INV])return playMovie2(MVX[INV]);const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(!st||!INV)return;if(MV){MV.ts.forEach(clearTimeout);if(MV.au){MV.au.pause()}}
   const p=BYN[INV],n=INV,L=mvMsgs(n);MV={ts:[],au:null};const at=(ms,fn)=>MV.ts.push(setTimeout(fn,ms));
   try{const au=new Audio('static/bgm.mp3');au.volume=.6;MV.au=au;au.play().catch(()=>{})}catch(e){}
   bt.classList.add('hide');st.innerHTML='';pr.style.transition='none';pr.style.width='0';void pr.offsetWidth;pr.style.transition='width 30s linear';pr.style.width='100%';
