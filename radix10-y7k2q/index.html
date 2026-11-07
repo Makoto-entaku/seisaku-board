@@ -771,7 +771,7 @@ html body #myMsgs.my-msgs{background:#fff;border:1px solid #ddd;border-radius:8p
 .m4c{background:#fff;border:1px solid rgba(57,93,200,.18);box-shadow:0 12px 30px rgba(31,42,85,.18)}.m4c b{color:#395DC8}.m4c p{color:#1f2a55}.m4c p.gh{visibility:hidden;height:0;margin:0;overflow:hidden}
 .mv3 .m4-txt.fin5{opacity:0;background:#f4efe7;transition:opacity .9s ease}.mv3 .m4-txt.fin5.on{opacity:1}.mv3 .m4-txt.fin5 p{font-size:23px;font-weight:700;color:#2f52c4;line-height:1.7;margin:0;min-height:0}
 .mv3 .m4-kv{z-index:7}.mv3 .m4-txt{z-index:6}.mv3 .fg.v{object-fit:contain;background:#000}.m5-dt{position:absolute;left:16px;top:14px;font:600 11px/1 "Helvetica Neue",Arial,sans-serif;letter-spacing:.2em;color:#fff;opacity:.85;text-shadow:0 1px 6px rgba(0,0,0,.5)}
-.m3-card.pl5{left:5%;bottom:7%}.m3-card.pr5{right:5%;bottom:7%}.m3-card.m4c{transition:transform .28s cubic-bezier(.2,1.6,.4,1),opacity .15s ease}
+.m5-blank{position:absolute;inset:0;background:#f4efe7}.m3-card.mid{bottom:auto!important;top:50%;transform:translateY(-50%) scale(.7)}.m3-card.mid.on{transform:translateY(-50%)}.m3-card.pl5{left:5%;bottom:7%}.m3-card.pr5{right:5%;bottom:7%}.m3-card.m4c{transition:transform .28s cubic-bezier(.2,1.6,.4,1),opacity .15s ease}
 .mv-play small{font-size:12px;font-weight:400;opacity:.85;margin-top:-4px}
 .mv-chat{padding:16px;background:linear-gradient(160deg,#395DC8,#24357a)}.mv-win{width:100%!important;height:100%;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.3)}.mv-win .s-ch{flex:none}.mv-feed{flex:1;overflow-y:auto;position:relative;overflow-x:hidden;padding:4px 0 10px;scrollbar-width:none}.mv-feed::-webkit-scrollbar{display:none}
 .mv-feed .s-msg{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease;text-align:left}.mv-feed .s-msg.on{opacity:1;transform:none}.mv-feed .s-tx{font-size:14px;line-height:21px;font-weight:400;max-height:none;white-space:pre-wrap}.mv-feed .s-tx:after{display:none}.mv-feed .s-hd b{font-size:14px}.mv-feed .ini{display:grid;place-items:center;width:36px;height:36px;border-radius:8px;background:#395DC8;color:#fff;font-weight:700}
@@ -1016,19 +1016,18 @@ function playMovie2(X){const st=document.getElementById('mvStage'),pr=document.g
   const bgL=st.querySelector('.m3-bg'),pop=st.querySelector('.m3-pop'),tx=st.querySelector('.m4-txt'),kv=st.querySelector('.m4-kv');
   const scene=(html,cls)=>{const el=document.createElement('div');el.className='mv-s '+(cls||'');el.innerHTML=html;bgL.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('in')));[...bgL.children].slice(0,-1).forEach(o=>{setTimeout(()=>o.classList.add('out'),250);setTimeout(()=>o.remove(),1400)});return el};
   // media: chronological, each used exactly once (image dataURL or video URL)
-  const mon={};(p.ph||[]).forEach(x=>mon[x[0]]=x[1]);[...(p.own||[]),...(p.about||[])].forEach(o=>(o[5]||[]).forEach(id=>{if(!mon[id])mon[id]=o[1]}));Object.assign(mon,X.mon||{});
-  const media=X.ph.filter(id=>PH[id]).sort((a,b)=>String(mon[a]||'').localeCompare(String(mon[b]||'')));
+  const mon={};(p.ph||[]).forEach(x=>mon[x[0]]=x[1]);[...(p.own||[]),...(p.about||[])].forEach(o=>(o[5]||[]).forEach(id=>{if(!mon[id])mon[id]=o[1]}));[...(X.pm||[]),...(X.mf||[])].forEach(([id,m])=>mon[id]=m);
+  const media=[...(X.ph||[]),...(X.pm||[]).map(x=>x[0]),...(X.mf||[]).map(x=>x[0])].filter(id=>PH[id]).sort((a,b)=>String(mon[a]||'').localeCompare(String(mon[b]||'')));
   const all=MSG.concat(THX),qs=X.q.map(([id,t])=>{const m=all.find(x=>x.id===id);return m&&String(m.text).includes(t)?{m,t}:null}).filter(Boolean);
-  const N=Math.min(media.length,qs.length);
   const isV=u=>/^data:video|\.mp4|\.webm|\.mov/i.test(u);
-  const mHtml=(id,k)=>{const u=PH[id],m=String(mon[id]||'').replace('-','.');return (isV(u)?`<video class="fg v" src="${u}" muted playsinline autoplay loop></video>`:`<img class="bgb" src="${u}" alt=""><img class="fg kb${k%2?'2':''}" src="${u}" alt="">`)+(m?`<span class="m5-dt">${esc(m)}</span>`:'')};
+  const mHtml=(id,k)=>{const u=PH[id],m=String(mon[id]||'').replace(/-/g,'.');return (isV(u)?`<video class="fg v" src="${u}" muted playsinline autoplay loop></video>`:`<img class="bgb" src="${u}" alt=""><img class="fg kb${k%2?'2':''}" src="${u}" alt="">`)+(m?`<span class="m5-dt">${esc(m)}</span>`:'')};
   const card=(x,cls)=>{const rn=resolveName(x.m.from)||x.m.from,fp=BYN[rn];const el=document.createElement('div');el.className='m3-card m4c '+cls;el.innerHTML=`<span class="av">${fp?avHtml(fp):''}</span><div><b>${esc(rn)}</b><p>${esc(x.t)}</p></div>`;pop.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('on')));return el};
-  const clearPop=()=>[...pop.children].forEach(c=>{c.classList.add('off');setTimeout(()=>c.remove(),450)});
+  const clearPop=()=>[...pop.children].forEach(c=>{c.classList.add('off');setTimeout(()=>c.remove(),300)});
   // opening
   scene((media[0]?`<img class="bgb op" src="${PH[media[0]]}" alt="">`:'')+`<div class="m3-op"><small>${esc(n)} さんへ</small><p>あなたと過ごした毎日は、<br>今も、みんなの中にある。</p></div>`,'m3-open');
-  // N segments between first and last cut, snapped to reference cut points
-  const C=MV_CUTS,E=C[C.length-1],inner=C.slice(1,-1);const bounds=[C[0]];for(let k=1;k<N;k++){const tgt=C[0]+(E-C[0])*k/N;bounds.push(inner.reduce((a,b)=>Math.abs(b-tgt)<Math.abs(a-tgt)?b:a))}
-  for(let k=0;k<N;k++){const t=bounds[k],x=qs[k],id=media[k];at(t,()=>{clearPop();scene(mHtml(id,k),'m3-sl');setTimeout(()=>card(x,k%2?'pr5':'pl5'),350)})}
+  // slots: every message gets its own slide (and its own photo/video, never reused)
+  const C=MV_CUTS,E=C[C.length-1],slots=[];C.slice(0,-1).forEach((t,i)=>{const d=C[i+1]-t;if(t<MV_FAST&&d>3.6){slots.push(t,t+d/2)}else slots.push(t)});
+  slots.forEach((t,k)=>{const x=qs[k];if(!x)return;const id=media[k],fast=t>=MV_FAST;at(t,()=>{clearPop();scene(id?mHtml(id,k):'<div class="m5-blank"></div>','m3-sl'+(fast?' cut':''));setTimeout(()=>card(x,(id?'':'mid ')+(k%2?'pr5':'pl5')+(fast&&k===slots.length-1?' big':'')),fast?120:300)})});
   // ending
   at(E,()=>{clearPop();st.classList.add('end5');tx.innerHTML='<p></p>';tx.classList.add('on');let q='お元気ですか？\nご都合合えば\nお話ししたいです。',c=0;const iv=setInterval(()=>{c++;tx.querySelector('p').textContent=q.slice(0,c);if(c>=q.length)clearInterval(iv)},90);MV.iv.push(iv)});
   at(E+3.8,()=>{kv.classList.add('on');tx.classList.remove('on')});
@@ -1044,7 +1043,7 @@ function playMovie(){if(INV&&MVX[INV])return playMovie2(MVX[INV]);const st=docum
   at(26200,()=>show('mv-end',`<h3>12月19日、<br>会いに来てください。</h3><p>2026 SAKIYOMI 年末総会</p>`));
   at(30000,()=>{if(MV.au){const a=MV.au;let v=a.volume;const f=setInterval(()=>{v-=.06;if(v<=0){a.pause();clearInterval(f)}else a.volume=v},120)}});
   at(31000,()=>{bt.innerHTML='<span>↻</span>もう一度見る';bt.classList.remove('hide')})}
-function setupMovie(){}
+function setupMovie(){if(!INV)return;const go=X=>{try{loadPhotos((X.pm||[]).map(x=>x[0]).filter(id=>!PH[id]))}catch(e){}(X.mf||[]).forEach(([id,m,ty])=>{if(PH[id])return;sdec('m/'+id+'.bin').then(u=>{PH[id]=URL.createObjectURL(new Blob([u],{type:ty==='v'?'video/mp4':'image/jpeg'}))}).catch(()=>{})})};if(MVX[INV])return go(MVX[INV]);sdec('mvx.bin').then(u=>{MVX=JSON.parse(new TextDecoder().decode(u));if(MVX[INV])go(MVX[INV])}).catch(()=>{})}
 document.addEventListener('click',e=>{if(e.target.closest('[data-mv="play"]'))playMovie()});
 const IVP=['総会','1次会','2次会'];let IVSEL=null,IVEDIT=false,IVOPEN=false;
 function invRsvpHtml(n){if(!IVSEL)IVSEL=new Set((ATTP[n]||'').split(',').filter(Boolean));const on=ATT.has(n);
