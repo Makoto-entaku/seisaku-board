@@ -945,18 +945,21 @@ function hints(p){
   h.push('当時は言えなかった「ありがとう」は？');
   return ['今の'+p.n+'さんに話したいこと、聞いてほしいことは？',...h.slice(0,3)];
 }
-const IVP=['総会','1次会','2次会'];let IVSEL=null,IVEDIT=false;
+const IVP=['総会','1次会','2次会'];let IVSEL=null,IVEDIT=false,IVOPEN=false;
 function invRsvpHtml(n){if(!IVSEL)IVSEL=new Set((ATTP[n]||'').split(',').filter(Boolean));const on=ATT.has(n);
   if(on&&!IVEDIT){const parts=(ATTP[n]||'').split(',').filter(Boolean);return `<div class="ivr on"><p class="ivr-st"><span class="att-stamp">出席</span>${parts.length?`<b>${parts.map(esc).join('・')}</b> に参加`:'参加予定'}</p><div class="ivr-links"><button type="button" class="link" data-iv="edit">変更する</button><button type="button" class="link" data-iv="cancel">取り消す</button></div></div>`}
-  const sel=IVP.filter(x=>IVSEL.has(x));return `<div class="ivr"><h3 class="ivr-t">ご出欠</h3><p class="ivr-d">12月19日 SAKIYOMI 10周年 全社総会</p><p class="ivr-step"><b>1</b>参加するものを選ぶ（複数OK）</p><div class="ivr-chips">${IVP.map(x=>`<button type="button" class="ivr-chip${IVSEL.has(x)?' on':''}" data-iv="tog" data-part="${x}" aria-pressed="${IVSEL.has(x)}">${x}</button>`).join('')}</div><p class="ivr-step"><b>2</b>ボタンを押して返事する</p><button type="button" class="ivr-go${sel.length?'':' off'}" data-iv="go">${sel.length?`${sel.join('・')} に出席する`:'先に 1 を選んでください'}</button>${on?'<button type="button" class="link" data-iv="back">キャンセル</button>':''}</div>`}
+  const sel=IVP.filter(x=>IVSEL.has(x));const hd=`<h3 class="ivr-t">ご出欠</h3><p class="ivr-d">12月19日 SAKIYOMI 10周年 全社総会</p>`;
+  if(!IVOPEN&&!IVEDIT)return `<div class="ivr">${hd}<button type="button" class="ivr-go" data-iv="open">出席する</button></div>`;
+  return `<div class="ivr">${hd}<p class="ivr-step">参加するものを選んでください（複数OK）</p><div class="ivr-chips">${IVP.map(x=>`<button type="button" class="ivr-chip${IVSEL.has(x)?' on':''}" data-iv="tog" data-part="${x}" aria-pressed="${IVSEL.has(x)}">${x}</button>`).join('')}</div><button type="button" class="ivr-go${sel.length?'':' off'}" data-iv="go">${sel.length?`${sel.join('・')} で返事する`:'上から選んでください'}</button><button type="button" class="link" data-iv="back">やめる</button></div>`}
 function redrawRsvp(){document.querySelectorAll('.ivr-wrap').forEach(e=>e.innerHTML=invRsvpHtml(INV))}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-iv]');if(!b||!INV)return;const n=INV,act=b.dataset.iv;
   if(act==='tog'){const x=b.dataset.part;IVSEL.has(x)?IVSEL.delete(x):IVSEL.add(x);redrawRsvp();return}
   if(act==='edit'){IVEDIT=true;IVSEL=new Set((ATTP[n]||'').split(',').filter(Boolean));redrawRsvp();return}
-  if(act==='back'){IVEDIT=false;redrawRsvp();return}
+  if(act==='open'){IVOPEN=true;redrawRsvp();return}
+  if(act==='back'){IVEDIT=false;IVOPEN=false;redrawRsvp();return}
   if(act==='go'&&!IVSEL.size){toast('総会・1次会・2次会から、参加するものを選んでください');return}
   const prev=[ATT.has(n),ATTP[n]];const text=act==='go'?'出席:'+IVP.filter(x=>IVSEL.has(x)).join(','):'取消';
-  if(act==='go'){ATT.add(n);ATTP[n]=text.split(':')[1]}else{ATT.delete(n);delete ATTP[n];IVSEL=new Set()}IVEDIT=false;redrawRsvp();render();toast(act==='go'?'出席の返事を送りました':'出席を取り消しました');
+  if(act==='go'){ATT.add(n);ATTP[n]=text.split(':')[1]}else{ATT.delete(n);delete ATTP[n];IVSEL=new Set()}IVEDIT=false;IVOPEN=false;redrawRsvp();render();toast(act==='go'?'出席の返事を送りました':'出席を取り消しました');
   try{const r=await post({action:'post',to:'__rsvp__',from:n,text});if(!r.ok)throw 0}catch(err){if(prev[0]){ATT.add(n);ATTP[n]=prev[1]}else{ATT.delete(n);delete ATTP[n]}redrawRsvp();render();toast('送れませんでした。もう一度押してください')}});
 function renderInvMsgs(){const el=document.getElementById('invMsgs');if(!el||!INV)return;const L=MSG.filter(m=>m.to===INV).concat(THX.filter(m=>m.to===INV&&thxOk(m))).sort((a,b)=>(a.thx?1:0)-(b.thx?1:0)||String(b.ts).localeCompare(String(a.ts)));
   el.innerHTML=`<div class="fg-sep">みんなからのメッセージ</div>`+(L.length?`<div class="fg">`+L.map(m=>{const rn=resolveName(m.from)||m.from,fp=BYN[rn];return `<div class="fg-t"><span class="fg-av">${fp?avHtml(fp):esc(String(rn||'?').slice(0,1))}</span><div class="fg-b"><div class="fg-hd"><b>${esc(rn)}</b></div><p>${esc(m.text)}</p></div></div>`}).join('')+`</div>`:'<p class="note" style="padding:8px 16px 14px">メッセージはこれから届きます。</p>')}
