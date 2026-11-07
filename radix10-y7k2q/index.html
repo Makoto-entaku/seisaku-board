@@ -761,6 +761,14 @@ html body #myMsgs.my-msgs{background:#fff;border:1px solid #ddd;border-radius:8p
 .m3-card.pl{left:5%;bottom:9%}.m3-card.pr{right:5%;top:8%}
 .m3-pop{display:flex;flex-direction:column;justify-content:flex-end;gap:8px;padding:0 5% 8%}.m3-card.stk{position:relative;left:auto;right:auto;top:auto;bottom:auto;max-width:80%}.m3-card.stk.pr{align-self:flex-end}.m3-card.stk.pl{align-self:flex-start}
 .m3-card.big{position:absolute;left:7%;right:7%;top:50%;bottom:auto;max-width:none;transform:translateY(-50%) scale(.6);padding:16px 18px}.m3-card.big.on{transform:translateY(-50%)}.m3-card.big p{font-size:18px}
+.mv-stage.m4{background:#f4efe7;overflow:hidden}.m4 .m4-3d{position:absolute;inset:0;perspective:700px;perspective-origin:50% 45%}.m4 .m4-world{position:absolute;left:50%;top:46%;width:0;height:0;transform-style:preserve-3d}
+.m4-ph{position:absolute;margin:0;left:-150px;top:-120px;width:300px;background:#fff;padding:7px 7px 0;box-shadow:0 18px 40px rgba(31,42,85,.22);backface-visibility:hidden}.m4-ph img{display:block;width:100%;height:auto}.m4-ph figcaption{font:600 10px/26px "Helvetica Neue",Arial,sans-serif;letter-spacing:.2em;color:#395DC8;text-align:right;padding-right:4px}
+.m4-ln{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;overflow:visible}.m4-ln path{fill:none;stroke:#2f52c4;stroke-linecap:round;opacity:.9}
+.m4-txt{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#1f2a55;transition:opacity .7s ease;padding:0 26px}.m4-txt.off{opacity:0}.m4-txt small{font-size:12px;letter-spacing:.18em;color:#395DC8;min-height:18px;font-weight:600}.m4-txt p{font-size:18px;line-height:1.9;letter-spacing:.06em;white-space:pre-line;margin:12px 0 0;min-height:70px;color:#1f2a55;font-weight:500;text-align:center}
+.m4-txt.fin p{font-size:23px;font-weight:700;color:#2f52c4;line-height:1.7;margin:0}
+.m4 .m4-3d{opacity:0;transition:opacity 1s ease}.m4.go .m4-3d{opacity:1}.m4.go.end .m4-3d{opacity:0;transition:opacity 1.2s ease .3s}
+.m4 .m3-pop{position:absolute;inset:0;pointer-events:none;z-index:6}.m4-kv{position:absolute;inset:0;z-index:5;opacity:0;transform:scale(1.04);transition:opacity 1.2s ease,transform 4s ease-out}.m4-kv.on{opacity:1;transform:none}.m4-kv img{width:100%;height:100%;object-fit:cover;display:block}
+.m4c{background:#fff;border:1px solid rgba(57,93,200,.18);box-shadow:0 12px 30px rgba(31,42,85,.18)}.m4c b{color:#395DC8}.m4c p{color:#1f2a55}.m4c p.gh{visibility:hidden;height:0;margin:0;overflow:hidden}
 .mv-play small{font-size:12px;font-weight:400;opacity:.85;margin-top:-4px}
 .mv-chat{padding:16px;background:linear-gradient(160deg,#395DC8,#24357a)}.mv-win{width:100%!important;height:100%;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.3)}.mv-win .s-ch{flex:none}.mv-feed{flex:1;overflow-y:auto;position:relative;overflow-x:hidden;padding:4px 0 10px;scrollbar-width:none}.mv-feed::-webkit-scrollbar{display:none}
 .mv-feed .s-msg{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease;text-align:left}.mv-feed .s-msg.on{opacity:1;transform:none}.mv-feed .s-tx{font-size:14px;line-height:21px;font-weight:400;max-height:none;white-space:pre-wrap}.mv-feed .s-tx:after{display:none}.mv-feed .s-hd b{font-size:14px}.mv-feed .ini{display:grid;place-items:center;width:36px;height:36px;border-radius:8px;background:#395DC8;color:#fff;font-weight:700}
@@ -997,33 +1005,40 @@ function mvMsgs(n){const by=(a,b)=>String(a.ts).localeCompare(String(b.ts));cons
 let MVX={};
 // cut points taken from the reference edit (seconds)
 const MV_CUTS=[4.8,9.4,12.0,14.3,19.3,22.1,24.3,27.1,29.6,34.6,35.6,36.9,38.6,41.4,43.5,44.9,46.3,47.6,48.9,50.2,51.1,52.4,54.5],MV_LEN=62.5,MV_FAST=34.6;
-function playMovie2(X){const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(MV){MV.ts.forEach(clearTimeout);if(MV.au)MV.au.pause()}
-  const n=INV;MV={ts:[],au:null};const at=(sec,fn)=>MV.ts.push(setTimeout(fn,sec*1000));
+function playMovie2(X){const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(MV){MV.ts.forEach(clearTimeout);MV.iv.forEach(clearInterval);if(MV.au)MV.au.pause()}
+  const n=INV,p=BYN[n];MV={ts:[],iv:[],au:null};const at=(sec,fn)=>MV.ts.push(setTimeout(fn,sec*1000));
   try{const au=new Audio('static/bgm2.mp3');au.volume=.8;MV.au=au;au.play().catch(()=>{})}catch(e){}
-  bt.classList.add('hide');st.innerHTML='<div class="m3-bg"></div><div class="m3-pop"></div>';st.className='mv-stage mv2 mv3';
+  bt.classList.add('hide');st.className='mv-stage m4';
+  st.innerHTML='<div class="m4-3d"><div class="m4-world"></div></div><svg class="m4-ln" viewBox="0 0 400 500" preserveAspectRatio="none"></svg><div class="m4-txt"></div><div class="m3-pop"></div><div class="m4-kv"><img src="card2.webp" alt=""></div>';
   pr.style.transition='none';pr.style.width='0';void pr.offsetWidth;pr.style.transition=`width ${MV_LEN}s linear`;pr.style.width='100%';
-  const bgL=st.querySelector('.m3-bg'),pop=st.querySelector('.m3-pop');
-  const scene=(html,cls)=>{const el=document.createElement('div');el.className='mv-s '+(cls||'');el.innerHTML=html;bgL.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('in')));[...bgL.children].slice(0,-1).forEach(o=>{setTimeout(()=>o.classList.add('out'),cls&&cls.includes('cut')?0:250);setTimeout(()=>o.remove(),1400)})};
-  const ph=X.ph.filter(id=>PH[id]).map(id=>PH[id]);const P=k=>ph.length?ph[k%ph.length]:'';
-  const im=(u,c)=>`<img class="${c||''}" src="${u}" alt="">`;
-  const L={fit:k=>im(P(k),'bgb')+im(P(k),'fg kb'+(k%2?'2':'')),
-    tri:k=>`<div class="m3-tri">${[0,1,2].map(i=>`<div>${im(P(k+i),'kb'+(i%2?'2':''))}</div>`).join('')}</div>`,
-    grid:k=>`<div class="m3-grid">${[0,1,2,3].map(i=>`<div>${im(P(k+i),i%2?'kb2':'kb')}</div>`).join('')}</div>`,
-    zl:k=>im(P(k),'cov kb')+'',zr:k=>im(P(k),'cov r kb2')};
-  const plan=['fit','tri','fit','zl','grid','fit','zr','tri','fit','zl','zr','zl','grid','zr','zl','tri','zr','zl','zr','zl','grid','fit'];
+  const W=st.querySelector('.m4-world'),ln=st.querySelector('.m4-ln'),tx=st.querySelector('.m4-txt'),pop=st.querySelector('.m3-pop'),kv=st.querySelector('.m4-kv');
+  // photos: chronological, each used once
+  const mon={};(p.ph||[]).forEach(x=>mon[x[0]]=x[1]);[...(p.own||[]),...(p.about||[])].forEach(o=>(o[5]||[]).forEach(id=>{if(!mon[id])mon[id]=o[1]}));
+  const ph=X.ph.filter(id=>PH[id]).sort((a,b)=>String(mon[a]||'').localeCompare(String(mon[b]||'')));
+  const POS=[[0,0],[260,-40],[-250,30],[230,50],[-240,-50]],DZ=1500;
+  ph.forEach((id,i)=>{const [x,y]=POS[i%POS.length],m=String(mon[id]||'');W.insertAdjacentHTML('beforeend',`<figure class="m4-ph" style="transform:translate3d(${x}px,${y}px,${-i*DZ}px) rotateY(${i%2?-8:8}deg)"><img src="${PH[id]}" alt=""><figcaption>${m?esc(m.replace('-','.')):''}</figcaption></figure>`)});
+  let cam={i:-1,x:0,y:0,z:-700,ry:0,rz:0};const setCam=(c,dur)=>{cam=c;W.style.transition=`transform ${dur}s cubic-bezier(.45,0,.2,1)`;const [x,y]=c.i>=0?POS[c.i%POS.length]:[0,0];W.style.transform=`rotateZ(${c.rz}deg) rotateY(${c.ry}deg) translate3d(${-x+c.x}px,${-y+c.y}px,${(c.i<0?0:c.i*DZ)+c.z}px)`};
+  setCam(cam,0);
+  // flying blue lines
+  let lk=0;const swoop=(k,fast)=>{const r=()=>Math.random();const pts=[[-40,80+r()*340],[100+r()*200,-60+r()*620],[200+r()*150,-60+r()*620],[440,60+r()*380]];if(k%2)pts.reverse();const d=`M${pts[0]} C${pts[1]} ${pts[2]} ${pts[3]}`;const sw=(fast?2:3)+r()*(fast?3:7);const pa=document.createElementNS('http://www.w3.org/2000/svg','path');pa.setAttribute('d',d);pa.setAttribute('stroke-width',sw);ln.appendChild(pa);const L=pa.getTotalLength();pa.style.strokeDasharray=L;pa.style.strokeDashoffset=L;pa.getBoundingClientRect();pa.style.transition=`stroke-dashoffset ${fast?.7:1.4}s cubic-bezier(.5,0,.2,1), opacity .8s ease ${fast?.8:1.8}s`;pa.style.strokeDashoffset=-L*.0;pa.style.opacity=0;setTimeout(()=>pa.remove(),3200)};
+  const type=(el,t,cps)=>{let k=0;el.textContent='';const iv=setInterval(()=>{k++;el.textContent=t.slice(0,k);if(k>=t.length)clearInterval(iv)},1000/cps);MV.iv.push(iv)};
   const all=MSG.concat(THX),qs=X.q.map(([id,t])=>{const m=all.find(x=>x.id===id);return m&&String(m.text).includes(t)?{m,t}:null}).filter(Boolean);
-  const card=(x,cls)=>{const rn=resolveName(x.m.from)||x.m.from,fp=BYN[rn];const el=document.createElement('div');el.className='m3-card '+cls;el.innerHTML=`<span class="av">${fp?avHtml(fp):''}</span><div><b>${esc(rn)}</b><p>${esc(x.t)}</p></div>`;pop.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('on')));return el};
-  // opening
-  scene(im(P(0),'bgb op')+`<div class="m3-op"><small>${esc(n)} さんへ</small><p>あなたと過ごした毎日は、<br>今も、みんなの中にある。</p></div>`,'m3-open');
-  // slides
-  const slow=[],fast=[];MV_CUTS.slice(0,-1).forEach((t,i)=>{const lay=plan[i%plan.length];at(t,()=>scene(L[lay](i),'m3-sl'+(t>=MV_FAST?' cut':'')));(t<MV_FAST?slow:fast).push([t,MV_CUTS[i+1]])});
-  let qi=0;const sl=[];slow.forEach(([a,b])=>{sl.push([a+.35,a+(b-a>3.6?(b-a)/2:b-a)]);if(b-a>3.6)sl.push([a+(b-a)/2+.2,b-a- (b-a)/2])});
-  // slow: one card at a time, alternating sides
-  sl.forEach(([t,d],k)=>{const x=qs[qi++];if(!x)return;at(t,()=>{[...pop.children].forEach(c=>{c.classList.add('off');setTimeout(()=>c.remove(),500)});card(x,k%2?'pr':'pl')})});
-  // fast: cards stack up (keep 3), last one is the big finale
-  fast.forEach(([t],k)=>{const x=qs[qi++];if(!x)return;const last=k===fast.length-1;at(t+.12,()=>{if(last){[...pop.children].forEach(c=>{c.classList.add('off');setTimeout(()=>c.remove(),500)});card(x,'big')}else{const cs=[...pop.querySelectorAll('.m3-card:not(.off)')];if(cs.length>=3){cs[0].classList.add('off');setTimeout(()=>cs[0].remove(),500)}card(x,'stk '+(k%2?'pr':'pl'))}})});
-  // ending
-  at(MV_CUTS[MV_CUTS.length-1],()=>{[...pop.children].forEach(c=>{c.classList.add('off');setTimeout(()=>c.remove(),600)});scene(`<div class="m3-end"><p>12月19日、<br>また、会いましょう。</p><small>2026 SAKIYOMI 年末総会</small></div>`,'m3-last')});
+  const card=(x,cls,cps)=>{const rn=resolveName(x.m.from)||x.m.from,fp=BYN[rn];const el=document.createElement('div');el.className='m3-card m4c '+cls;el.innerHTML=`<span class="av">${fp?avHtml(fp):''}</span><div><b>${esc(rn)}</b><p></p><p class="gh">${esc(x.t)}</p></div>`;pop.appendChild(el);requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('on')));const pe=el.querySelector('p');if(cps)type(pe,x.t,cps);else pe.textContent=x.t;return el};
+  const clearPop=()=>[...pop.children].forEach(c=>{c.classList.add('off');setTimeout(()=>c.remove(),500)});
+  // opening: typed text on blank paper
+  tx.innerHTML='<small></small><p></p>';at(.5,()=>type(tx.querySelector('small'),n+' さんへ',14));at(1.6,()=>type(tx.querySelector('p'),'あなたと過ごした毎日は、\n今も、みんなの中にある。',12));at(.3,()=>swoop(0));at(2.4,()=>swoop(1));
+  // slides: camera flies to each photo in order; extra cuts orbit the current one
+  const nP=Math.max(1,ph.length),cuts=MV_CUTS.slice(0,-1);const span=cuts.length/nP;
+  cuts.forEach((t,ci)=>{const fast=t>=MV_FAST;const pi=Math.min(nP-1,Math.floor(ci/span)),first=ci===0||Math.min(nP-1,Math.floor((ci-1)/span))!==pi;
+    at(t,()=>{if(ci===0){tx.classList.add('off');st.classList.add('go')}const k=ci%4;setCam(first?{i:pi,x:0,y:0,z:0,ry:0,rz:0}:{i:pi,x:[40,-50,30,-30][k],y:[-20,25,-15,20][k],z:fast?[260,120,320,180][k]:[160,60,220,100][k],ry:(fast?[10,-12,8,-9]:[5,-6,4,-5])[k],rz:fast?[2,-2,1.5,-1.5][k]:0},first?2.2:fast?.85:2.4);swoop(ci,fast);if(fast)swoop(ci+1,true)})});
+  // messages
+  const slow=[],fast=[];cuts.forEach((t,i)=>(t<MV_FAST?slow:fast).push([t,MV_CUTS[i+1]]));let qi=0;const sl=[];slow.forEach(([a,b])=>{const d=b-a;sl.push(a+.4);if(d>3.6)sl.push(a+d/2+.2)});
+  sl.forEach((t,k)=>{const x=qs[qi++];if(!x)return;at(t,()=>{clearPop();card(x,k%2?'pr':'pl',26)})});
+  fast.forEach(([t],k)=>{const x=qs[qi++];if(!x)return;const last=k===fast.length-1;at(t+.12,()=>{if(last){clearPop();card(x,'big',22)}else{const cs=[...pop.querySelectorAll('.m3-card:not(.off)')];if(cs.length>=3){cs[0].classList.add('off');setTimeout(()=>cs[0].remove(),500)}card(x,'stk '+(k%2?'pr':'pl'))}})});
+  // ending: speed lines -> typed line -> KV
+  const E=MV_CUTS[MV_CUTS.length-1];
+  at(E,()=>{clearPop();setCam({i:nP-1,x:0,y:0,z:2600,ry:0,rz:0},1.6);st.classList.add('end');for(let k=0;k<6;k++)setTimeout(()=>swoop(k,true),k*90);tx.className='m4-txt fin';tx.innerHTML='<p></p>';setTimeout(()=>type(tx.querySelector('p'),'お元気ですか？\nご都合合えば\nお話ししたいです。',11),900)});
+  at(E+3.6,()=>{kv.classList.add('on');tx.classList.add('off')});
   at(MV_LEN+.4,()=>{bt.innerHTML='<span>↻</span>もう一度見る';bt.classList.remove('hide')})}
 function playMovie(){if(INV&&MVX[INV])return playMovie2(MVX[INV]);const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(!st||!INV)return;if(MV){MV.ts.forEach(clearTimeout);if(MV.au){MV.au.pause()}}
   const p=BYN[INV],n=INV,L=mvMsgs(n);MV={ts:[],au:null};const at=(ms,fn)=>MV.ts.push(setTimeout(fn,ms));
