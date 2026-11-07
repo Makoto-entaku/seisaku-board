@@ -740,6 +740,9 @@ html body #myMsgs.my-msgs{background:#fff;border:1px solid #ddd;border-radius:8p
 .mv-stage{position:absolute;inset:0}.mv-s{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:28px;opacity:0;transition:opacity .6s ease}.mv-s.in{opacity:1}.mv-s.out{opacity:0}
 .mv-bar{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.25);z-index:3}.mv-bar i{display:block;height:100%;width:0;background:#fff}
 .mv-play{position:absolute;inset:0;z-index:4;border:0;background:rgba(31,42,85,.55);color:#fff;font:inherit;font-size:16px;font-weight:700;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;cursor:pointer}.mv-play span{display:grid;place-items:center;width:68px;height:68px;border-radius:50%;background:#fff;color:#1f2a55;font-size:26px}.mv-play.hide{display:none}
+.mv-play small{font-size:12px;font-weight:400;opacity:.85;margin-top:-4px}
+.mv-chat{padding:16px;background:linear-gradient(160deg,#395DC8,#24357a)}.mv-win{width:100%!important;height:100%;display:flex;flex-direction:column;box-shadow:0 10px 30px rgba(0,0,0,.3)}.mv-win .s-ch{flex:none}.mv-feed{flex:1;overflow-y:auto;position:relative;overflow-x:hidden;padding:4px 0 10px;scrollbar-width:none}.mv-feed::-webkit-scrollbar{display:none}
+.mv-feed .s-msg{opacity:0;transform:translateY(14px);transition:opacity .45s ease,transform .45s ease;text-align:left}.mv-feed .s-msg.on{opacity:1;transform:none}.mv-feed .s-tx{font-size:14px;line-height:21px;font-weight:400;max-height:none;white-space:pre-wrap}.mv-feed .s-tx:after{display:none}.mv-feed .s-hd b{font-size:14px}.mv-feed .ini{display:grid;place-items:center;width:36px;height:36px;border-radius:8px;background:#395DC8;color:#fff;font-weight:700}
 .mv-title{background:radial-gradient(circle at 50% 35%,#4a6fd8,#1f2a55)}.mv-title .av{width:110px;height:110px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:#fff;color:#1f2a55;font-size:36px;font-weight:700;border:4px solid #fff;animation:mvPop .9s ease both}.mv-title .av img{width:100%;height:100%;object-fit:cover}.mv-title h3{margin:18px 0 10px;font-size:26px;color:#fff!important}.mv-title p{margin:0;font-size:15px;line-height:1.8;opacity:.9}
 .mv-photo{padding:0;background:#000}.mv-photo img{width:100%;height:100%;object-fit:cover;animation:mvKb var(--d) linear both}.mv-photo.r img{animation-name:mvKb2}
 .mv-post{background:#f6f2ea;color:#1d1c1d}.mv-post small{font-size:12px;color:#7a6e5a;margin-bottom:14px}.mv-post p{margin:0;font-size:19px;line-height:1.9;font-family:"Hiragino Mincho ProN","Noto Serif JP",serif;animation:mvUp 1s ease both}.mv-post b{margin-top:16px;font-size:13px;color:#7a6e5a;font-weight:600}
@@ -967,19 +970,20 @@ function hints(p){
 }
 function mvPhotoIds(p){return [...[...(p.own||[]),...(p.about||[])].flatMap(o=>(o[5]||[]).map(id=>[id,o[1]])),...(p.ph||[])].filter((x,i,a)=>a.findIndex(y=>y[0]===x[0])===i).slice(0,8).map(x=>x[0])}
 let MV=null;
-function mvScenes(n){const p=BYN[n];if(!p)return [];const S=[];const cut=(t,k)=>{t=String(t).replace(/\s+/g,' ').trim();return t.length>k?t.slice(0,k)+'…':t};
-  S.push({d:3200,c:'mv-title',h:`<span class="av">${avHtml(p)}</span><h3>${esc(p.n)} さんへ</h3><p>あの頃のあなたと、<br>みんなからの言葉</p>`});
-  const ph=mvPhotoIds(p).filter(id=>PH[id]).slice(0,4);ph.forEach((id,i)=>S.push({d:2000,c:'mv-photo'+(i%2?' r':''),h:`<img src="${PH[id]}" alt="">`}));
-  const posts=(p.own||[]).filter(o=>o&&String(o[0]).length>20).slice(0,2);posts.forEach(o=>S.push({d:3800,c:'mv-post',h:`<small># ${esc(o[4]||'')}　${ym(o[1])}</small><p>${esc(cut(o[0],95))}</p><b>— ${esc(p.n)}</b>`}));
-  const M=MSG.filter(m=>m.to===n).concat(THX.filter(m=>m.to===n&&thxOk(m))).filter(m=>String(m.text).length>8);
-  M.slice(0,4).forEach(m=>{const rn=resolveName(m.from)||m.from,fp=BYN[rn];S.push({d:3000,c:'mv-msg',h:`<div class="mv-bub"><span class="mv-av">${fp?avHtml(fp):esc(String(rn).slice(0,1))}</span><div><b>${esc(rn)}</b><p>${esc(cut(m.text,90))}</p></div></div>`})});
-  S.push({d:3600,c:'mv-end',h:`<h3>12月19日、<br>会いに来てください。</h3><p>2026 SAKIYOMI 年末総会</p>`});
-  const tot=S.reduce((a,x)=>a+x.d,0),f=30000/tot;S.forEach(x=>x.d=Math.round(x.d*f));return S}
-function playMovie(){const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(!st||!INV)return;if(MV&&MV.t)clearTimeout(MV.t);
-  const S=mvScenes(INV);let i=0;bt.classList.add('hide');st.innerHTML='';pr.style.transition='none';pr.style.width='0';void pr.offsetWidth;pr.style.transition='width 30s linear';pr.style.width='100%';MV={t:0};
-  const step=()=>{if(i>=S.length){MV.t=setTimeout(()=>{bt.innerHTML='<span>↻</span>もう一度見る';bt.classList.remove('hide')},1200);return;bt.innerHTML='<span>↻</span>もう一度見る';bt.classList.remove('hide');return}const x=S[i++];const el=document.createElement('div');el.className='mv-s '+x.c;el.style.setProperty('--d',x.d+'ms');el.innerHTML=x.h;st.appendChild(el);requestAnimationFrame(()=>el.classList.add('in'));
-    [...st.children].slice(0,-1).forEach(o=>{o.classList.add('out');setTimeout(()=>o.remove(),700)});MV.t=setTimeout(step,x.d)};step()}
-function setupMovie(){const m=document.getElementById('mv');if(!m||m._io)return;m._io=new IntersectionObserver(es=>{if(es.some(e=>e.isIntersecting)&&!MV){setTimeout(()=>{if(!MV)playMovie()},600)}},{threshold:.6});m._io.observe(m)}
+function mvMsgs(n){const by=(a,b)=>String(a.ts).localeCompare(String(b.ts));const A=MSG.filter(m=>m.to===n).sort(by),B=THX.filter(m=>m.to===n&&thxOk(m)).sort((a,b)=>String(b.text).length-String(a.text).length);
+  const L=[],budget=22000;let t=0;for(const m of A.concat(B)){const d=Math.max(1800,Math.min(4800,1300+String(m.text).length*22));if(L.length>=3&&t+d>budget)break;L.push({m,d});t+=d}const f=L.length?budget/t:1;L.forEach(x=>x.d=Math.round(x.d*f));return L}
+function playMovie(){const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(!st||!INV)return;if(MV){MV.ts.forEach(clearTimeout);if(MV.au){MV.au.pause()}}
+  const p=BYN[INV],n=INV,L=mvMsgs(n);MV={ts:[],au:null};const at=(ms,fn)=>MV.ts.push(setTimeout(fn,ms));
+  try{const au=new Audio('static/bgm.mp3');au.volume=.6;MV.au=au;au.play().catch(()=>{})}catch(e){}
+  bt.classList.add('hide');st.innerHTML='';pr.style.transition='none';pr.style.width='0';void pr.offsetWidth;pr.style.transition='width 30s linear';pr.style.width='100%';
+  const show=(cls,html)=>{const el=document.createElement('div');el.className='mv-s '+cls;el.innerHTML=html;st.appendChild(el);requestAnimationFrame(()=>el.classList.add('in'));[...st.children].slice(0,-1).forEach(o=>{o.classList.add('out');setTimeout(()=>o.remove(),700)});return el};
+  show('mv-title',`<span class="av">${avHtml(p)}</span><h3>${esc(n)} さんへ</h3><p>みんなから、<br>メッセージが届いています</p>`);
+  at(3200,()=>{const el=show('mv-chat',`<div class="slk2 open mv-win"><div class="s-top"><i></i><i></i><i></i><span>株式会社SAKIYOMI</span></div><div class="s-ch"># ${esc(n)} さんへ</div><div class="mv-feed"></div></div>`);
+    const feed=el.querySelector('.mv-feed');let t=400;L.forEach(({m,d})=>{at(3200+t,()=>{const rn=resolveName(m.from)||m.from,fp=BYN[rn];const div=document.createElement('div');div.className='s-msg mv-in';div.innerHTML=`<span class="s-av">${fp?avHtml(fp):`<span class="ini">${esc(String(rn||'?').slice(0,1))}</span>`}</span><div class="s-body"><div class="s-hd"><b>${esc(rn)}</b><span>${m.thx?'感謝アンケートより':''}</span></div><div class="s-tx">${esc(String(m.text).trim())}</div></div>`;feed.appendChild(div);requestAnimationFrame(()=>{div.classList.add('on');feed.scrollTo({top:Math.max(0,div.offsetTop-feed.offsetTop-6),behavior:'smooth'})})});t+=d})});
+  at(26200,()=>show('mv-end',`<h3>12月19日、<br>会いに来てください。</h3><p>2026 SAKIYOMI 年末総会</p>`));
+  at(30000,()=>{if(MV.au){const a=MV.au;let v=a.volume;const f=setInterval(()=>{v-=.06;if(v<=0){a.pause();clearInterval(f)}else a.volume=v},120)}});
+  at(31000,()=>{bt.innerHTML='<span>↻</span>もう一度見る';bt.classList.remove('hide')})}
+function setupMovie(){}
 document.addEventListener('click',e=>{if(e.target.closest('[data-mv="play"]'))playMovie()});
 const IVP=['総会','1次会','2次会'];let IVSEL=null,IVEDIT=false,IVOPEN=false;
 function invRsvpHtml(n){if(!IVSEL)IVSEL=new Set((ATTP[n]||'').split(',').filter(Boolean));const on=ATT.has(n);
@@ -1049,7 +1053,7 @@ function openSheet(n){
       <section id="tab-board"><div class="board" id="msgs"></div><div class="row end"><button class="btn ghost" id="close2">← みんなの一覧に戻る</button><button class="btn ghost" id="next">次の人へ →</button></div></section>`;
     const INFO_H='<section class="inv2-info"><h3 class="inv2-h">📍 当日のスケジュール・場所</h3><p class="inv2-soon">Coming soon</p><p class="inv2-sub">決まりしだい、お知らせします。</p></section>';
     if(isInv){$('#sheet').innerHTML=`<div class="inv2"><header class="inv2-hd"><span class="av">${avHtml(p)}</span><h2>${esc(p.n)} さんへ</h2><p>2026 SAKIYOMI 年末総会（12月19日）の招待状です。</p></header>
-      <div class="mv" id="mv"><div class="mv-stage" id="mvStage"></div><div class="mv-bar"><i id="mvProg"></i></div><button class="mv-play" id="mvPlay" type="button" data-mv="play"><span>▶</span>${esc(p.n)}さんへの30秒ムービー</button></div>
+      <div class="mv" id="mv"><div class="mv-stage" id="mvStage"></div><div class="mv-bar"><i id="mvProg"></i></div><button class="mv-play" id="mvPlay" type="button" data-mv="play"><span>▶</span>${esc(p.n)}さんへの30秒ムービー<small>音が出ます</small></button></div>
       <figure class="inv2-card" id="invCard"><img id="invImg" alt="招待状" ${window._invURL?`src="${window._invURL}"`:''}></figure>
       <div class="ivr-wrap">${invRsvpHtml(p.n)}</div>
       ${INFO_H}
