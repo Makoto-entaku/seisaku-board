@@ -1038,7 +1038,7 @@ function mvMsgs(n){const by=(a,b)=>String(a.ts).localeCompare(String(b.ts));cons
 
 let MVX={};
 // cut points taken from the reference edit (seconds)
-const MV_SLOW=[3.36,6.56,9.76,12.95,16.15,19.35,22.55,25.75,28.95,32.15,35.34,38.54,41.74,44.94,48.14];const MV_BEAT=[34.9,36.15,37.38,38.66,39.92,41.15,42.38,43.61,44.86,46.09,47.32,48.58,49.81,51.06,52.29];const MV_PULSE=[35.53,36.76,38.01,39.29,40.52,41.75,43.0,44.21,45.49,46.7,47.95,49.18,50.43,51.69];const MV_CUTS=[4.8,9.4,12.0,14.3,19.3,22.1,24.3,27.1,29.6,34.6,35.6,36.9,38.6,41.4,43.5,44.9,46.3,47.6,48.9,50.2,51.1,52.4,54.5],MV_LEN=79,MV_FAST=51.3;
+const MV_SLOW=[3.36,6.56,9.76,12.95,16.15,19.35,22.55,25.75,28.95,32.15,35.34,38.54,41.74,44.94,48.14];const MV_BEAT=[34.9,36.15,37.38,38.66,39.92,41.15,42.38,43.61,44.86,46.09,47.32,48.58,49.81,51.06,52.29];const MV_PULSE=[35.53,36.76,38.01,39.29,40.52,41.75,43.0,44.21,45.49,46.7,47.95,49.18,50.43,51.69];const MV_CUTS=[4.8,9.4,12.0,14.3,19.3,22.1,24.3,27.1,29.6,34.6,35.6,36.9,38.6,41.4,43.5,44.9,46.3,47.6,48.9,50.2,51.1,52.4,54.5],MV_LEN=77,MV_FAST=51.3;
 function playMovie2(X){const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(MV){MV.ts.forEach(clearTimeout);MV.iv.forEach(clearInterval);if(MV.au)MV.au.pause()}
   const n=INV,p=BYN[n];MV={ts:[],iv:[],au:null};const AO=0,at=(sec,fn)=>MV.ts.push(setTimeout(fn,Math.max(0,sec-AO)*1000));
   try{const au=new Audio('static/bgm4.mp3');au.volume=.8;MV.au=au;au.play().catch(()=>{})}catch(e){}
@@ -1064,7 +1064,7 @@ function playMovie2(X){const st=document.getElementById('mvStage'),pr=document.g
   // opening
   scene((media[0]?`<img class="bgb op" src="${PH[media[0]]}" alt="">`:'')+`<div class="m3-op"><small>${esc(n)} さんへ</small><p style="white-space:nowrap">メッセージが<br>届いています<span style="margin-right:-1em">。</span></p></div>`,'m3-open');
   // slots: every message gets its own slide (and its own photo/video, never reused)
-  const E=72.13,CH=[51.34,52.94,54.54,56.14,57.73,59.33,60.93,62.53,64.13,65.73,67.33],slots=[...MV_SLOW.map(t=>[t,1]),...CH.map(t=>[t,1]),[68.93,1]];let mi=0;
+  const E=68.93,CH=[51.34,52.94,54.54,56.14,57.73,59.33,60.93,62.53,64.13,65.73],slots=[...MV_SLOW.map(t=>[t,1]),...CH.map(t=>[t,1]),[67.33,1]];let mi=0;
   slots.forEach(([t,ph],k)=>{const x=qs[k];if(!x)return;const id=ph?media[mi++]:null,fast=t>=MV_FAST,last=k===slots.length-1;at(t,()=>{
     if(!fast||last){clearPop();pop.classList.remove('feed');st.classList.remove('feedmode')}else if(!pop.classList.contains('feed')){clearPop();pop.classList.add('feed');st.classList.add('feedmode')}
     if(ph)scene(id?mHtml(id,k):'<div class="m5-blank"></div>','m3-sl'+(t>=MV_FAST?' cut':'')+(last?' last':''),false);
@@ -1072,7 +1072,7 @@ function playMovie2(X){const st=document.getElementById('mvStage'),pr=document.g
     else setTimeout(()=>card(x,(id?'':'mid ')+(k%2?'pr5':'pl5')+(fast&&last?' big'+(id?' lastc':''):'')),fast?120:300)})});
   // ending
   at(E,()=>{clearPop();st.classList.remove('feedmode');[...bgL.children].forEach(o=>{o.classList.add('out');setTimeout(()=>o.remove(),600)});st.classList.add('end5')});at(E+.6,()=>{tx.innerHTML='<p style="white-space:pre"></p>';tx.classList.add('on');let q='12/19(土)\n年末総会へ\nぜひお越しくださいませ',c=0;const iv=setInterval(()=>{c++;const tp=tx.querySelector('p');tp.textContent=q.slice(0,c);if(c>=q.length){clearInterval(iv);tp.insertAdjacentHTML('beforeend','<span style="margin-right:-1em">。</span>')}},75);MV.iv.push(iv)});
-  at(E+4.2,()=>tx.classList.remove('on'));at(76.93,()=>{kv.classList.add('on')});
+  at(E+4.2,()=>tx.classList.remove('on'));at(73.73,()=>{kv.classList.add('on')});
   at(MV_LEN+.4,()=>{bt.innerHTML='<span>↻</span>もう一度見る';bt.classList.remove('hide')})}
 function playMovie(){if(INV&&MVX[INV])return playMovie2(MVX[INV]);const st=document.getElementById('mvStage'),pr=document.getElementById('mvProg'),bt=document.getElementById('mvPlay');if(!st||!INV)return;if(MV){MV.ts.forEach(clearTimeout);if(MV.au){MV.au.pause()}}
   const p=BYN[INV],n=INV,L=mvMsgs(n);MV={ts:[],au:null};const at=(ms,fn)=>MV.ts.push(setTimeout(fn,ms));
