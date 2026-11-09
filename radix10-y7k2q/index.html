@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ja">
-<head><link rel="preload" as="image" href="card2.webp"><meta name="color-scheme" content="only light">
+<head><script>try{if(localStorage.getItem('yk_intro'))document.documentElement.classList.add('seen')}catch(e){}</script><style>.seen #gate{display:none!important}</style><link rel="preload" as="image" href="card2.webp"><meta name="color-scheme" content="only light">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1244,7 +1244,7 @@ $('#sheet').addEventListener('click',async e=>{
   try{localStorage.setItem('yk_intro','1')}catch(e){}
   const g=$('#gateErr');if(g)g.textContent='';
   try{window.__PREM=_gasGet({action:'messages'}).catch(()=>null);window.__PRE=get({action:'data'});loadAVB()}catch(e){}
-  setTimeout(()=>{const gt=$('#gate');gt.style.transition='opacity .6s';gt.style.opacity='0';setTimeout(boot,600)},3200)})();
+  if(seen){const gt=$('#gate');if(gt)gt.style.display='none';try{typing.stop()}catch(e){}boot()}else setTimeout(()=>{const gt=$('#gate');gt.style.transition='opacity .6s';gt.style.opacity='0';setTimeout(boot,600)},3200)})();
 </script>
 </body>
 </html>
