@@ -879,7 +879,7 @@ function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTim
 async function get(params){const u=API+'?'+new URLSearchParams({...params,key:KEY});const r=await fetch(u);return r.json()}
 const SBASE='static/';let SKEY=null;const _TE=new TextEncoder();
 async function skey(){if(!SKEY)SKEY=(async()=>{const km=await crypto.subtle.importKey('raw',_TE.encode('radix10'),'PBKDF2',false,['deriveKey']);return crypto.subtle.deriveKey({name:'PBKDF2',salt:_TE.encode('sakiyomi-r10-static-v1'),iterations:100000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt'])})();return SKEY}
-async function sdec(path){const r=await fetch(SBASE+path+'?v=20261110c');if(!r.ok)throw new Error('nf');const b=new Uint8Array(await r.arrayBuffer());return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:b.slice(0,12)},await skey(),b.slice(12)))}
+async function sdec(path){const r=await fetch(SBASE+path+'?v=20261110d');if(!r.ok)throw new Error('nf');const b=new Uint8Array(await r.arrayBuffer());return new Uint8Array(await crypto.subtle.decrypt({name:'AES-GCM',iv:b.slice(0,12)},await skey(),b.slice(12)))}
 async function sname(k){const h=new Uint8Array(await crypto.subtle.digest('SHA-256',_TE.encode('r10:'+k)));return [...h].map(x=>x.toString(16).padStart(2,'0')).join('').slice(0,20)+'.bin'}
 function sniff(u){if(u[0]===0xFF&&u[1]===0xD8)return 'image/jpeg';if(u[0]===0x89&&u[1]===0x50)return 'image/png';if(u[0]===0x47&&u[1]===0x49)return 'image/gif';if(u[8]===0x57&&u[9]===0x45)return 'image/webp';return 'application/octet-stream'}
 const toDU=u=>new Promise(res=>{const f=new FileReader();f.onload=()=>res(f.result);f.readAsDataURL(new Blob([u],{type:sniff(u)}))});
