@@ -1103,6 +1103,7 @@ function invRsvpHtml(n){const on0=ATT.has(n);return on0?`<div class="ivr on"><h3
   if(!IVOPEN&&!IVEDIT)return `<div class="ivr">${hd}<button type="button" class="ivr-go" data-iv="open">出席する</button></div>`;
   return `<div class="ivr">${hd}<p class="ivr-step">参加するものを選んでください（複数OK）</p><div class="ivr-chips">${IVP.map(x=>`<button type="button" class="ivr-chip${IVSEL.has(x)?' on':''}" data-iv="tog" data-part="${x}" aria-pressed="${IVSEL.has(x)}">${x}</button>`).join('')}</div><button type="button" class="ivr-go${sel.length?'':' off'}" data-iv="go">${sel.length?`${sel.join('・')} で返事する`:'上から選んでください'}</button><button type="button" class="link" data-iv="back">やめる</button></div>`}
 function redrawRsvp(){document.querySelectorAll('.ivr-wrap').forEach(e=>e.innerHTML=invRsvpHtml(INV));renderInvAtt()}
+setTimeout(()=>{if(typeof render==='function'&&!render._att){const _r=render;render=function(...a){const x=_r.apply(this,a);try{renderInvAtt()}catch(e){}return x};render._att=1}},0);
 function renderInvAtt(){const el=document.getElementById('invAtt');if(!el)return;const L=PEOPLE.filter(p=>ATT.has(p.n));el.innerHTML=`<h3 class="inv2-h">🙋 出席予定のメンバー <small>${L.length}人</small></h3>`+(L.length?`<div class="att-grid">${L.map(p=>`<div class="att-p"><span class="av">${avHtml(p)}</span><span class="nm">${esc(p.n)}</span></div>`).join('')}</div>`:'<p class="inv2-sub">まだいません。一番乗りでどうぞ！</p>')}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-iv]');if(!b||!INV)return;const n=INV,act=b.dataset.iv;
   if(act==='form')return;
