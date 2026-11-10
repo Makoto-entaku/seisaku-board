@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="ja">
-<head><script>try{if(localStorage.getItem('yk_intro'))document.documentElement.classList.add('seen')}catch(e){}</script><style>.seen #gate{display:none!important}</style><link rel="preload" as="image" href="card2.webp"><meta name="color-scheme" content="only light">
+<head><script>try{if(localStorage.getItem('yk_intro'))document.documentElement.classList.add('seen')}catch(e){}</script><style>.seen #gate{display:none!important}.inv2-att .att-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:12px 8px;margin:8px 0 4px}.inv2-att .att-p{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center}.inv2-att .att-p .av{width:52px;height:52px;border-radius:50%;overflow:hidden;display:block}.inv2-att .att-p .av img{width:100%;height:100%;object-fit:cover}.inv2-att .att-p .nm{font-size:11px;line-height:1.3;word-break:break-word}.inv2-att{margin:8px 0 18px}
+</style><link rel="preload" as="image" href="card2.webp"><meta name="color-scheme" content="only light">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -922,7 +923,7 @@ async function boot(){
   setInterval(refresh,90000);
 }
 function apply(d){if(INV_T){const ip=d.people.find(p=>tok(p.n)===INV_T||(p.al&&INV_T&&p.al.normalize('NFC')===String(INV_T).normalize('NFC')));if(ip)INV=ip.n}d.people.forEach(p=>{if(['Yuji Tominaga','Ryosuke Mochizuki','Ayako Nishiuma'].includes(p.n))p.hide=true});PEOPLE=d.people.filter(p=>!p.hide||p.n===INV);BYN=Object.fromEntries(PEOPLE.map(p=>[p.n,p]));{const HID={};(d.messages||[]).filter(m=>m.to==='__hide__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{try{const o=JSON.parse(m.text);HID[o.k]=o.h}catch(e){}});const FIRST={};(d.messages||[]).filter(m=>m.to==='__first__').sort((a,b)=>String(a.ts).localeCompare(String(b.ts))).forEach(m=>{try{const o=JSON.parse(m.text);FIRST[o.n]=o.k}catch(e){}});const pk=(p,o)=>'p:'+(o[7]&&o[7].ts?o[7].ts:p.n+':'+String(o[0]||'').slice(0,30));PEOPLE.forEach(p=>{if(p.own&&(FIRST[p.n]||p.firstK)){const i=p.own.findIndex(o=>o&&pk(p,o)===(FIRST[p.n]||p.firstK));if(i>=0){p.own[i].__f=1;if(i>0)p.own.unshift(p.own.splice(i,1)[0])}}});PEOPLE.forEach(p=>{if(p.own)p.own=p.own.filter(o=>!(o&&HID['p:'+(o[7]&&o[7].ts?o[7].ts:p.n+':'+String(o[0]||'').slice(0,30))]));if(p.ph)p.ph=p.ph.filter(x=>!HID['f:'+x[0]])})}{const NR={'So Akamatsu':1,'Sorai Shibata':1,'Ryosuke Mochizuki':1};PEOPLE.forEach(p=>{if(NR[p.n])p.role='other'})}{const FX={'Akira Okubo':'fx_akira','Kenta Ogawa':'fx_kenta','Ryusei Kato':'fx_ryusei'};PEOPLE.forEach(p=>{if(FX[p.n])p.av=FX[p.n]})}if(INV&&!ME){ME=INV;save('yk_me',ME)}if(ME){const rn=resolveName(ME);if(rn&&rn!==ME){ME=rn;save('yk_me',ME)}}setMsgs(d.messages||[]);
-  $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV){if(open!==INV){document.body.classList.add('inv');openSheet(INV)}else{renderMsgs(INV);renderInvMsgs()}}}
+  $('#names').innerHTML=PEOPLE.map(p=>`<option value="${esc(p.n)}">`).join('');if(!$('#me').value)$('#me').value=ME;render();if(INV){if(open!==INV){document.body.classList.add('inv');openSheet(INV)}else{renderMsgs(INV);renderInvMsgs()}renderInvAtt()}}
 async function refresh(){try{let d=null;if(window.__PREM){d=await window.__PREM;window.__PREM=null}if(!d||!d.ok)d=await get({action:'messages'});if(d.ok){setMsgs(d.messages);render();if(open)renderMsgs(open)}}catch(e){}}
 async function loadKV(){const im=$('#kvImg');if(!im)return;const ids=[...Array(4).keys()].map(i=>'il2:'+i);const put=()=>{if(ids.every(k=>PH[k]))im.src=ids.map(k=>PH[k]).join('')};put();if(im.src)return;try{const d=await get({action:'photos',ids:ids.join(',')});if(d.ok){gotPhotos(d.photos);put()}}catch(e){}}
 async function loadAvatars(){
@@ -1101,7 +1102,8 @@ function invRsvpHtml(n){const on0=ATT.has(n);return on0?`<div class="ivr on"><h3
   const sel=IVP.filter(x=>IVSEL.has(x));const hd=`<h3 class="ivr-t">ご出欠</h3><p class="ivr-d">12月19日 2026 SAKIYOMI 年末総会</p>`;
   if(!IVOPEN&&!IVEDIT)return `<div class="ivr">${hd}<button type="button" class="ivr-go" data-iv="open">出席する</button></div>`;
   return `<div class="ivr">${hd}<p class="ivr-step">参加するものを選んでください（複数OK）</p><div class="ivr-chips">${IVP.map(x=>`<button type="button" class="ivr-chip${IVSEL.has(x)?' on':''}" data-iv="tog" data-part="${x}" aria-pressed="${IVSEL.has(x)}">${x}</button>`).join('')}</div><button type="button" class="ivr-go${sel.length?'':' off'}" data-iv="go">${sel.length?`${sel.join('・')} で返事する`:'上から選んでください'}</button><button type="button" class="link" data-iv="back">やめる</button></div>`}
-function redrawRsvp(){document.querySelectorAll('.ivr-wrap').forEach(e=>e.innerHTML=invRsvpHtml(INV))}
+function redrawRsvp(){document.querySelectorAll('.ivr-wrap').forEach(e=>e.innerHTML=invRsvpHtml(INV));renderInvAtt()}
+function renderInvAtt(){const el=document.getElementById('invAtt');if(!el)return;const L=PEOPLE.filter(p=>ATT.has(p.n));el.innerHTML=`<h3 class="inv2-h">🙋 出席予定のメンバー <small>${L.length}人</small></h3>`+(L.length?`<div class="att-grid">${L.map(p=>`<div class="att-p"><span class="av">${avHtml(p)}</span><span class="nm">${esc(p.n)}</span></div>`).join('')}</div>`:'<p class="inv2-sub">まだいません。一番乗りでどうぞ！</p>')}
 document.addEventListener('click',async e=>{const b=e.target.closest('[data-iv]');if(!b||!INV)return;const n=INV,act=b.dataset.iv;
   if(act==='form')return;
   if(act==='tog'){const x=b.dataset.part;IVSEL.has(x)?IVSEL.delete(x):IVSEL.add(x);redrawRsvp();return}
@@ -1166,6 +1168,7 @@ function openSheet(n){
     if(isInv){$('#sheet').innerHTML=`<div class="inv2"><header class="inv2-hd"><span class="av">${avHtml(p)}</span><h2>${esc(p.n)} さんへ</h2><p>2026 SAKIYOMI 年末総会（12月19日）の招待状です。</p></header>
       <div class="mv" id="mv"><div class="mv-stage" id="mvStage"></div><div class="mv-bar"><i id="mvProg"></i></div><button class="mv-play" id="mvPlay" type="button" data-mv="play"><span>▶</span>${esc(p.n)}さんへのムービー<small>音が出ます</small></button></div>
       <div class="ivr-wrap">${invRsvpHtml(p.n)}</div>
+      <section class="inv2-att" id="invAtt"></section>
       ${INFO_H}
       <h3 class="inv2-h">💌 あなたに会いたい人たちから</h3>
       <div class="invw" id="invMsgs"></div>
@@ -1174,7 +1177,7 @@ function openSheet(n){
       ${own?`<h3 class="inv2-h">💬 あの頃のあなたの投稿${(p.own||[]).length>1?'<small>横にスワイプ →</small>':''}</h3><div class="poststrip">${own}</div>`:''}
       <div class="ivr-wrap">${invRsvpHtml(p.n)}</div>
       ${INFO_H}</div>`;
-      if(!window._invURL&&!window._invBusy){window._invBusy=1;const tryLoad=(k)=>sdec('v/'+tok(p.n)+'.bin?t='+Date.now()).then(u=>{window._invURL=URL.createObjectURL(new Blob([u],{type:'image/jpeg'}));const im=document.getElementById('invImg');if(im)im.src=window._invURL;window._invBusy=0}).catch(()=>{if(k<4)setTimeout(()=>tryLoad(k+1),2500*(k+1));else{window._invBusy=0;const f=document.getElementById('invCard');if(f)f.remove()}});tryLoad(0)}
+      setTimeout(renderInvAtt,0);if(!window._invURL&&!window._invBusy){window._invBusy=1;const tryLoad=(k)=>sdec('v/'+tok(p.n)+'.bin?t='+Date.now()).then(u=>{window._invURL=URL.createObjectURL(new Blob([u],{type:'image/jpeg'}));const im=document.getElementById('invImg');if(im)im.src=window._invURL;window._invBusy=0}).catch(()=>{if(k<4)setTimeout(()=>tryLoad(k+1),2500*(k+1));else{window._invBusy=0;const f=document.getElementById('invCard');if(f)f.remove()}});tryLoad(0)}
       $('#sheet').classList.add('full');$('#scrim').hidden=false;$('#sheet').hidden=false;$('#sheet').scrollTop=0;renderInvMsgs();loadPhotos([...new Set([...mvPhotoIds(p),...(p.own||[]).flatMap(o=>(o[5]||[]).slice(0,4))])].filter(id=>!PH[id]));setupMovie();return}
     $('#sheet').innerHTML=`<div class="bar-b"><button class="back" id="close" aria-label="一覧に戻る">← 一覧へ</button><div class="bt">${esc(p.n)}${isInv?' さんへの招待状':''}</div><button class="btn pill" data-opencompose>＋ 書く</button></div>
       <header class="hero"><div class="heroWords" id="heroWords" aria-hidden="true"></div><span class="av">${avHtml(p)}${ATT.has(p.n)?MARU:''}</span><h2 id="shName">${esc(p.n)}</h2><div class="sub">${span?`Slackでの活動 ${esc(span)}`:''}</div>${isInv?`<p class="inv-lead">12月19日、2026 SAKIYOMI 年末総会へ。<br>あなたに <b id="invN">${nMsg}</b> 件のメッセージが届いています。</p>`:''}</header>
