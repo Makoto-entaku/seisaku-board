@@ -1123,7 +1123,7 @@ function renderInvMsgs(){const el=document.getElementById('invMsgs');if(!el||!IN
   const win=(ch,L)=>{let last='';return `<div class="slk2 open invslk"><div class="s-top"><i></i><i></i><i></i><span>株式会社SAKIYOMI</span></div><div class="s-ch"><svg width="15" height="15" viewBox="0 0 20 20" aria-hidden="true"><path fill="#1d1c1d" d="M7.5 2.5 6.3 7H3v1.5h2.9l-.8 3H2V13h2.7l-1.2 4.5H5L6.2 13h3.6l-1.2 4.5h1.5l1.2-4.5H15v-1.5h-3.3l.8-3H16V7h-3.1l1.2-4.5h-1.5L11.4 7H7.8L9 2.5zM7.4 8.5H11l-.8 3H6.6z"/></svg>${esc(ch)}</div>`+L.map(m=>{const rn=resolveName(m.from)||m.from,fp=BYN[rn],d=pd(m);const day=d?dday(d):(m.date||'');const sep=day&&day!==last?`<div class="s-day"><span>${esc(day)}</span></div>`:'';last=day;
     return `<div class="s-msg"><span class="s-av">${fp?avHtml(fp):`<span class="ini">${esc(String(rn||'?').slice(0,1))}</span>`}</span><div class="s-body"><div class="s-hd"><b>${esc(JA(rn))}</b></div><div class="s-tx">${esc(m.text)}</div></div></div>`}).join('')+`<div class="s-pad"></div></div>`};
   const A=MSG.filter(m=>m.to===INV).sort(by),B=THX.filter(m=>m.to===INV&&thxOk(m)).sort(by);
-  el.innerHTML=A.length?win(INV+' さんへ',A):'<p class="note" style="padding:14px 16px">メッセージはこれから届きます。</p>';
+  el.innerHTML=A.length?win(INV+' さんへ',A):'<p class="note" style="padding:14px 16px">メッセージはこれから届きます。</p>';const ms=document.getElementById('invMsgSec');if(ms)ms.hidden=!A.length;
   const sec=document.getElementById('invThxSec'),tl=document.getElementById('invThx');if(sec&&tl){sec.hidden=!B.length;tl.innerHTML=B.length?win('感謝アンケート通知',B):''}}
 function openSheet(n){
   const p=BYN[n];if(!p)return;open=n;
@@ -1173,8 +1173,8 @@ function openSheet(n){
       <div class="ivr-wrap">${invRsvpHtml(p.n)}</div>
       <section class="inv2-att" id="invAtt"></section>
       ${INFO_H}
-      <h3 class="inv2-h">💌 あなたに会いたい人たちから</h3>
-      <div class="invw" id="invMsgs"></div>
+      <div id="invMsgSec"><h3 class="inv2-h">💌 あなたに会いたい人たちから</h3>
+      <div class="invw" id="invMsgs"></div></div>
       <div id="invThxSec" hidden><h3 class="inv2-h">🙏 感謝アンケートで届いていた言葉</h3><p class="inv2-sub">在籍中に、Slackの感謝アンケートで送られていたメッセージです。</p>
       <div class="invw" id="invThx"></div></div>
       ${own?`<h3 class="inv2-h">💬 あの頃のあなたの投稿${(p.own||[]).length>1?'<small>横にスワイプ →</small>':''}</h3><div class="poststrip">${own}</div>`:''}
